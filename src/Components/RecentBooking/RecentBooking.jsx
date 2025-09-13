@@ -1,13 +1,10 @@
 /* eslint-disable no-unused-vars */
-import { Avatar, ConfigProvider, Input, Space, Table } from "antd";
+import { ConfigProvider, Input, Space, Table } from "antd";
 import { useState } from "react";
 
-import { Button, Modal } from "antd";
-import { FaEye } from "react-icons/fa";
-import { FiUserCheck } from "react-icons/fi";
-import { LiaUserSlashSolid } from "react-icons/lia";
 import { SearchOutlined } from "@ant-design/icons";
-import { LuRefreshCcw } from "react-icons/lu";
+import { Link } from "react-router-dom";
+import { FaArrowTrendUp } from "react-icons/fa6";
 const RecentBooking = () => {
   const userData = [
     {
@@ -20,8 +17,31 @@ const RecentBooking = () => {
       address: "76/4 R no. 60/1 Rue des Saints-Paris, 75005 Paris",
       date: "07/04/2025 - 6:30 PM",
       gender: "Male",
-      action: "↗",
       is_active: "true",
+      booking: [
+        {
+          name: "No of Adults",
+          quantity: 5,
+          price: 2500,
+        },
+        {
+          name: "Single Seater Dune Buggy 30 mins",
+          quantity: 2,
+          price: 900,
+        },
+        {
+          name: "20 Minutes Quad Bike",
+          quantity: 1,
+          price: 1100,
+        },
+        {
+          name: "4 Seater Dune Buggy 30 mins",
+          quantity: 1,
+          price: 700,
+        },
+      ],
+      total_price: 5200,
+      profileImage: "/path/to/profile-image.jpg",
     },
     {
       id: "#1238",
@@ -33,47 +53,38 @@ const RecentBooking = () => {
       address: "123 Rue des Lilas, Paris, 75008",
       date: "07/04/2025 - 6:30 PM",
       gender: "Female",
-      action: "↗",
       is_active: "true",
-    },
-    {
-      id: "#1237",
-      name: "Kathry",
-      email: "irnabela@gmail.com",
-      total_booking: 20,
-      contact: "(+33) 7 00 55 59 27",
-      location: "Syracuse, Connecticut",
-      address: "45 Avenue des Champs, Paris, 75001",
-      date: "07/04/2025 - 6:30 PM",
-      gender: "Female",
-      action: "↗",
-      is_active: "true",
+      booking: [
+        {
+          name: "No of Adults",
+          quantity: 4,
+          price: 2500,
+        },
+        {
+          name: "Single Seater Dune Buggy 30 mins",
+          quantity: 3,
+          price: 900,
+        },
+        {
+          name: "20 Minutes Quad Bike",
+          quantity: 2,
+          price: 1100,
+        },
+        {
+          name: "4 Seater Dune Buggy 30 mins",
+          quantity: 1,
+          price: 700,
+        },
+      ],
+      total_price: 6500,
+      profileImage: "/path/to/profile-image.jpg",
     },
   ];
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [selectedUser, setSelectedUser] = useState(null);
   const [email, setEmail] = useState("");
 
-  // const data = userData?.data
-  // const filteredData = data?.filter(user =>
-  //   user.email.includes(email) || user.name.toLowerCase().includes(email.toLowerCase())
-  // );
-
-  // const [block, setBlock] = useState(false);
-
-  const showModal = (record) => {
-    setSelectedUser(record);
-    setIsModalOpen(true);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-    setSelectedUser(null);
-  };
-
-  const handleSearch = () => {
-    // refetc();
-  };
+  const handleSearch = () => {};
 
   const handleSession = (record) => {
     console.log(record);
@@ -91,7 +102,6 @@ const RecentBooking = () => {
       key: "name",
       render: (_, record) => (
         <div className="flex items-center gap-2">
-          {/* <Avatar size={40} className="shadow-md" src={record?.profileImage} /> */}
           <span>{record.name}</span>
         </div>
       ),
@@ -140,21 +150,9 @@ const RecentBooking = () => {
           }}
         >
           <Space size="middle">
-            <Button
-              onClick={() => showModal(record)}
-              icon={<FaEye className="text-primary" />}
-            />
-
-            <Button
-              onClick={() => handleSession(record)}
-              icon={
-                record?.is_active === true ? (
-                  <FiUserCheck className="h-5 w-5 text-green-500" />
-                ) : (
-                  <LiaUserSlashSolid className="h-5 w-5 text-red-500" />
-                )
-              }
-            />
+            <Link to="/booking-details">
+              <FaArrowTrendUp className="text-primary" />
+            </Link>
           </Space>
         </ConfigProvider>
       ),
@@ -226,39 +224,6 @@ const RecentBooking = () => {
           />
         </ConfigProvider>
       </div>
-
-      <Modal open={isModalOpen} onCancel={handleCancel} footer={null}>
-        {selectedUser && (
-          <div className="p-2">
-            <div className="bg-secondary py-5 text-center">
-              <Avatar size={200} src={selectedUser?.profileImage} />
-              <h2 className="text-2xl font-bold mt-4 text-textColor">
-                Name: {selectedUser.name}
-              </h2>
-              <h2 className="text-xl mt-4 text-textColor">Patient </h2>
-            </div>
-            <div className="my-6">
-              <div className="flex gap-2 mb-4">
-                <p className="text-gray-600 font-semibold">Email :</p>
-                <p>{selectedUser.email}</p>
-              </div>
-              <div className="flex gap-2 mb-4">
-                <p className="text-gray-600 font-semibold">Contact No :</p>
-                <p>{selectedUser?.contact || "N/A"}</p>
-              </div>
-              <div className="flex gap-2 mb-4">
-                <p className="text-gray-600 font-semibold">Date of birth :</p>
-                <p>{selectedUser?.dob || "N/A"}</p>
-              </div>
-
-              <div className="flex gap-2 mb-4">
-                <p className="text-gray-600 font-semibold">Address :</p>
-                <p>{selectedUser.address || "N/A"}</p>
-              </div>
-            </div>
-          </div>
-        )}
-      </Modal>
     </div>
   );
 };

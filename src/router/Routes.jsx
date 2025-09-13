@@ -24,6 +24,7 @@ import TermsCondition from "../Pages/Settings/TermsCondition/TermsCondition";
 import Banner from "../Pages/Settings/Banner/Banner";
 import AdminProfile from "../Pages/AdminProfile/AdminProfile";
 import Notifications from "../Pages/Notification/Notification";
+import BookingDetails from "../Components/BookingDetails/BookingDetails";
 
 
 export const router = createBrowserRouter([
@@ -58,8 +59,8 @@ export const router = createBrowserRouter([
                 element: <Analytics />
             },
             {
-                path: "/user-management/patient",
-                element: <Patient />
+                path: "/booking-details",
+                element: <BookingDetails />
             },
             {
                 path: "/user-management/doctor",
