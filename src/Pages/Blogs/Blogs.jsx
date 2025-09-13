@@ -2,6 +2,7 @@ import { Input } from "antd";
 import img1 from "../../assets/image/1.png";
 import { SearchOutlined } from "@ant-design/icons";
 import { FaEdit, FaTrash } from "react-icons/fa";
+
 const blogsData = [
   {
     title: "The Ultimate Guide to Dubai Desert Safari What to Expect",
@@ -16,12 +17,13 @@ const handleSearch = () => {};
 const Blogs = () => {
   return (
     <div>
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center my-4 gap-3">
         <h1 className="text-2xl font-bold">All Blogs</h1>
 
         <div className="flex flex-wrap gap-2 items-center">
           <Input
-            placeholder="Search package name"
+            placeholder="Search blog title"
             value=""
             onChange={handleSearch}
             size="large"
@@ -30,26 +32,43 @@ const Blogs = () => {
           />
 
           <button className="h-10 px-4 bg-primary rounded-md text-white flex items-center justify-center">
-            Add New Package
+            Add New Blog
           </button>
         </div>
       </div>
-      <div>
+
+      {/* Blog List */}
+      <div className="space-y-3">
         {blogsData.map((blog, index) => (
           <div
             key={index}
-            className="flex justify-center items-center bg-secondary p-2 w-full"
+            className="flex items-center bg-secondary p-3 rounded-md shadow-sm"
           >
-            <div className="w-[20%]">
-              <img src={img1} alt={blog.title} className="w-40 h-20" />
+            {/* Blog Image */}
+            <div className="w-[15%]">
+              <img
+                src={img1}
+                alt={blog.title}
+                className="w-32 h-20 object-cover rounded"
+              />
             </div>
-            <div className="blog-content w-[60%]">
-              <h2>{blog.title}</h2>
-              <p>{blog.description}</p>
+
+            {/* Blog Content */}
+            <div className="w-[65%] px-3">
+              <h2 className="text-lg font-semibold">{blog.title}</h2>
+              <p className="text-sm text-gray-700 line-clamp-2">
+                {blog.description}
+              </p>
             </div>
-            <div className="blog-actions w-[20%]">
-              <FaTrash />
-              <FaEdit />
+
+            {/* Blog Actions (Right Aligned) */}
+            <div className="w-[20%] flex justify-end items-center gap-4 text-gray-600">
+              <button className="hover:text-blue-500">
+                <FaEdit />
+              </button>
+              <button className="hover:text-red-500">
+                <FaTrash />
+              </button>
             </div>
           </div>
         ))}
