@@ -13,7 +13,6 @@ import MakeAdmin from "../Pages/MakeAdmin/MakeAdmin";
 import Category from "../Pages/Category/Category";
 import Subscription from "../Pages/Subscription/Subscription";
 import AboutUs from "../Pages/Settings/AboutUS/AboutUs";
-import ContactUS from "../Pages/Settings/ContactUS/COntactUS";
 import PrivacyPolicy from "../Pages/Settings/PrivacyPolicy/PrivacyPolicy";
 import TermsCondition from "../Pages/Settings/TermsCondition/TermsCondition";
 import Banner from "../Pages/Settings/Banner/Banner";
@@ -112,10 +111,7 @@ export const router = createBrowserRouter([
         path: "/settings/about-us",
         element: <AboutUs />,
       },
-      {
-        path: "/settings/contact-us",
-        element: <ContactUS />,
-      },
+     
 
       {
         path: "/settings/privacy-policy",
