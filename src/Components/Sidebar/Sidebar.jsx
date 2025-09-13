@@ -36,7 +36,7 @@ const Sidebar = ({ closeDrawer }) => {
 
     const menuItems = [
         { icon: <MdDashboard className="h-5 w-5" />, label: "Dashboard", Link: "/" },
-        { icon: <FiUser className="h-5 w-5" />, label: "All Booking", Link: "/" },
+        { icon: <FiUser className="h-5 w-5" />, label: "All Booking", Link: "/all-booking" },
         { icon: <GrMapLocation className="h-5 w-5" />, label: "Add Events", Link: "/" },
         { icon: <SiHomeassistantcommunitystore className="h-5 w-5" />, label: "Add Package", Link: "/" },
         { icon: <SlNotebook className="h-5 w-5" />, label: "Add Blog", Link: "/" },

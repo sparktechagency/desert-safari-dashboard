@@ -7,9 +7,7 @@ import SignIn from "../Pages/Auth/SignIn/SignIn";
 import ForgatePassword from "../Pages/Auth/ForgatePassword/ForgatePassword";
 import Newpass from "../Pages/Auth/NewPass/Newpass";
 import VerifyPass from "../Pages/Auth/VerifyPass/VerifyPass";
-// import Chat from "../Pages/ChatComponent/Chat";
 import ContinuePage from "../Pages/Auth/ContinuePage/ContinuePage";
-import Patient from "../Components/UserManagemnet/Patient/Patient";
 import Doctor from "../Components/UserManagemnet/Doctor/Doctor";
 import SignUpRequest from "../Components/UserManagemnet/SignUpRequest/SignUpRequest";
 import Appointment from "../Pages/Appointment/Appointment";
@@ -25,6 +23,7 @@ import Banner from "../Pages/Settings/Banner/Banner";
 import AdminProfile from "../Pages/AdminProfile/AdminProfile";
 import Notifications from "../Pages/Notification/Notification";
 import BookingDetails from "../Components/BookingDetails/BookingDetails";
+import AllBooking from "../Pages/AllBooking/AllBooking";
 
 
 export const router = createBrowserRouter([
@@ -63,8 +62,8 @@ export const router = createBrowserRouter([
                 element: <BookingDetails />
             },
             {
-                path: "/user-management/doctor",
-                element: <Doctor />
+                path: "/all-booking",
+                element: <AllBooking />
             },
             {
                 path: "/user-management/sign-up-request",

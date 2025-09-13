@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { TiLocationOutline } from "react-icons/ti";
-import { Button, Modal, Table } from "antd";
+import { Modal, Table } from "antd";
 
 import img1 from "../../assets/image/1.png";
 import img2 from "../../assets/image/2.png";
