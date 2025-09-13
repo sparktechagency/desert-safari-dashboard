@@ -6,6 +6,8 @@ import img1 from "../../assets/image/1.png";
 import img2 from "../../assets/image/2.png";
 import img3 from "../../assets/image/3.png";
 import img4 from "../../assets/image/4.png";
+import { IoCar } from "react-icons/io5";
+import { CgEditBlackPoint } from "react-icons/cg";
 
 const BookingDetails = () => {
   const [isRejected, setIsRejected] = useState(false);
@@ -58,12 +60,12 @@ const BookingDetails = () => {
   ];
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <div>
       <div>
         <h2 className="text-4xl text-primary">57 Heritage Desert Experience</h2>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <TiLocationOutline style={{ color: "#FF8C00", fontSize: "20px" }} />
-          <p>United Arab Emirates</p>
+        <div className="flex justify-start items-center gap-2">
+          <TiLocationOutline className="h-5 w-5 text-primary my-4" />
+          <p className="text-xl">United Arab Emirates</p>
         </div>
       </div>
 
@@ -80,28 +82,62 @@ const BookingDetails = () => {
         </div>
       </div>
 
-      <h3>Booking Details</h3>
+      <div className="bg-secondary py-2 px-5 my-4 ">
+        <h1 className="text-xl font-semibold ">Book VIP Desert Safari Dubai</h1>
+      </div>
+
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-5 justify-start items-center my-4">
+        <h1 className="text-2xl">
+          Date: <span className="text-primary"> 07/04/2025 - 6:30 PM</span>{" "}
+        </h1>
+        <div className="flex justify-start items-center gap-2">
+          <IoCar className="text-primary h-14 w-20" />
+          <div>
+            <h1 className="text-xl">Activity</h1>
+            <p>Dune Bashing</p>
+          </div>
+        </div>
+      </div>
       <Table columns={columns} dataSource={bookingData} pagination={false} />
 
-      <div style={{ marginTop: "20px" }}>
-        <Button
-          type="primary"
+      <div className="my-4">
+        <div className="flex justify-start items-center gap-2">
+          <CgEditBlackPoint className="text-primary h-5 w-5" />
+          <p className="text-2xl font-bold">Personal Information</p>
+        </div>
+        <p className="text-xl my-1">
+          <span className="font-semibold">Name: </span> Nahid Hossain
+        </p>
+        <p className="text-xl my-1">
+          <span className="font-semibold">Email: </span> workwithnahid@gmail.com
+        </p>
+        <p className="text-xl my-1">
+          <span className="font-semibold">Phone Number: </span> 01840560614
+        </p>
+        <p className="text-xl my-1">
+          <span className="font-semibold">Country: </span> Bangladesh
+        </p>
+        <p className="text-xl my-1">
+          <span className="font-semibold">Pickup location: </span> Badda, Dhaka
+        </p>
+        <p className="text-xl my-1">
+          <span className="font-semibold"> Transaction ID: </span> 255424FD34
+        </p>
+      </div>
+
+      <div className="my-8 flex justify-start items-center gap-5">
+        <button
           onClick={handleApprove}
-          style={{
-            backgroundColor: "#28a745",
-            borderColor: "#28a745",
-            marginRight: "10px",
-          }}
+          className="bg-blue-500 text-white px-8 py-3 rounded-md text-md"
         >
           Approve
-        </Button>
-        <Button
-          type="primary"
+        </button>
+        <button
           onClick={handleReject}
-          style={{ backgroundColor: "#dc3545", borderColor: "#dc3545" }}
+          className="bg-primary text-white px-8 py-3 rounded-md text-md"
         >
           Reject
-        </Button>
+        </button>
       </div>
 
       {isRejected && (
