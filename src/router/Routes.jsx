@@ -24,6 +24,7 @@ import AllBooking from "../Pages/AllBooking/AllBooking";
 import AllEvents from "../Pages/AllEvents/AllEvents";
 import AllPackage from "../Pages/AllPackage/AllPackage";
 import Blogs from "../Pages/Blogs/Blogs";
+import Faq from "../Pages/Faq/Faq";
 
 export const router = createBrowserRouter([
   {
@@ -78,7 +79,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/faq",
-        element: <AllBooking />,
+        element: <Faq />,
       },
 
       {
