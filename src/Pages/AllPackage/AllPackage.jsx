@@ -61,20 +61,27 @@ const AllPackage = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="flex justify-between items-center my-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center my-4 gap-3">
+        {/* Title */}
         <h1 className="text-2xl font-bold">All Booking</h1>
-        <div className="flex gap-2 items-center">
+
+        {/* Right Controls */}
+        <div className="flex flex-wrap gap-2 items-center">
           <Input
             placeholder="Search package name"
             value={searchTerm}
             onChange={handleSearch}
             size="large"
             prefix={<SearchOutlined style={{ cursor: "pointer" }} />}
+            className="w-60"
           />
-          <div>
-            <DatePicker style={{ width: 200 }} onChange={handleDateChange} />
-          </div>
-          <button className="px-4 py-3 bg-primary rounded-md text-white">
+
+          <DatePicker
+            style={{ width: 200, height: 40 }}
+            onChange={handleDateChange}
+          />
+
+          <button className="h-10 px-4 bg-primary rounded-md text-white flex items-center justify-center">
             Add New Package
           </button>
         </div>
