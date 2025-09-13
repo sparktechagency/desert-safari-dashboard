@@ -22,6 +22,7 @@ import Notifications from "../Pages/Notification/Notification";
 import BookingDetails from "../Components/BookingDetails/BookingDetails";
 import AllBooking from "../Pages/AllBooking/AllBooking";
 import AllEvents from "../Pages/AllEvents/AllEvents";
+import AllPackage from "../Pages/AllPackage/AllPackage";
 
 export const router = createBrowserRouter([
   {
@@ -68,7 +69,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/pacakes",
-        element: <AllBooking />,
+        element: <AllPackage />,
       },
       {
         path: "/blog",
