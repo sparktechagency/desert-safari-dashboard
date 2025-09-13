@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Button } from "antd"; // Import Ant Design's Button component
 import {
-  EditOutlined,
-  DeleteOutlined,
+
   MinusOutlined,
   PlusOutlined,
 } from "@ant-design/icons";

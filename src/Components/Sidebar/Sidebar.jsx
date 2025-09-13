@@ -42,18 +42,18 @@ const Sidebar = ({ closeDrawer }) => {
         { icon: <SlNotebook className="h-5 w-5" />, label: "Add Blog", Link: "/blog" },
         { icon: <LuFileQuestion className="h-5 w-5" />, label: "Add FAQ", Link: "/faq" },
      
-        {
-            icon: <AiOutlineSetting className="h-5 w-5" />,
-            label: "Settings",
-            isDropdown: true,
-            subItems: [
-                { icon: <FaEdit className="h-5 w-5" />, label: "About Us", Link: "/settings/about-us" },
-                { icon: <MdPolicy className="h-5 w-5" />, label: "Contact Us", Link: "/settings/contact-us" },
-                { icon: <MdPrivacyTip className="h-5 w-5" />, label: "Privacy Policy", Link: "/settings/privacy-policy" },
-                { icon: <RiTerminalWindowLine className="h-5 w-5" />, label: "Terms & Condition", Link: "/settings/terms-condition" },
-                { icon: <MdMenuBook className="h-5 w-5" />, label: "Banner", Link: "/settings/banner" },
-            ],
-        },
+        // {
+        //     icon: <AiOutlineSetting className="h-5 w-5" />,
+        //     label: "Settings",
+        //     isDropdown: true,
+        //     subItems: [
+        //         { icon: <FaEdit className="h-5 w-5" />, label: "About Us", Link: "/settings/about-us" },
+        //         { icon: <MdPolicy className="h-5 w-5" />, label: "Contact Us", Link: "/settings/contact-us" },
+        //         { icon: <MdPrivacyTip className="h-5 w-5" />, label: "Privacy Policy", Link: "/settings/privacy-policy" },
+        //         { icon: <RiTerminalWindowLine className="h-5 w-5" />, label: "Terms & Condition", Link: "/settings/terms-condition" },
+        //         { icon: <MdMenuBook className="h-5 w-5" />, label: "Banner", Link: "/settings/banner" },
+        //     ],
+        // },
 
     ];
 
