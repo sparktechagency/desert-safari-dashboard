@@ -1,6 +1,4 @@
-import {
-    createBrowserRouter,
-} from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "../Layout/Main/Main";
 import Analytics from "../Pages/Analytics/Analytics";
 import SignIn from "../Pages/Auth/SignIn/SignIn";
@@ -8,7 +6,6 @@ import ForgatePassword from "../Pages/Auth/ForgatePassword/ForgatePassword";
 import Newpass from "../Pages/Auth/NewPass/Newpass";
 import VerifyPass from "../Pages/Auth/VerifyPass/VerifyPass";
 import ContinuePage from "../Pages/Auth/ContinuePage/ContinuePage";
-import Doctor from "../Components/UserManagemnet/Doctor/Doctor";
 import SignUpRequest from "../Components/UserManagemnet/SignUpRequest/SignUpRequest";
 import Appointment from "../Pages/Appointment/Appointment";
 import Payment from "../Pages/Payment/Payment";
@@ -24,106 +21,121 @@ import AdminProfile from "../Pages/AdminProfile/AdminProfile";
 import Notifications from "../Pages/Notification/Notification";
 import BookingDetails from "../Components/BookingDetails/BookingDetails";
 import AllBooking from "../Pages/AllBooking/AllBooking";
-
+import AllEvents from "../Pages/AllEvents/AllEvents";
 
 export const router = createBrowserRouter([
-    {
-        path: "/sign-in",
-        element: <SignIn></SignIn>
-    },
+  {
+    path: "/sign-in",
+    element: <SignIn></SignIn>,
+  },
 
-    {
-        path: "/forgate-password",
-        element: <ForgatePassword></ForgatePassword>
-    },
-    {
-        path: "/varification",
-        element: <VerifyPass></VerifyPass>
-    },
+  {
+    path: "/forgate-password",
+    element: <ForgatePassword></ForgatePassword>,
+  },
+  {
+    path: "/varification",
+    element: <VerifyPass></VerifyPass>,
+  },
 
-    {
-        path: "/new-password",
-        element: <Newpass></Newpass>
-    },
-    {
-        path: "/continue-page",
-        element: <ContinuePage />
-    },
-    {
+  {
+    path: "/new-password",
+    element: <Newpass></Newpass>,
+  },
+  {
+    path: "/continue-page",
+    element: <ContinuePage />,
+  },
+  {
+    path: "/",
+    element: <MainLayout />,
+    children: [
+      {
         path: "/",
-        element: <MainLayout />,
-        children: [
-            {
-                path: "/",
-                element: <Analytics />
-            },
-            {
-                path: "/booking-details",
-                element: <BookingDetails />
-            },
-            {
-                path: "/all-booking",
-                element: <AllBooking />
-            },
-            {
-                path: "/user-management/sign-up-request",
-                element: <SignUpRequest />
-            },
-            {
-                path: '/appoinment-management',
-                element: <Appointment />
-            },
-            {
-                path: '/payment-management',
-                element: <Payment></Payment>
-            },
-            {
-                path: '/add-category',
-                element: <Category></Category>
-            },
-            {
-                path: '/subdcription-management',
-                element: <Subscription />
-            },
-            {
-                path: '/make-admin',
-                element: <MakeAdmin />
-            },
+        element: <Analytics />,
+      },
+      {
+        path: "/booking-details",
+        element: <BookingDetails />,
+      },
+      {
+        path: "/all-booking",
+        element: <AllBooking />,
+      },
+      {
+        path: "/all-events",
+        element: <AllEvents />,
+      },
+      {
+        path: "/pacakes",
+        element: <AllBooking />,
+      },
+      {
+        path: "/blog",
+        element: <AllBooking />,
+      },
+      {
+        path: "/faq",
+        element: <AllBooking />,
+      },
 
-            // setting:
-            {
-                path: "/settings/about-us",
-                element: <AboutUs />
-            },
-            {
-                path: "/settings/contact-us",
-                element: <ContactUS />
-            },
+      {
+        path: "/user-management/sign-up-request",
+        element: <SignUpRequest />,
+      },
+      {
+        path: "/appoinment-management",
+        element: <Appointment />,
+      },
+      {
+        path: "/payment-management",
+        element: <Payment></Payment>,
+      },
+      {
+        path: "/add-category",
+        element: <Category></Category>,
+      },
+      {
+        path: "/subdcription-management",
+        element: <Subscription />,
+      },
+      {
+        path: "/make-admin",
+        element: <MakeAdmin />,
+      },
 
+      // setting:
+      {
+        path: "/settings/about-us",
+        element: <AboutUs />,
+      },
+      {
+        path: "/settings/contact-us",
+        element: <ContactUS />,
+      },
 
-            {
-                path: "/settings/privacy-policy",
-                element: <PrivacyPolicy />
-            },
-            {
-                path: "/settings/terms-condition",
-                element: <TermsCondition />
-            },
-            {
-                path: "/settings/banner",
-                element: <Banner />
-            },
+      {
+        path: "/settings/privacy-policy",
+        element: <PrivacyPolicy />,
+      },
+      {
+        path: "/settings/terms-condition",
+        element: <TermsCondition />,
+      },
+      {
+        path: "/settings/banner",
+        element: <Banner />,
+      },
 
-            // Admin profile:
-            {
-                path: '/admin-profile',
-                element: <AdminProfile />
-            },
-            {
-                path: '/notification',
-                element: <Notifications />
-            }
-
-        ]
-    },
+      // Admin profile:
+      {
+        path: "/admin-profile",
+        element: <AdminProfile />,
+      },
+      {
+        path: "/notification",
+        element: <Notifications />,
+      },
+    ],
+  },
 ]);

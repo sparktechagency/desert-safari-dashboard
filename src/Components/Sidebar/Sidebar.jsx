@@ -37,10 +37,10 @@ const Sidebar = ({ closeDrawer }) => {
     const menuItems = [
         { icon: <MdDashboard className="h-5 w-5" />, label: "Dashboard", Link: "/" },
         { icon: <FiUser className="h-5 w-5" />, label: "All Booking", Link: "/all-booking" },
-        { icon: <GrMapLocation className="h-5 w-5" />, label: "Add Events", Link: "/" },
-        { icon: <SiHomeassistantcommunitystore className="h-5 w-5" />, label: "Add Package", Link: "/" },
-        { icon: <SlNotebook className="h-5 w-5" />, label: "Add Blog", Link: "/" },
-        { icon: <LuFileQuestion className="h-5 w-5" />, label: "Add FAQ", Link: "/" },
+        { icon: <GrMapLocation className="h-5 w-5" />, label: "Add Events", Link: "/all-events" },
+        { icon: <SiHomeassistantcommunitystore className="h-5 w-5" />, label: "Add Package", Link: "/pacakes" },
+        { icon: <SlNotebook className="h-5 w-5" />, label: "Add Blog", Link: "/blog" },
+        { icon: <LuFileQuestion className="h-5 w-5" />, label: "Add FAQ", Link: "/faq" },
      
         {
             icon: <AiOutlineSetting className="h-5 w-5" />,

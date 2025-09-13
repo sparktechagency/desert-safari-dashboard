@@ -151,7 +151,7 @@ const AllBooking = () => {
   };
 
   return (
-    <div>
+    <div className="min-h-screen">
       <div className="flex justify-between items-center my-4">
         <h1 className="text-2xl font-bold">All Booking</h1>
         <div className="flex gap-2 items-center">
