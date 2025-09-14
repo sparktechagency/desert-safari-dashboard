@@ -2,15 +2,11 @@
 import { Avatar, ConfigProvider, message, Space, Table } from "antd";
 import { useState } from "react";
 
-import { Button, Modal } from "antd";
-import { FaCalendar, FaPlus, FaStopwatch, FaTrash } from "react-icons/fa";
-import { FiUserCheck } from "react-icons/fi";
-import { LiaUserSlashSolid } from "react-icons/lia";
+import {  FaPlus,  FaTrash } from "react-icons/fa";
+
 
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { AllImages } from "../../assets/image/AllImages";
-import AddCategory from "../../Components/Category/AddCategory/AddCategory";
-import EditCAtegory from "../../Components/Category/EditCategory/EditCAtegory";
 const Category = () => {
     const userData = [
         {
@@ -138,18 +134,7 @@ const Category = () => {
             </div>
 
 
-            {/* Add Category */}
-            <Modal open={isModalOpen} onCancel={handleCancel} footer={null}>
-                {selectedUser && (
-                    <AddCategory selectedUser={selectedUser} handleCancel={handleCancel} />
-                )}
-            </Modal>
-            {/* Edit Category */}
-            <Modal open={editModalOpen} onCancel={handleEditCancel} footer={null}>
-                {selectedUser && (
-                    <EditCAtegory selectedUser={selectedUser} handleCancel={handleEditCancel} />
-                )}
-            </Modal>
+           
 
         </div>
     );

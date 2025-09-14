@@ -27,12 +27,10 @@ const MainLayout = () => {
 
     return (
         <div>
-            {/* haeder */}
             <div className="h-20 bg-primary flex justify-between  items-center px-2 md:px-20 gap-2">
                 {isMobile && (
                     <GiHamburgerMenu onClick={toggleDrawer} className="h-8 w-8 cursor-pointer " />
                 )}
-                {/* logo section */}
                 <div>
                     <Link to="/">
                         <div className="">
@@ -40,7 +38,6 @@ const MainLayout = () => {
                         </div>
                     </Link>
                 </div>
-                {/* others section */}
                 <div>
                     <div className="flex justify-between items-center gap-2 text-white mx-10">
                         <div className="relative">

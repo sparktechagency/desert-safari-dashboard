@@ -1,10 +1,8 @@
 /* eslint-disable no-unused-vars */
-import { ConfigProvider, Form, Input, message, Modal, Upload } from "antd";
+import { ConfigProvider,  message,  } from "antd";
 import { useState } from "react";
-import { FaCamera, FaPlus } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import banner from "../../../assets/image/banner.png"
-import AddBanner from "../../../Components/Seetings/Banner/AddBanner/AddBanner";
-import EditBanner from "../../../Components/Seetings/Banner/EditBanner/EditBanner";
 const Banner = () => {
 
 
@@ -78,14 +76,7 @@ const Banner = () => {
                     }
                 }}
             >
-                <Modal title="Add Banner" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} footer={false} >
-                    <AddBanner />
-
-                </Modal>
-                <Modal title="Edit Banner" open={editModalOpen} onOk={handleEditOk} onCancel={handleEditCancel} footer={false} >
-                    <EditBanner />
-
-                </Modal>
+            
             </ConfigProvider>
         </div>
     );

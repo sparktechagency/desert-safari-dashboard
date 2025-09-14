@@ -6,12 +6,9 @@ import ForgatePassword from "../Pages/Auth/ForgatePassword/ForgatePassword";
 import Newpass from "../Pages/Auth/NewPass/Newpass";
 import VerifyPass from "../Pages/Auth/VerifyPass/VerifyPass";
 import ContinuePage from "../Pages/Auth/ContinuePage/ContinuePage";
-import SignUpRequest from "../Components/UserManagemnet/SignUpRequest/SignUpRequest";
-import Appointment from "../Pages/Appointment/Appointment";
-import Payment from "../Pages/Payment/Payment";
+
 import MakeAdmin from "../Pages/MakeAdmin/MakeAdmin";
 import Category from "../Pages/Category/Category";
-import Subscription from "../Pages/Subscription/Subscription";
 import AboutUs from "../Pages/Settings/AboutUS/AboutUs";
 import PrivacyPolicy from "../Pages/Settings/PrivacyPolicy/PrivacyPolicy";
 import TermsCondition from "../Pages/Settings/TermsCondition/TermsCondition";
@@ -81,26 +78,13 @@ export const router = createBrowserRouter([
         element: <Faq />,
       },
 
-      {
-        path: "/user-management/sign-up-request",
-        element: <SignUpRequest />,
-      },
-      {
-        path: "/appoinment-management",
-        element: <Appointment />,
-      },
-      {
-        path: "/payment-management",
-        element: <Payment></Payment>,
-      },
+   
+    
       {
         path: "/add-category",
         element: <Category></Category>,
       },
-      {
-        path: "/subdcription-management",
-        element: <Subscription />,
-      },
+     
       {
         path: "/make-admin",
         element: <MakeAdmin />,
