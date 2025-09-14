@@ -5,6 +5,7 @@ import { useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { FaArrowTrendUp } from "react-icons/fa6";
+import { MdArrowOutward } from "react-icons/md";
 const RecentBooking = () => {
   const userData = [
     {
@@ -151,7 +152,7 @@ const RecentBooking = () => {
         >
           <Space size="middle">
             <Link to="/booking-details">
-              <FaArrowTrendUp className="text-primary" />
+             <MdArrowOutward className="text-primary h-5 w-5" />
             </Link>
           </Space>
         </ConfigProvider>
@@ -165,45 +166,7 @@ const RecentBooking = () => {
         <h3 className="text-xl md:text-3xl font-semibold  px-2 md:px-0">
           Recent Booking
         </h3>
-        <div className="mt-4 md:mt-0 flex justify-between items-center gap-2">
-          <div>
-            <ConfigProvider
-              theme={{
-                components: {
-                  Input: {
-                    borderRadius: 0,
-                    hoverBorderColor: "none",
-                    activeBorderColor: "none",
-                  },
-                },
-              }}
-            >
-              <div className="flex gap-2 items-center relative">
-                <Input
-                  placeholder="Search by email"
-                  allowClear
-                  size="large"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onPressEnter={handleSearch}
-                  prefix={
-                    <SearchOutlined
-                      style={{ cursor: "pointer" }}
-                      onClick={handleSearch}
-                    />
-                  }
-                />
-
-                <button
-                  onClick={handleSearch}
-                  className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-primaryColor text-white p-2 rounded-r-lg"
-                >
-                  search
-                </button>
-              </div>
-            </ConfigProvider>
-          </div>
-        </div>
+       
       </div>
       <div className="bg-white overflow-x-auto">
         <ConfigProvider

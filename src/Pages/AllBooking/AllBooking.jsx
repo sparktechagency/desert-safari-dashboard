@@ -4,6 +4,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { FaArrowTrendUp } from "react-icons/fa6";
 import GobackButton from "../../Components/Shared/GobackButton";
+import { MdArrowOutward } from "react-icons/md";
 const AllBooking = () => {
   const bookingData = [
     {
@@ -140,16 +141,17 @@ const AllBooking = () => {
         >
           <Space size="middle">
             <Link to="/booking-details">
-              <FaArrowTrendUp className="text-primary" />
+              <MdArrowOutward className="text-primary h-5 w-5" />
             </Link>
           </Space>
         </ConfigProvider>
       ),
     },
   ];
-  const handleSearch = () => {
+  const handleSearch = () => {};
+  const handleDateChange = (date, dateString) => {
+    console.log("Selected date: ", dateString);
   };
-
   return (
     <div className="min-h-screen">
       <div className="flex justify-between items-center my-4">
@@ -159,23 +161,18 @@ const AllBooking = () => {
         </div>
         <div className="flex gap-2 items-center">
           <Input
-            placeholder="Search guest name"
-            allowClear
+            placeholder="Search package name"
+            value=""
+            onChange={handleSearch}
             size="large"
-            // value={searchTerm}
-            // onChange={(e) => setSearchTerm(e.target.value)}
-            onPressEnter={handleSearch}
-            prefix={
-              <SearchOutlined
-                style={{ cursor: "pointer" }}
-                onClick={handleSearch}
-              />
-            }
+            prefix={<SearchOutlined style={{ cursor: "pointer" }} />}
+            className="w-60"
           />
 
-          <div>
-            <DatePicker style={{ width: 200 }} />
-          </div>
+          <DatePicker
+            style={{ width: 200, height: 40 }}
+            onChange={handleDateChange}
+          />
         </div>
       </div>
 

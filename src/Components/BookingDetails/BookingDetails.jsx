@@ -8,6 +8,7 @@ import img3 from "../../assets/image/3.png";
 import img4 from "../../assets/image/4.png";
 import { IoCar } from "react-icons/io5";
 import { CgEditBlackPoint } from "react-icons/cg";
+import GobackButton from "../Shared/GobackButton";
 
 const BookingDetails = () => {
   const [isRejected, setIsRejected] = useState(false);
@@ -50,7 +51,7 @@ const BookingDetails = () => {
       quantity: 1,
       price: "AED 700",
     },
-    {  name: "Total", quantity: "", price: "AED 5200" },
+    { name: "Total", quantity: "", price: "AED 5200" },
   ];
 
   const columns = [
@@ -63,7 +64,11 @@ const BookingDetails = () => {
   return (
     <div>
       <div>
-        <h2 className="text-4xl text-primary">57 Heritage Desert Experience</h2>
+        <div className="flex justify-start items-center gap-2">
+          <GobackButton />
+          <h1 className="text-2xl font-bold">57 Heritage Desert Experience</h1>
+        </div>
+     
         <div className="flex justify-start items-center gap-2">
           <TiLocationOutline className="h-5 w-5 text-primary my-4" />
           <p className="text-xl">United Arab Emirates</p>
@@ -126,16 +131,16 @@ const BookingDetails = () => {
         </p>
       </div>
 
-      <div className="my-8 flex justify-start items-center gap-5">
+      <div className="my-8 flex justify-center items-center gap-5">
         <button
           onClick={handleApprove}
-          className="bg-blue-500 text-white px-8 py-3 rounded-md text-md"
+          className="bg-blue-500 text-white px-16 py-3 rounded-md text-md"
         >
           Approve
         </button>
         <button
           onClick={handleReject}
-          className="bg-primary text-white px-8 py-3 rounded-md text-md"
+          className="bg-primary text-white px-16 py-3 rounded-md text-md"
         >
           Reject
         </button>
