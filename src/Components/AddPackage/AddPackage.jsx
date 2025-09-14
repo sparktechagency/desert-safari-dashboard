@@ -1,0 +1,249 @@
+import {  Form, Input, Select, Upload } from "antd";
+import GobackButton from "../Shared/GobackButton";
+import { FaImage, FaPlus, FaTimes } from "react-icons/fa";
+import { useState } from "react";
+
+const AddPackage = () => {
+  const onFinish = () => {};
+  const [previewCoverImage, setPreviewCoverImage] = useState(null);
+  const [Cover, setCover] = useState(null);
+
+  const handleCoverBeforeUpload = (file) => {
+    setCover(file);
+    setPreviewCoverImage(URL.createObjectURL(file));
+    return false;
+  };
+
+  const [fileList, setFileList] = useState([]);
+
+  const handleBeforeUpload = (file) => {
+    setFileList((prevList) => [...prevList, file]);
+    return false;
+  };
+
+  const removeImage = (fileToRemove) => {
+    setFileList((prevList) =>
+      prevList.filter((file) => file.uid !== fileToRemove.uid)
+    );
+  };
+  const { Option } = Select;
+  return (
+    <div className="min-h-screen">
+      <div className="flex justify-start items-center gap-2">
+        <GobackButton />
+        <h1 className="text-2xl font-bold">Add New Package</h1>
+      </div>
+      <div className="flex justify-center items-center">
+        <Form
+          name="add-new-package"
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+          layout="vertical"
+          className="w-[70%]  "
+        >
+          <div className="w-full flex justify-between items-center gap-5">
+            <div className="w-[50%]">
+              <Form.Item
+                name="package-images"
+                label={<p className="text-md">Add Packages Images</p>}
+                required
+              >
+                <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
+                  <div className="flex gap-3 flex-wrap">
+                    {fileList.map((file) => (
+                      <div
+                        key={file.uid}
+                        className="relative w-24 h-24 border border-neutral-300 rounded overflow-hidden"
+                      >
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt="preview"
+                          className="w-full h-full object-cover"
+                          height={100}
+                          width={100}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(file)}
+                          className="absolute top-1 right-1 bg-white rounded-full p-1 text-xs"
+                        >
+                          <FaTimes className="text-red-600" />
+                        </button>
+                      </div>
+                    ))}
+
+                    <Upload
+                      multiple
+                      showUploadList={false}
+                      beforeUpload={handleBeforeUpload}
+                    >
+                      <div className="w-24 h-24 border border-dashed flex items-center justify-center rounded cursor-pointer hover:bg-gray-100">
+                        <FaPlus className="text-xl text-gray-500" />
+                      </div>
+                    </Upload>
+                  </div>
+                </div>
+              </Form.Item>
+            </div>
+
+            <div className="w-[50%]">
+              <Form.Item
+                name="cover-image"
+                label={<p className=" text-md">Add Cover Image</p>}
+              >
+                <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
+                  <Upload
+                    showUploadList={false}
+                    maxCount={1}
+                    beforeUpload={handleCoverBeforeUpload}
+                  >
+                    {!previewCoverImage ? (
+                      <div className="flex flex-col items-center">
+                        <FaImage className="text-neutral-400 h-10 w-10" />
+                        <p className="text-neutral-500">Upload Cover Image</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center">
+                        <img
+                          src={previewCoverImage}
+                          alt="Preview"
+                          className="h-24 object-contain"
+                        />
+                        <p className="text-neutral-500">{Cover?.name}</p>
+                      </div>
+                    )}
+                  </Upload>
+                </div>
+              </Form.Item>
+            </div>
+          </div>
+
+          <Form.Item
+            name="name"
+            label={<p className=" text-md">Package Name</p>}
+            style={{}}
+          >
+            <Input
+              required
+              style={{ padding: "6px" }}
+              className=" text-md"
+              placeholder="Type name"
+            />
+          </Form.Item>
+          <Form.Item
+            name="name"
+            label={<p className=" text-md">Location Name</p>}
+            style={{}}
+          >
+            <Input
+              required
+              style={{ padding: "6px" }}
+              className=" text-md"
+              placeholder="Type Location name"
+            />
+          </Form.Item>
+          <Form.Item
+            name="email"
+            label={<p className=" text-md">Email</p>}
+            style={{}}
+          >
+            <Input
+              required
+              style={{ padding: "6px" }}
+              className=" text-md"
+              placeholder="Your Email"
+            />
+          </Form.Item>
+
+          <div className="flex justify-between items-center gap-5">
+            <Form.Item
+              name="duration"
+              label={<p className=" text-md">Duration</p>}
+              style={{}}
+            >
+              <Input
+                required
+                style={{ padding: "6px" }}
+                className=" text-md"
+                placeholder="Type duration"
+              />
+            </Form.Item>
+            <Form.Item
+              name="max-adults"
+              label={<p className=" text-md">Max Adults</p>}
+            >
+              <Input
+                required
+                style={{ padding: "6px" }}
+                className=" text-md"
+                placeholder="Max Adults"
+              />
+            </Form.Item>
+            <Form.Item
+              name="child-min-age"
+              label={<p className=" text-md">Child Min Age</p>}
+            >
+              <Input
+                required
+                style={{ padding: "6px" }}
+                className=" text-md"
+                placeholder="Child Min Age"
+              />
+            </Form.Item>
+            <Form.Item name="pickup" label={<p className=" text-md">Pickup</p>}>
+              <Input
+                required
+                style={{ padding: "6px" }}
+                className=" text-md"
+                placeholder="Pickup"
+              />
+            </Form.Item>
+            <Form.Item
+              name="availability"
+              label={<p className=" text-md">Availability</p>}
+            >
+              <Input
+                required
+                style={{ padding: "6px" }}
+                className=" text-md"
+                placeholder="Availability"
+              />
+            </Form.Item>
+            <Form.Item
+              name="activity"
+              label={<p className="text-md">Activity</p>}
+            >
+              <Select placeholder="Select an activity">
+                <Option value="dune-bashing">Dune Bashing</Option>
+                <Option value="camel-ride">Camel Ride</Option>
+                <Option value="quad-biking">Quad Biking</Option>
+                <Option value="dune-buggy-ride">Dune Buggy Ride</Option>
+                <Option value="tea-coffee-soft-drinks">
+                  Tea, Coffee, & Soft Drinks
+                </Option>
+                <Option value="henna-tattoos">Henna Tattoos</Option>
+                <Option value="fire-show">Fire Show in the Desert</Option>
+                <Option value="arabic-costumes">Arabic Costumes</Option>
+                <Option value="shisha-smoking">Shisha Smoking</Option>
+                <Option value="falcon-pictures">Falcon To Take Pictures</Option>
+                <Option value="sand-boarding">Sand-Boarding</Option>
+                <Option value="belly-dance">Belly Dance Show</Option>
+              </Select>
+            </Form.Item>
+          </div>
+
+          <Form.Item className="text-center">
+            <button
+              className="text-center w-full  p-2 font-bold text-2xl bg-primary  text-white px-10 py-2 rounded-md shadow-lg"
+              type="submit"
+            >
+              submit
+            </button>
+          </Form.Item>
+        </Form>
+      </div>
+    </div>
+  );
+};
+
+export default AddPackage;

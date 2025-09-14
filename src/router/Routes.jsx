@@ -21,6 +21,7 @@ import AllEvents from "../Pages/AllEvents/AllEvents";
 import AllPackage from "../Pages/AllPackage/AllPackage";
 import Blogs from "../Pages/Blogs/Blogs";
 import Faq from "../Pages/Faq/Faq";
+import AddPackage from "../Components/AddPackage/AddPackage";
 
 export const router = createBrowserRouter([
   {
@@ -68,6 +69,10 @@ export const router = createBrowserRouter([
       {
         path: "/pacakes",
         element: <AllPackage />,
+      },
+      {
+        path: "/add-package",
+        element: <AddPackage />,
       },
       {
         path: "/blog",

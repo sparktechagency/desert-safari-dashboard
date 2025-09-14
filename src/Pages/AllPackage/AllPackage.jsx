@@ -6,6 +6,7 @@ import img1 from "../../assets/image/1.png";
 import imgp from "../../assets/image/p.png";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import GobackButton from "../../Components/Shared/GobackButton";
+import { useNavigate } from "react-router-dom";
 
 const AllPackage = () => {
   const samplePackages = [
@@ -57,6 +58,11 @@ const AllPackage = () => {
     console.log("Selected date: ", dateString);
   };
 
+  const nevigate = useNavigate();
+  const handleAddPackage = () => {
+    nevigate("/add-package");
+  };
+
   return (
     <div className="min-h-screen">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center my-4 gap-3">
@@ -80,7 +86,7 @@ const AllPackage = () => {
             onChange={handleDateChange}
           />
 
-          <button className="h-10 px-4 bg-primary rounded-md text-white flex items-center justify-center">
+          <button onClick={handleAddPackage} className="h-10 px-4 bg-primary rounded-md text-white flex items-center justify-center">
             Add New Package
           </button>
         </div>
