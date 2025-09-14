@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Button } from "antd"; 
+import { Button, Modal, Input, Form } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import GobackButton from "../../Components/Shared/GobackButton";
+import Swal from "sweetalert2";
 
 const faqData = [
   {
@@ -15,42 +16,50 @@ const faqData = [
     answer:
       "Yes, most of our Dubai tours include hotel pickup and drop-off for your convenience.",
   },
-  {
-    question: "Can I book group or private tours?",
-    answer:
-      "We offer both group and private tours depending on your preference and group size.",
-  },
-  {
-    question: "How do I book a tour with Oasis Palm Dubai?",
-    answer:
-      "Booking a tour is easy. You can book online through our website or by calling our customer service.",
-  },
-  {
-    question: "What countries can I call and text?",
-    answer:
-      "We offer coverage for calls and text messages in over 50 countries worldwide.",
-  },
-  {
-    question: "Are your desert safaris family-friendly?",
-    answer:
-      "Yes, our desert safaris are suitable for families, with activities and experiences for all age groups.",
-  },
-  {
-    question: "Can I customize my Dubai tour experience?",
-    answer:
-      "Yes, we offer customized tour packages based on your preferences and needs.",
-  },
 ];
 
 const Faq = () => {
   const [openIndex, setOpenIndex] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+ 
+  const [editIndex, setEditIndex] = useState(null);
+  const [newFaq, setNewFaq] = useState({ question: "", answer: "" });
 
   const toggleAnswer = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
+const [form] = Form.useForm();
+  const [editForm] = Form.useForm();
+
+  const handleAddFaq = () => {
+    faqData.push(newFaq);
+    setShowAddModal(false); 
+  };
+
+  const handleEditFaq = () => {
+    faqData[editIndex] = newFaq; 
+    setShowEditModal(false); 
+  };
+
+  const handleDeleteFaq = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire("Deleted!", "Your blog has been deleted.", "success");
+      }
+    });
+  };
 
   return (
-    <div className=" mx-auto p-6">
+    <div className=" mx-auto p-6 min-h-screen">
       <div className="flex justify-between items-center mb-5">
         <div className="flex justify-center items-center gap-2">
           <GobackButton />
@@ -59,6 +68,7 @@ const Faq = () => {
         <button
           className=" bg-primary px-6 py-2 text-white rounded-md"
           icon={<PlusOutlined />}
+          onClick={() => setShowAddModal(true)}
         >
           Add FAQ
         </button>
@@ -87,12 +97,82 @@ const Faq = () => {
             )}
 
             <div className="flex justify-end space-x-4 mt-4">
-              <FaEdit></FaEdit>
-              <FaTrash />
+              <FaEdit
+                onClick={() => {
+                  setNewFaq(faq);
+                  setEditIndex(index);
+                  setShowEditModal(true);
+                }}
+              />
+              <FaTrash
+               onClick={handleDeleteFaq}
+              />
             </div>
           </div>
         ))}
       </div>
+
+     <Modal
+        title="Add FAQ"
+        open={showAddModal}
+        onCancel={() => setShowAddModal(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setShowAddModal(false)}>
+            Cancel
+          </Button>,
+          <Button key="confirm" type="primary" onClick={handleAddFaq}>
+            Confirm
+          </Button>,
+        ]}
+      >
+        <Form layout="vertical" form={form}>
+          <Form.Item
+            name="question"
+            label="Question"
+            rules={[{ required: true, message: "Please input a question!" }]}
+          >
+            <Input placeholder="Enter question" />
+          </Form.Item>
+          <Form.Item
+            name="answer"
+            label="Answer"
+            rules={[{ required: true, message: "Please input an answer!" }]}
+          >
+            <Input.TextArea rows={4} placeholder="Enter answer" />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="Edit FAQ"
+        open={showEditModal}
+        onCancel={() => setShowEditModal(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setShowEditModal(false)}>
+            Cancel
+          </Button>,
+          <Button key="confirm" type="primary" onClick={handleEditFaq}>
+            Save
+          </Button>,
+        ]}
+      >
+        <Form layout="vertical" form={editForm}>
+          <Form.Item
+            name="question"
+            label="Question"
+            rules={[{ required: true, message: "Please input a question!" }]}
+          >
+            <Input placeholder="Enter question" />
+          </Form.Item>
+          <Form.Item
+            name="answer"
+            label="Answer"
+            rules={[{ required: true, message: "Please input an answer!" }]}
+          >
+            <Input.TextArea rows={4} placeholder="Enter answer" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
