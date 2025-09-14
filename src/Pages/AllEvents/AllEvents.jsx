@@ -1,6 +1,8 @@
 import { SiTicktick } from "react-icons/si";
-import img1 from "../../assets/image/1.png"; 
-import { FaTrashAlt } from "react-icons/fa";
+import img1 from "../../assets/image/1.png";
+import { FaImage, FaTrashAlt } from "react-icons/fa";
+import { useState } from "react";
+import { ConfigProvider, Form, Input, Modal, TimePicker, Upload } from "antd";
 
 const AllEvents = () => {
   const data = [
@@ -39,6 +41,18 @@ const AllEvents = () => {
       details: ["Exciting Visits", "Competitions and Prizes", "Rides Included"],
     },
   ];
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleAddModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+  const onFinish = () => {};
 
   return (
     <div className="min-h-screen ">
@@ -46,21 +60,21 @@ const AllEvents = () => {
         <h1 className="text-2xl font-bold">
           Exclusive arrangement for Corporate
         </h1>
-        <button className="px-4 py-2 rounded-md bg-primary text-white shadow-md hover:bg-orange-600 transition">
+        <button
+          onClick={handleAddModal}
+          className="px-4 py-2 rounded-md bg-primary text-white shadow-md hover:bg-orange-600 transition"
+        >
           Add Events
         </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-6 justify-end items-end">
         {data.map((event, index) => (
-          <div
-            key={index}
-            className="relative rounded-lg  " 
-          >
+          <div key={index} className="relative rounded-lg  ">
             <div
               className="absolute inset-0"
               style={{
-                backgroundImage: `linear-gradient(to left, rgba(216,101,48,0.8), rgba(0,0,0,0.2)), url(${img1})`, 
+                backgroundImage: `linear-gradient(to left, rgba(216,101,48,0.8), rgba(0,0,0,0.2)), url(${img1})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
@@ -86,7 +100,7 @@ const AllEvents = () => {
                 <ul className="text-sm space-y-2">
                   {event.details.map((detail, i) => (
                     <li key={i} className="flex items-center gap-2">
-                   <SiTicktick className="text-white" /> {detail}
+                      <SiTicktick className="text-white" /> {detail}
                     </li>
                   ))}
                 </ul>
@@ -95,6 +109,89 @@ const AllEvents = () => {
           </div>
         ))}
       </div>
+      <ConfigProvider
+        theme={{
+          components: {
+            Button: {
+              defaultHoverBorderColor: "rgb(47,84,235)",
+              defaultHoverColor: "rgb(47,84,235)",
+              defaultBorderColor: "rgb(47,84,235)",
+            },
+          },
+        }}
+      >
+        <Modal
+          title="Add Events"
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          footer={false}
+        >
+          <Form
+            name="contact"
+            initialValues={{ remember: false }}
+            onFinish={onFinish}
+            layout="vertical"
+          >
+            <Form.Item name="image">
+              <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
+                <Upload showUploadList={false} className="cursor-pointer">
+                  <FaImage className="text-neutral-500 h-10 w-10" />
+                </Upload>
+              </div>
+            </Form.Item>
+
+            <Form.Item
+              name="title"
+              label={<p className="text-md font-medium">Event Name</p>}
+            >
+              <Input
+                required
+                placeholder="Enter event name"
+                className="text-md border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]"
+              />
+            </Form.Item>
+
+            <div className="flex gap-2">
+              <Form.Item
+                name="startTime"
+                label={<p className="text-md font-medium">Start Time</p>}
+                className="flex-1"
+              >
+                <TimePicker className="w-full border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]" />
+              </Form.Item>
+              <Form.Item
+                name="endTime"
+                label={<p className="text-md font-medium">End Time</p>}
+                className="flex-1"
+              >
+                <TimePicker className="w-full border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]" />
+              </Form.Item>
+            </div>
+
+            <Form.Item
+              name="description"
+              label={<p className="text-md font-medium">Description</p>}
+            >
+              <Input.TextArea
+                required
+                placeholder="Enter description"
+                rows={4}
+                className="border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]"
+              />
+            </Form.Item>
+
+            <Form.Item>
+              <button
+                type="submit"
+                className="px-10 py-3 w-full bg-primary text-white font-semibold text-lg md:text-xl rounded shadow-lg  transition"
+              >
+                Publish
+              </button>
+            </Form.Item>
+          </Form>
+        </Modal>
+      </ConfigProvider>
     </div>
   );
 };

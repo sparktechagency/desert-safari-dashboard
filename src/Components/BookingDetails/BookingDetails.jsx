@@ -46,10 +46,11 @@ const BookingDetails = () => {
     { key: 3, name: "20 Minutes Quad Bike", quantity: 2, price: "AED 1100" },
     {
       key: 4,
-      name: "4 Seater Dune Buggy 30 mins",
+      name: "4 Seater Dune Buggy 30 Mins",
       quantity: 1,
       price: "AED 700",
     },
+    {  name: "Total", quantity: "", price: "AED 5200" },
   ];
 
   const columns = [
@@ -94,7 +95,7 @@ const BookingDetails = () => {
           <IoCar className="text-primary h-14 w-20" />
           <div>
             <h1 className="text-xl">Activity</h1>
-            <p>Dune Bashing</p>
+            <p className="text-sm text-gray-500">Dune Bashing</p>
           </div>
         </div>
       </div>
