@@ -6,8 +6,7 @@ import { BiChevronDown } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import {
   MdDashboard,
-  MdMenuBook,
-  MdPolicy,
+
   MdPrivacyTip,
 } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
@@ -15,7 +14,7 @@ import { RiTerminalWindowLine } from "react-icons/ri";
 import { GrMapLocation } from "react-icons/gr";
 import { SiHomeassistantcommunitystore } from "react-icons/si";
 import { SlNotebook } from "react-icons/sl";
-import { LuFileQuestion } from "react-icons/lu";
+import { LuArrowRightLeft, LuFileQuestion } from "react-icons/lu";
 const Sidebar = ({ closeDrawer }) => {
   const [active, setActive] = useState("Dashboard");
   const [openDropdown, setOpenDropdown] = useState("");
@@ -81,11 +80,7 @@ const Sidebar = ({ closeDrawer }) => {
           label: "About Us",
           Link: "/settings/about-us",
         },
-        {
-          icon: <MdPolicy className="h-5 w-5" />,
-          label: "Contact Us",
-          Link: "/settings/contact-us",
-        },
+
         {
           icon: <MdPrivacyTip className="h-5 w-5" />,
           label: "Privacy Policy",
@@ -97,9 +92,9 @@ const Sidebar = ({ closeDrawer }) => {
           Link: "/settings/terms-condition",
         },
         {
-          icon: <MdMenuBook className="h-5 w-5" />,
-          label: "Banner",
-          Link: "/settings/banner",
+          icon: <LuArrowRightLeft className="h-5 w-5" />,
+          label: "Refund & Returns",
+          Link: "/settings/refund",
         },
       ],
     },

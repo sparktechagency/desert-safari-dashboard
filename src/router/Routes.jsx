@@ -12,7 +12,6 @@ import Category from "../Pages/Category/Category";
 import AboutUs from "../Pages/Settings/AboutUS/AboutUs";
 import PrivacyPolicy from "../Pages/Settings/PrivacyPolicy/PrivacyPolicy";
 import TermsCondition from "../Pages/Settings/TermsCondition/TermsCondition";
-import Banner from "../Pages/Settings/Banner/Banner";
 import AdminProfile from "../Pages/AdminProfile/AdminProfile";
 import Notifications from "../Pages/Notification/Notification";
 import BookingDetails from "../Components/BookingDetails/BookingDetails";
@@ -23,6 +22,7 @@ import Blogs from "../Pages/Blogs/Blogs";
 import Faq from "../Pages/Faq/Faq";
 import AddPackage from "../Components/AddPackage/AddPackage";
 import EditPackage from "../Components/EditPackage/EditPackage";
+import Refund from "../Pages/Settings/Refund/Refund";
 
 export const router = createBrowserRouter([
   {
@@ -113,8 +113,8 @@ export const router = createBrowserRouter([
         element: <TermsCondition />,
       },
       {
-        path: "/settings/banner",
-        element: <Banner />,
+        path: "/settings/refund",
+        element: <Refund />,
       },
 
       // Admin profile:
