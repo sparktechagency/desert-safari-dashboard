@@ -1,4 +1,4 @@
-import {  Form, Input, Select, Upload } from "antd";
+import { Form, Input, Select, Upload } from "antd";
 import GobackButton from "../Shared/GobackButton";
 import { FaImage, FaPlus, FaTimes } from "react-icons/fa";
 import { useState } from "react";
@@ -155,7 +155,7 @@ const AddPackage = () => {
             />
           </Form.Item>
 
-          <div className="flex justify-between items-center gap-5">
+          <div className="flex justify-between items-center gap-2">
             <Form.Item
               name="duration"
               label={<p className=" text-md">Duration</p>}
@@ -232,12 +232,235 @@ const AddPackage = () => {
             </Form.Item>
           </div>
 
+          <div className="w-[70%]">
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Adult Price</h1>
+              <Form.Item name="adultPrice" className="text-md w-[150px]">
+                <Input
+                  required
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Child Price</h1>
+              <Form.Item name="child-price" className="text-md w-[150px]">
+                <Input
+                  required
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Single Seater Dune Buggy 30 mins</h1>
+              <Form.Item name="single-seater" className="text-md w-[150px]">
+                <Input
+                  required
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">20 Minutes Quad Bike</h1>
+              <Form.Item name="quad-bike" className="text-md w-[150px]">
+                <Input
+                  required
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">30 Minutes Camel Bike</h1>
+              <Form.Item name="camel-bike" className="text-md w-[150px]">
+                <Input
+                  required
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">20 Minutes Quad Bike</h1>
+              <Form.Item name="quad-bike-2" className="text-md w-[150px]">
+                <Input
+                  required
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">4 Seater Dune Buggy 30 Mins</h1>
+              <Form.Item
+                name="4-seater-dune-buggy"
+                className="text-md w-[150px]"
+              >
+                <Input
+                  required
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Overall Discount</h1>
+              <Form.Item name="overall-discount" className="text-md w-[150px]">
+                <Input
+                  required
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 %"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+          </div>
+
+          <Form.Item
+            name="expectedPickup"
+            label="Expected Pickup"
+            className="text-md"
+          >
+            <Input
+              required
+              style={{ padding: "6px" }}
+              className="text-md"
+              placeholder="00:00"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="expectedDropoff"
+            label="Expected Drop off"
+            className="text-md"
+          >
+            <Input
+              required
+              style={{ padding: "6px" }}
+              className="text-md"
+              placeholder="00:00"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="importantNote"
+            label="Important Note"
+            className="text-md"
+          >
+            <Input.TextArea
+              required
+              style={{ padding: "6px" }}
+              className="text-md"
+              placeholder="Type here"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="refundPolicy"
+            label="Cancellation & Refund Policy"
+            className="text-md"
+          >
+            <Input.TextArea
+              required
+              style={{ padding: "6px" }}
+              className="text-md"
+              placeholder="Type here"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="includedExcluded"
+            label="Included / Excluded"
+            className="text-md"
+          >
+            <Input.TextArea
+              required
+              style={{ padding: "6px" }}
+              className="text-md"
+              placeholder="Type here"
+            />
+          </Form.Item>
+
+          <Form.Item name="tourPlan" label="Tour Plan" className="text-md">
+            <Input.TextArea
+              required
+              style={{ padding: "6px" }}
+              className="text-md"
+              placeholder="Type here"
+            />
+          </Form.Item>
+
+          <Form.Item name="description" label="Description" className="text-md">
+            <Input.TextArea
+              required
+              style={{ padding: "6px" }}
+              className="text-md"
+              placeholder="Type here"
+            />
+          </Form.Item>
           <Form.Item className="text-center">
             <button
               className="text-center w-full  p-2 font-bold text-2xl bg-primary  text-white px-10 py-2 rounded-md shadow-lg"
               type="submit"
             >
-              submit
+              Upload
             </button>
           </Form.Item>
         </Form>
