@@ -1,21 +1,65 @@
-import { Input } from "antd";
+import { Button, Input, message, Modal, Upload, Form } from "antd";
 import img1 from "../../assets/image/1.png";
 import { SearchOutlined } from "@ant-design/icons";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaImage, FaTrash } from "react-icons/fa";
 import GobackButton from "../../Components/Shared/GobackButton";
-
-const blogsData = [
-  {
-    title: "The Ultimate Guide to Dubai Desert Safari What to Expect",
-    description:
-      "Experience the magic of the Arabian desert with our detailed guide. From thrilling dune bashing to serene camel rides, discover every adventure waiting for you. Learn about the best time to visit, what to pack, and how to make the most of your safari trip.",
-    imageUrl: "your-image-url-here",
-  },
-];
-
-const handleSearch = () => {};
+import Swal from "sweetalert2";
+import { useState } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const Blogs = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editorValue, setEditorValue] = useState("");
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const blogsData = [
+    {
+      title: "The Ultimate Guide to Dubai Desert Safari What to Expect",
+      description:
+        "Experience the magic of the Arabian desert with our detailed guide. From thrilling dune bashing to serene camel rides, discover every adventure waiting for you.",
+      imageUrl: img1,
+    },
+  ];
+
+  const handleDelete = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire("Deleted!", "Your blog has been deleted.", "success");
+      }
+    });
+  };
+
+  const handleFinish = (values) => {
+    console.log("Blog Data:", { ...values, description: editorValue });
+    message.success("Blog added successfully!");
+    setIsModalVisible(false);
+  };
+
+  const [previewCoverImage, setPreviewCoverImage] = useState(null);
+  const [Cover, setCover] = useState(null);
+
+  const handleCoverBeforeUpload = (file) => {
+    setCover(file);
+    setPreviewCoverImage(URL.createObjectURL(file));
+    return false;
+  };
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center my-4 gap-3">
@@ -27,14 +71,15 @@ const Blogs = () => {
         <div className="flex flex-wrap gap-2 items-center">
           <Input
             placeholder="Search blog title"
-            value=""
-            onChange={handleSearch}
             size="large"
             prefix={<SearchOutlined style={{ cursor: "pointer" }} />}
             className="w-60"
           />
 
-          <button className="h-10 px-4 bg-primary rounded-md text-white flex items-center justify-center">
+          <button
+            onClick={showModal}
+            className="h-10 px-4 bg-primary rounded-md text-white flex items-center justify-center"
+          >
             Add New Blog
           </button>
         </div>
@@ -48,7 +93,7 @@ const Blogs = () => {
           >
             <div className="w-[15%]">
               <img
-                src={img1}
+                src={blog.imageUrl}
                 alt={blog.title}
                 className="w-32 h-20 object-cover rounded"
               />
@@ -65,13 +110,90 @@ const Blogs = () => {
               <button className="hover:text-blue-500">
                 <FaEdit />
               </button>
-              <button className="hover:text-red-500">
+              <button className="hover:text-red-500" onClick={handleDelete}>
                 <FaTrash />
               </button>
             </div>
           </div>
         ))}
       </div>
+
+      <Modal
+        title="Add Blog"
+        open={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        width={700}
+      >
+        <Form layout="vertical" onFinish={handleFinish}>
+          <div className="flex justify-between items-center gap-5">
+            <div className="w-[50%]">
+              <Form.Item
+                label="Title"
+                name="title"
+                rules={[
+                  { required: true, message: "Please input the blog title!" },
+                ]}
+              >
+                <Input placeholder="Write your title" />
+              </Form.Item>
+            </div>
+            <div className="w-[50%]">
+              <Form.Item
+                name="cover-image"
+                label={<p className=" text-md">Add Blog Image</p>}
+              >
+                <div className="border-2 border-[#fb5a10] h-20 p-5 flex justify-center items-center rounded-md">
+                  <Upload
+                    showUploadList={false}
+                    maxCount={1}
+                    beforeUpload={handleCoverBeforeUpload}
+                  >
+                    {!previewCoverImage ? (
+                      <div className="flex flex-col items-center">
+                        <FaImage className="text-neutral-400 h-10 w-10" />
+                        <p className="text-neutral-500">Upload Blog Image</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center">
+                        <img
+                          src={previewCoverImage}
+                          alt="Preview"
+                          className="h-24 object-contain"
+                        />
+                        <p className="text-neutral-500">{Cover?.name}</p>
+                      </div>
+                    )}
+                  </Upload>
+                </div>
+              </Form.Item>
+            </div>
+          </div>
+          <Form.Item
+            label="Blog Content"
+            name="description"
+            rules={[
+              { required: true, message: "Please write your blog content!" },
+            ]}
+          >
+            <ReactQuill
+              style={{ height: 300 }}
+              theme="snow"
+              value={editorValue}
+              onChange={setEditorValue}
+              placeholder="Write your blog here..."
+            />
+          </Form.Item>
+          <Form.Item type="submit">
+            <button
+              type="submit"
+              className="w-full bg-primary text-white py-3 rounded-md"
+            >
+              Confirm
+            </button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
