@@ -3,6 +3,7 @@ import { ConfigProvider, DatePicker, Input, Space, Table } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { FaArrowTrendUp } from "react-icons/fa6";
+import GobackButton from "../../Components/Shared/GobackButton";
 const AllBooking = () => {
   const bookingData = [
     {
@@ -147,13 +148,15 @@ const AllBooking = () => {
     },
   ];
   const handleSearch = () => {
-    // refetc();
   };
 
   return (
     <div className="min-h-screen">
       <div className="flex justify-between items-center my-4">
-        <h1 className="text-2xl font-bold">All Booking</h1>
+        <div className="flex justify-center items-center gap-2">
+          <GobackButton />
+          <h1 className="text-2xl font-bold">All Booking</h1>
+        </div>
         <div className="flex gap-2 items-center">
           <Input
             placeholder="Search guest name"

@@ -4,6 +4,8 @@ import { FaImage, FaTrashAlt } from "react-icons/fa";
 import { useState } from "react";
 import { ConfigProvider, Form, Input, Modal, TimePicker, Upload } from "antd";
 import { useForm } from "antd/es/form/Form";
+import Swal from "sweetalert2";
+import GobackButton from "../../Components/Shared/GobackButton";
 
 const AllEvents = () => {
   const data = [
@@ -64,12 +66,36 @@ const AllEvents = () => {
     setBanner(null);
   };
 
+  const handleDelete = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success",
+        });
+      }
+    });
+  };
+
   return (
     <div className="min-h-screen ">
       <div className="flex justify-between items-center my-6 px-6">
-        <h1 className="text-2xl font-bold">
-          Exclusive arrangement for Corporate
-        </h1>
+        <div className="flex justify-center items-center gap-2">
+          <GobackButton />
+          <h1 className="text-2xl font-bold">
+            Exclusive arrangement for Corporate
+          </h1>
+        </div>
+
         <button
           onClick={handleAddModal}
           className="px-4 py-2 rounded-md bg-primary text-white shadow-md hover:bg-orange-600 transition"
@@ -91,7 +117,10 @@ const AllEvents = () => {
             />
 
             <div className="absolute top-3 left-3 z-20">
-              <button className="text-2xl text-white rounded-full p-1 shadow hover:scale-110 transition">
+              <button
+                onClick={handleDelete}
+                className="text-2xl text-white rounded-full p-1 shadow hover:scale-110 transition"
+              >
                 <FaTrashAlt />
               </button>
             </div>

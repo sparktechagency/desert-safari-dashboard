@@ -1,11 +1,8 @@
 import { useState } from "react";
-import { Button } from "antd"; // Import Ant Design's Button component
-import {
-
-  MinusOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+import { Button } from "antd"; 
+import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import GobackButton from "../../Components/Shared/GobackButton";
 
 const faqData = [
   {
@@ -55,7 +52,10 @@ const Faq = () => {
   return (
     <div className=" mx-auto p-6">
       <div className="flex justify-between items-center mb-5">
-        <h1 className="text-3xl font-semibold mb-6">FAQ</h1>
+        <div className="flex justify-center items-center gap-2">
+          <GobackButton />
+          <h1 className="text-2xl font-bold">FAQ</h1>
+        </div>
         <button
           className=" bg-primary px-6 py-2 text-white rounded-md"
           icon={<PlusOutlined />}
@@ -78,7 +78,6 @@ const Faq = () => {
                 }
                 onClick={() => toggleAnswer(index)}
               />
-              
             </div>
 
             {openIndex === index && (

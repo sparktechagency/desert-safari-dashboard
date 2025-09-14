@@ -5,6 +5,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import img1 from "../../assets/image/1.png";
 import imgp from "../../assets/image/p.png";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import GobackButton from "../../Components/Shared/GobackButton";
 
 const AllPackage = () => {
   const samplePackages = [
@@ -38,7 +39,6 @@ const AllPackage = () => {
       discount: "0%",
       imageUrl: "https://via.placeholder.com/200",
     },
-    // Add more mock packages here...
   ];
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredPackages, setFilteredPackages] = useState(samplePackages);
@@ -47,7 +47,6 @@ const AllPackage = () => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
 
-    // Filter packages based on the search term (guest name or package title)
     const filtered = samplePackages.filter((pkg) =>
       pkg.title.toLowerCase().includes(term)
     );
@@ -55,17 +54,17 @@ const AllPackage = () => {
   };
 
   const handleDateChange = (date, dateString) => {
-    // Implement logic to filter packages based on selected date
     console.log("Selected date: ", dateString);
   };
 
   return (
     <div className="min-h-screen">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center my-4 gap-3">
-        {/* Title */}
-        <h1 className="text-2xl font-bold">All Booking</h1>
+        <div className="flex justify-center items-center gap-2">
+          <GobackButton />
+          <h1 className="text-2xl font-bold">All Package</h1>
+        </div>
 
-        {/* Right Controls */}
         <div className="flex flex-wrap gap-2 items-center">
           <Input
             placeholder="Search package name"
