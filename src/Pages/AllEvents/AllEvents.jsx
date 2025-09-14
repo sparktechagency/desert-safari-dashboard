@@ -3,6 +3,7 @@ import img1 from "../../assets/image/1.png";
 import { FaImage, FaTrashAlt } from "react-icons/fa";
 import { useState } from "react";
 import { ConfigProvider, Form, Input, Modal, TimePicker, Upload } from "antd";
+import { useForm } from "antd/es/form/Form";
 
 const AllEvents = () => {
   const data = [
@@ -41,18 +42,27 @@ const AllEvents = () => {
       details: ["Exciting Visits", "Competitions and Prizes", "Rides Included"],
     },
   ];
+  const [form] = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [banner, setBanner] = useState(null);
 
-  const handleAddModal = () => {
-    setIsModalOpen(true);
+  const handleBeforeUpload = (file) => {
+    setBanner(file);
+    setPreviewImage(URL.createObjectURL(file));
+    return false;
   };
-  const handleOk = () => {
+
+  const handleAddModal = () => setIsModalOpen(true);
+  const handleCancel = () => setIsModalOpen(false);
+
+  const onFinish = (values) => {
+    console.log("Form values:", values);
     setIsModalOpen(false);
+    form.resetFields();
+    setPreviewImage(null);
+    setBanner(null);
   };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-  const onFinish = () => {};
 
   return (
     <div className="min-h-screen ">
@@ -123,58 +133,62 @@ const AllEvents = () => {
         <Modal
           title="Add Events"
           open={isModalOpen}
-          onOk={handleOk}
           onCancel={handleCancel}
-          footer={false}
+          footer={null}
         >
-          <Form
-            name="contact"
-            initialValues={{ remember: false }}
-            onFinish={onFinish}
-            layout="vertical"
-          >
+          <Form form={form} onFinish={onFinish} layout="vertical">
             <Form.Item name="image">
               <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
-                <Upload showUploadList={false} className="cursor-pointer">
-                  <FaImage className="text-neutral-500 h-10 w-10" />
+                <Upload
+                  showUploadList={false}
+                  maxCount={1}
+                  beforeUpload={handleBeforeUpload}
+                >
+                  {!previewImage ? (
+                    <div className="flex flex-col items-center">
+                      <FaImage className="text-neutral-400 h-10 w-10" />
+                      <p className="text-neutral-500">Upload Image</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center">
+                      <img
+                        src={previewImage}
+                        alt="Preview"
+                        className="h-24 object-contain"
+                      />
+                      <p className="text-neutral-500">{banner?.name}</p>
+                    </div>
+                  )}
                 </Upload>
               </div>
             </Form.Item>
 
             <Form.Item
               name="title"
-              label={<p className="text-md font-medium">Event Name</p>}
+              label="Event Name"
+              rules={[{ required: true, message: "Please enter event name" }]}
             >
               <Input
-                required
                 placeholder="Enter event name"
                 className="text-md border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]"
               />
             </Form.Item>
 
             <div className="flex gap-2">
-              <Form.Item
-                name="startTime"
-                label={<p className="text-md font-medium">Start Time</p>}
-                className="flex-1"
-              >
+              <Form.Item name="startTime" label="Start Time" className="flex-1">
                 <TimePicker className="w-full border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]" />
               </Form.Item>
-              <Form.Item
-                name="endTime"
-                label={<p className="text-md font-medium">End Time</p>}
-                className="flex-1"
-              >
+              <Form.Item name="endTime" label="End Time" className="flex-1">
                 <TimePicker className="w-full border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]" />
               </Form.Item>
             </div>
 
             <Form.Item
               name="description"
-              label={<p className="text-md font-medium">Description</p>}
+              label="Description"
+              rules={[{ required: true, message: "Please enter description" }]}
             >
               <Input.TextArea
-                required
                 placeholder="Enter description"
                 rows={4}
                 className="border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]"
@@ -184,7 +198,7 @@ const AllEvents = () => {
             <Form.Item>
               <button
                 type="submit"
-                className="px-10 py-3 w-full bg-primary text-white font-semibold text-lg md:text-xl rounded shadow-lg  transition"
+                className="px-10 py-3 w-full bg-primary text-white font-semibold text-lg md:text-xl rounded shadow-lg transition"
               >
                 Publish
               </button>
