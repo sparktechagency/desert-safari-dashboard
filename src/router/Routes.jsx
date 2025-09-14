@@ -22,6 +22,7 @@ import AllPackage from "../Pages/AllPackage/AllPackage";
 import Blogs from "../Pages/Blogs/Blogs";
 import Faq from "../Pages/Faq/Faq";
 import AddPackage from "../Components/AddPackage/AddPackage";
+import EditPackage from "../Components/EditPackage/EditPackage";
 
 export const router = createBrowserRouter([
   {
@@ -75,6 +76,10 @@ export const router = createBrowserRouter([
         element: <AddPackage />,
       },
       {
+        path: "/edit-package",
+        element: <EditPackage />,
+      },
+      {
         path: "/blog",
         element: <Blogs />,
       },
@@ -83,13 +88,11 @@ export const router = createBrowserRouter([
         element: <Faq />,
       },
 
-   
-    
       {
         path: "/add-category",
         element: <Category></Category>,
       },
-     
+
       {
         path: "/make-admin",
         element: <MakeAdmin />,
@@ -100,7 +103,6 @@ export const router = createBrowserRouter([
         path: "/settings/about-us",
         element: <AboutUs />,
       },
-     
 
       {
         path: "/settings/privacy-policy",

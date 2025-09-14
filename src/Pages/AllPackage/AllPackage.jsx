@@ -7,6 +7,7 @@ import imgp from "../../assets/image/p.png";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import GobackButton from "../../Components/Shared/GobackButton";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const AllPackage = () => {
   const samplePackages = [
@@ -62,6 +63,29 @@ const AllPackage = () => {
   const handleAddPackage = () => {
     nevigate("/add-package");
   };
+  const handleEditPackage = () => {
+    nevigate("/edit-package");
+  };
+
+  const handleDelete = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success",
+        });
+      }
+    });
+  };
 
   return (
     <div className="min-h-screen">
@@ -86,7 +110,10 @@ const AllPackage = () => {
             onChange={handleDateChange}
           />
 
-          <button onClick={handleAddPackage} className="h-10 px-4 bg-primary rounded-md text-white flex items-center justify-center">
+          <button
+            onClick={handleAddPackage}
+            className="h-10 px-4 bg-primary rounded-md text-white flex items-center justify-center"
+          >
             Add New Package
           </button>
         </div>
@@ -100,10 +127,10 @@ const AllPackage = () => {
 
               <div className="absolute top-8 right-10 flex gap-3 text-gray-600">
                 <button className="hover:text-blue-500">
-                  <FaEdit />
+                  <FaEdit onClick={handleEditPackage} />
                 </button>
                 <button className="hover:text-red-500">
-                  <FaTrash />
+                  <FaTrash onClick={handleDelete} />
                 </button>
               </div>
 
