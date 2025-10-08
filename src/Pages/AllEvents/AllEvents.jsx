@@ -1,4 +1,4 @@
-import { FaImage, FaTrashAlt } from "react-icons/fa";
+import { FaImage, FaPen, FaTrashAlt } from "react-icons/fa";
 import { useState } from "react";
 import { ConfigProvider, Form, Input, Modal, TimePicker, Upload } from "antd";
 import { useForm } from "antd/es/form/Form";
@@ -8,35 +8,78 @@ import {
   useCreateEventsMutation,
   useDeletEventMutation,
   useGetAllEventsQuery,
+  useUpdateEventMutation,
 } from "../../redux/features/eventsApi/eventsApi";
+import dayjs from "dayjs";
 
 const AllEvents = () => {
   const { data: allEventsData } = useGetAllEventsQuery();
   const [deletEvent] = useDeletEventMutation();
-  // console.log("allEventsData", allEventsData?.data?.result);
-  const data = allEventsData?.data?.result;
-  const [form] = useForm();
+  const [UpdateEvent] = useUpdateEventMutation();
+  const [createEvents] = useCreateEventsMutation();
+
+  const data = allEventsData?.data?.result ?? [];
+
+  // Use separate forms for Add and Edit to avoid crosstalk
+  const [addForm] = useForm();
+  const [editForm] = useForm();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
   const [banner, setBanner] = useState(null);
-  const [createEvents] = useCreateEventsMutation();
+  const [editingEvent, setEditingEvent] = useState(null);
 
   const handleBeforeUpload = (file) => {
     setBanner(file);
     setPreviewImage(URL.createObjectURL(file));
-    return false;
+    return false; // prevent antd from auto-uploading
   };
 
-  const handleAddModal = () => setIsModalOpen(true);
-  const handleCancel = () => setIsModalOpen(false);
+  const handleAddModal = () => {
+    setIsModalOpen(true);
+    // ensure clean state when opening Add
+    setPreviewImage(null);
+    setBanner(null);
+    addForm.resetFields();
+  };
+
+  // FIX #1: accept the full event object (not just _id) so we can prefill
+  const handleEditModal = (event) => {
+    setEditingEvent(event);
+
+    // Prefill the edit form with existing values
+    editForm.setFieldsValue({
+      title: event.title,
+      description: event.description,
+      startTime: event.start_time ? dayjs(event.start_time) : null,
+      endTime: event.end_time ? dayjs(event.end_time) : null,
+    });
+
+    // Show existing image unless a new one is picked
+    setPreviewImage(event.image || null);
+    setBanner(null);
+
+    setIsEditModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    addForm.resetFields();
+    setPreviewImage(null);
+    setBanner(null);
+  };
+
+  const handleEditCancel = () => {
+    setIsEditModalOpen(false);
+    editForm.resetFields();
+    setPreviewImage(null);
+    setBanner(null);
+    setEditingEvent(null);
+  };
 
   const onFinish = async (values) => {
     try {
-      if (!banner) {
-        Swal.fire("Error", "Please upload an image!", "error");
-        return;
-      }
-
       const startTime = values.startTime ? values.startTime.toDate() : null;
       const endTime = values.endTime ? values.endTime.toDate() : null;
 
@@ -45,13 +88,14 @@ const AllEvents = () => {
       formData.append("description", values.description);
       if (startTime) formData.append("start_time", startTime.toISOString());
       if (endTime) formData.append("end_time", endTime.toISOString());
-      formData.append("image", banner);
+      // FIX #2: only append image if selected; avoids sending null/empty
+      if (banner) formData.append("image", banner);
 
       const response = await createEvents(formData).unwrap();
-      Swal.fire(response?.message);
+      Swal.fire(response?.message || "Event created");
 
       setIsModalOpen(false);
-      form.resetFields();
+      addForm.resetFields();
       setPreviewImage(null);
       setBanner(null);
     } catch (error) {
@@ -60,8 +104,38 @@ const AllEvents = () => {
     }
   };
 
+  const onEditFinish = async (values) => {
+    try {
+      const startTime = values.startTime ? values.startTime.toDate() : null;
+      const endTime = values.endTime ? values.endTime.toDate() : null;
+
+      const formData = new FormData();
+      formData.append("title", values.title);
+      formData.append("description", values.description);
+      if (startTime) formData.append("start_time", startTime.toISOString());
+      if (endTime) formData.append("end_time", endTime.toISOString());
+      // Only include new image if user picked one
+      if (banner) formData.append("image", banner);
+
+      // FIX #3: use the correct id from the stored event object
+      const response = await UpdateEvent({
+        _id: editingEvent?._id,
+        data: formData,
+      }).unwrap();
+
+      Swal.fire(response?.message || "Event updated");
+      setIsEditModalOpen(false);
+      editForm.resetFields();
+      setPreviewImage(null);
+      setBanner(null);
+      setEditingEvent(null);
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Error", "Something went wrong!", "error");
+    }
+  };
+
   const handleDelete = (_id) => {
-    console.log(_id);
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -70,14 +144,18 @@ const AllEvents = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        deletEvent(_id).unwrap();
-        Swal.fire({
-          title: "Deleted!",
-          text: "Your file has been deleted.",
-          icon: "success",
-        });
+        try {
+          await deletEvent(_id).unwrap();
+          Swal.fire({
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success",
+          });
+        } catch (error) {
+          Swal.fire(error.message);
+        }
       }
     });
   };
@@ -101,7 +179,7 @@ const AllEvents = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-6 justify-end items-end">
-        {data?.map((event) => (
+        {data.map((event) => (
           <div key={event._id} className="relative rounded-lg  ">
             <div
               className="absolute inset-0"
@@ -112,16 +190,24 @@ const AllEvents = () => {
               }}
             />
 
-            <div className="absolute top-3 left-3 z-20">
+            <div className="absolute top-3 left-3 z-20 flex justify-center items-center gap-2">
               <button
                 onClick={() => handleDelete(event._id)}
                 className="text-2xl text-white rounded-full p-1 shadow hover:scale-110 transition"
               >
                 <FaTrashAlt />
               </button>
+              {/* FIX #1 usage: pass the whole event object */}
+              <button
+                onClick={() => handleEditModal(event)}
+                className="text-2xl text-white rounded-full p-1 shadow hover:scale-110 transition"
+              >
+                <FaPen />
+              </button>
             </div>
+
             <div className="border-2 border-red-500 p-2 w-full">
-              <div className="relative z-10 p-5 text-white border-2 flex flex-col justify-end items-end  ">
+              <div className="relative z-10 p-5 text-white border-2 flex flex-col justify-end items-end">
                 <h2 className="font-bold text-2xl mb-3">{event.title}</h2>
 
                 <div className="bg-orange-200 text-black inline-block px-3 py-1 rounded-md mb-3 font-medium">
@@ -132,19 +218,12 @@ const AllEvents = () => {
                 <div className="bg-white text-black px-4 py-2 rounded-md mb-3 font-semibold">
                   {event.description}
                 </div>
-
-                {/* <ul className="text-sm space-y-2">
-                  {event?.details?.map((detail, i) => (
-                    <li key={i} className="flex items-center gap-2">
-                      <SiTicktick className="text-white" /> {detail}
-                    </li>
-                  ))}
-                </ul> */}
               </div>
             </div>
           </div>
         ))}
       </div>
+
       <ConfigProvider
         theme={{
           components: {
@@ -156,13 +235,91 @@ const AllEvents = () => {
           },
         }}
       >
+        {/* Add Modal */}
         <Modal
           title="Add Events"
           open={isModalOpen}
           onCancel={handleCancel}
           footer={null}
         >
-          <Form form={form} onFinish={onFinish} layout="vertical">
+          <Form form={addForm} onFinish={onFinish} layout="vertical">
+            <Form.Item name="image">
+              <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
+                <Upload
+                  showUploadList={false}
+                  maxCount={1}
+                  beforeUpload={handleBeforeUpload}
+                >
+                  {!previewImage ? (
+                    <div className="flex flex-col items-center">
+                      <FaImage className="text-neutral-400 h-10 w-10" />
+                      <p className="text-neutral-500">Upload Image</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center">
+                      <img
+                        src={previewImage}
+                        alt="Preview"
+                        className="h-24 object-contain"
+                      />
+                      <p className="text-neutral-500">{banner?.name}</p>
+                    </div>
+                  )}
+                </Upload>
+              </div>
+            </Form.Item>
+
+            <Form.Item
+              name="title"
+              label="Event Name"
+              rules={[{ required: true, message: "Please enter event name" }]}
+            >
+              <Input
+                placeholder="Enter event name"
+                className="text-md border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]"
+              />
+            </Form.Item>
+
+            <div className="flex gap-2">
+              <Form.Item name="startTime" label="Start Time" className="flex-1">
+                <TimePicker className="w-full border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]" />
+              </Form.Item>
+              <Form.Item name="endTime" label="End Time" className="flex-1">
+                <TimePicker className="w-full border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]" />
+              </Form.Item>
+            </div>
+
+            <Form.Item
+              name="description"
+              label="Description"
+              rules={[{ required: true, message: "Please enter description" }]}
+            >
+              <Input.TextArea
+                placeholder="Enter description"
+                rows={4}
+                className="border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]"
+              />
+            </Form.Item>
+
+            <Form.Item>
+              <button
+                type="submit"
+                className="px-10 py-3 w-full bg-primary text-white font-semibold text-lg md:text-xl rounded shadow-lg transition"
+              >
+                Publish
+              </button>
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* Edit Modal */}
+        <Modal
+          title="Edit Events"
+          open={isEditModalOpen}
+          onCancel={handleEditCancel}
+          footer={null}
+        >
+          <Form form={editForm} onFinish={onEditFinish} layout="vertical">
             <Form.Item name="image">
               <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
                 <Upload
