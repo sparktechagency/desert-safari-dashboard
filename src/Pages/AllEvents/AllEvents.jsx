@@ -6,6 +6,7 @@ import { ConfigProvider, Form, Input, Modal, TimePicker, Upload } from "antd";
 import { useForm } from "antd/es/form/Form";
 import Swal from "sweetalert2";
 import GobackButton from "../../Components/Shared/GobackButton";
+import { useCreateEventsMutation } from "../../redux/features/eventsApi/eventsApi";
 
 const AllEvents = () => {
   const data = [
@@ -48,6 +49,7 @@ const AllEvents = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
   const [banner, setBanner] = useState(null);
+  const [createEvents] = useCreateEventsMutation();
 
   const handleBeforeUpload = (file) => {
     setBanner(file);
@@ -58,12 +60,37 @@ const AllEvents = () => {
   const handleAddModal = () => setIsModalOpen(true);
   const handleCancel = () => setIsModalOpen(false);
 
-  const onFinish = (values) => {
-    console.log("Form values:", values);
-    setIsModalOpen(false);
-    form.resetFields();
-    setPreviewImage(null);
-    setBanner(null);
+  const onFinish = async (values) => {
+    try {
+      if (!banner) {
+        Swal.fire("Error", "Please upload an image!", "error");
+        return;
+      }
+
+      // Convert TimePicker to Date objects (today's date with selected time)
+      const startTime = values.startTime
+        ? values.startTime.toDate() // moment object to Date
+        : null;
+      const endTime = values.endTime ? values.endTime.toDate() : null;
+
+      const formData = new FormData();
+      formData.append("title", values.title);
+      formData.append("description", values.description);
+      if (startTime) formData.append("start_time", startTime.toISOString());
+      if (endTime) formData.append("end_time", endTime.toISOString());
+      formData.append("image", banner);
+
+      const response = await createEvents(formData).unwrap();
+      Swal.fire(response?.message);
+
+      setIsModalOpen(false);
+      form.resetFields();
+      setPreviewImage(null);
+      setBanner(null);
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Error", "Something went wrong!", "error");
+    }
   };
 
   const handleDelete = () => {

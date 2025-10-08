@@ -5,7 +5,7 @@ import SignIn from "../Pages/Auth/SignIn/SignIn";
 import ForgatePassword from "../Pages/Auth/ForgatePassword/ForgatePassword";
 import Newpass from "../Pages/Auth/NewPass/Newpass";
 import VerifyPass from "../Pages/Auth/VerifyPass/VerifyPass";
-import ContinuePage from "../Pages/Auth/ContinuePage/ContinuePage";
+
 
 import MakeAdmin from "../Pages/MakeAdmin/MakeAdmin";
 import Category from "../Pages/Category/Category";
@@ -43,10 +43,7 @@ export const router = createBrowserRouter([
     path: "/new-password",
     element: <Newpass></Newpass>,
   },
-  {
-    path: "/continue-page",
-    element: <ContinuePage />,
-  },
+
   {
     path: "/",
     element: <MainLayout />,
