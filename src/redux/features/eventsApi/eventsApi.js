@@ -10,7 +10,14 @@ const eventsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["create-enent"],
     }),
+    getAllEvents: builder.query({
+      query: () => ({
+        url: "/event/allEvents",
+        method: "GET",
+      }),
+      providesTags: ["create-enent"],
+    }),
   }),
 });
 
-export const { useCreateEventsMutation } = eventsApi;
+export const { useCreateEventsMutation, useGetAllEventsQuery } = eventsApi;

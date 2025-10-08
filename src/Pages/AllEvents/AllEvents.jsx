@@ -6,45 +6,15 @@ import { ConfigProvider, Form, Input, Modal, TimePicker, Upload } from "antd";
 import { useForm } from "antd/es/form/Form";
 import Swal from "sweetalert2";
 import GobackButton from "../../Components/Shared/GobackButton";
-import { useCreateEventsMutation } from "../../redux/features/eventsApi/eventsApi";
+import {
+  useCreateEventsMutation,
+  useGetAllEventsQuery,
+} from "../../redux/features/eventsApi/eventsApi";
 
 const AllEvents = () => {
-  const data = [
-    {
-      title: "School Trip",
-      time: "09:00PM to 11:30PM",
-      price: "Adult 360 - Child 160",
-      details: [
-        "Camping, Exciting Visits.",
-        "Competitions and Prizes",
-        "Rides Included",
-      ],
-    },
-    {
-      title: "Corporate Events",
-      time: "09:00PM to 11:30PM",
-      price: "Adult 360 - Child 160",
-      details: ["Exciting Visits", "Competitions and Prizes", "Rides Included"],
-    },
-    {
-      title: "Wedding Ceremony",
-      time: "09:00PM to 11:30PM",
-      price: "Adult 360 - Child 160",
-      details: ["Exciting Visits", "Competitions and Prizes", "Rides Included"],
-    },
-    {
-      title: "Product Launch Ceremony",
-      time: "09:00PM to 11:30PM",
-      price: "Adult 360 - Child 160",
-      details: ["Exciting Visits", "Competitions and Prizes", "Rides Included"],
-    },
-    {
-      title: "Conference & Gatherings",
-      time: "09:00PM to 11:30PM",
-      price: "Adult 360 - Child 160",
-      details: ["Exciting Visits", "Competitions and Prizes", "Rides Included"],
-    },
-  ];
+  const { data: allEventsData } = useGetAllEventsQuery();
+  console.log("allEventsData", allEventsData?.data?.result);
+  const data = allEventsData?.data?.result;
   const [form] = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
@@ -132,12 +102,12 @@ const AllEvents = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-6 justify-end items-end">
-        {data.map((event, index) => (
-          <div key={index} className="relative rounded-lg  ">
+        {data?.map((event) => (
+          <div key={event._id} className="relative rounded-lg  ">
             <div
               className="absolute inset-0"
               style={{
-                backgroundImage: `linear-gradient(to left, rgba(216,101,48,0.8), rgba(0,0,0,0.2)), url(${img1})`,
+                backgroundImage: `linear-gradient(to left, rgba(216,101,48,0.8), rgba(0,0,0,0.2)), url(${event.image})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
@@ -156,20 +126,21 @@ const AllEvents = () => {
                 <h2 className="font-bold text-2xl mb-3">{event.title}</h2>
 
                 <div className="bg-orange-200 text-black inline-block px-3 py-1 rounded-md mb-3 font-medium">
-                  {event.time}
+                  {new Date(event.start_time).toLocaleString()} -{" "}
+                  {new Date(event.end_time).toLocaleString()}
                 </div>
 
                 <div className="bg-white text-black px-4 py-2 rounded-md mb-3 font-semibold">
-                  {event.price}
+                  {event.description}
                 </div>
 
-                <ul className="text-sm space-y-2">
-                  {event.details.map((detail, i) => (
+                {/* <ul className="text-sm space-y-2">
+                  {event?.details?.map((detail, i) => (
                     <li key={i} className="flex items-center gap-2">
                       <SiTicktick className="text-white" /> {detail}
                     </li>
                   ))}
-                </ul>
+                </ul> */}
               </div>
             </div>
           </div>
