@@ -1,5 +1,3 @@
-import { SiTicktick } from "react-icons/si";
-import img1 from "../../assets/image/1.png";
 import { FaImage, FaTrashAlt } from "react-icons/fa";
 import { useState } from "react";
 import { ConfigProvider, Form, Input, Modal, TimePicker, Upload } from "antd";
@@ -8,12 +6,14 @@ import Swal from "sweetalert2";
 import GobackButton from "../../Components/Shared/GobackButton";
 import {
   useCreateEventsMutation,
+  useDeletEventMutation,
   useGetAllEventsQuery,
 } from "../../redux/features/eventsApi/eventsApi";
 
 const AllEvents = () => {
   const { data: allEventsData } = useGetAllEventsQuery();
-  console.log("allEventsData", allEventsData?.data?.result);
+  const [deletEvent] = useDeletEventMutation();
+  // console.log("allEventsData", allEventsData?.data?.result);
   const data = allEventsData?.data?.result;
   const [form] = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,10 +37,7 @@ const AllEvents = () => {
         return;
       }
 
-      // Convert TimePicker to Date objects (today's date with selected time)
-      const startTime = values.startTime
-        ? values.startTime.toDate() // moment object to Date
-        : null;
+      const startTime = values.startTime ? values.startTime.toDate() : null;
       const endTime = values.endTime ? values.endTime.toDate() : null;
 
       const formData = new FormData();
@@ -63,7 +60,8 @@ const AllEvents = () => {
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = (_id) => {
+    console.log(_id);
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -74,6 +72,7 @@ const AllEvents = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
+        deletEvent(_id).unwrap();
         Swal.fire({
           title: "Deleted!",
           text: "Your file has been deleted.",
@@ -115,7 +114,7 @@ const AllEvents = () => {
 
             <div className="absolute top-3 left-3 z-20">
               <button
-                onClick={handleDelete}
+                onClick={() => handleDelete(event._id)}
                 className="text-2xl text-white rounded-full p-1 shadow hover:scale-110 transition"
               >
                 <FaTrashAlt />

@@ -17,7 +17,18 @@ const eventsApi = baseApi.injectEndpoints({
       }),
       providesTags: ["create-enent"],
     }),
+    deletEvent: builder.mutation({
+      query: (_id) => ({
+        url: `/event/delete-event/${_id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["create-enent"],
+    }),
   }),
 });
 
-export const { useCreateEventsMutation, useGetAllEventsQuery } = eventsApi;
+export const {
+  useCreateEventsMutation,
+  useGetAllEventsQuery,
+  useDeletEventMutation,
+} = eventsApi;
