@@ -11,21 +11,21 @@ const AuthAPi = baseApi.injectEndpoints({
     }),
     forgatePassword: builder.mutation({
       query: (email) => ({
-        url: "/admin/auth/forget-password/send-otp",
+        url: "/auth/forgotPass",
         method: "POST",
         body: email,
       }),
     }),
     verifyOtp: builder.mutation({
       query: (data) => ({
-        url: "/admin/auth/verify-otp",
+        url: "/auth/verifyOtp",
         method: "POST",
         body: data,
       }),
     }),
     resetPassword: builder.mutation({
       query: (data) => ({
-        url: "/admin/auth/reset-password",
+        url: "/auth/resetPass",
         method: "POST",
         body: data,
       }),
