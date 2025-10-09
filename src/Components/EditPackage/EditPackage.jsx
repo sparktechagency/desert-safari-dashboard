@@ -1,4 +1,4 @@
-import { Form, Input, Select, Upload } from "antd";
+import { Form, Input, message, Select, Upload } from "antd";
 import GobackButton from "../Shared/GobackButton";
 import { FaImage, FaPlus, FaTimes } from "react-icons/fa";
 import { useEffect, useState } from "react";
@@ -16,7 +16,7 @@ const EditPackage = () => {
 
   const { data: singleData } = useGetSInglePackageQuery(id);
   console.log("single package", singleData?.data);
-  const onFinish = () => {};
+
   // const [previewCoverImage, setPreviewCoverImage] = useState(null);
   // const [Cover, setCover] = useState(null);
 
@@ -80,6 +80,98 @@ const EditPackage = () => {
       );
     }
   }, [singleData, form]);
+
+
+const onFinish = (values) => {
+  const formData = new FormData();
+
+  try {
+    // Ensure values.activity is an array
+    const activity = Array.isArray(values.activity) ? values.activity : [];
+    formData.append("activity", activity.join(", "));
+
+    // Ensure values.availability is an array
+    const availability = Array.isArray(values.availability) ? values.availability : [];
+    formData.append("availability", availability.join(", "));
+
+    // Ensure values.included is an array
+    const included = Array.isArray(values.included) ? values.included : [];
+    formData.append("included", included.join(", "));
+
+    // Ensure values.excluded is an array
+    const excluded = Array.isArray(values.excluded) ? values.excluded : [];
+    formData.append("excluded", excluded.join(", "));
+
+    // Ensure values.tour_plan is an array (if needed)
+    const tourPlan = Array.isArray(values.tour_plan) ? values.tour_plan : [];
+    formData.append("tour_plan", tourPlan.join("\n"));
+
+    // Handle price fields (e.g., camel_bike, quad_bike, etc.)
+    const camelBikeAmount = Number(values.camel_bike_amount);
+    const camelBikeCurrency = values.camel_bike_currency || "AED";
+    formData.append("camel_bike_amount", isNaN(camelBikeAmount) ? 0 : camelBikeAmount);
+    formData.append("camel_bike_currency", camelBikeCurrency);
+
+    const quadBikeAmount = Number(values.quad_bike_amount);
+    const quadBikeCurrency = values.quad_bike_currency || "AED";
+    formData.append("quad_bike_amount", isNaN(quadBikeAmount) ? 0 : quadBikeAmount);
+    formData.append("quad_bike_currency", quadBikeCurrency);
+
+    const fourSitterAmount = Number(values.four_sitter_dune_buggy_amount);
+    const fourSitterCurrency = values.four_sitter_dune_buggy_currency || "AED";
+    formData.append("four_sitter_dune_buggy_amount", isNaN(fourSitterAmount) ? 0 : fourSitterAmount);
+    formData.append("four_sitter_dune_buggy_currency", fourSitterCurrency);
+
+    const singleSitterAmount = Number(values.single_sitter_dune_buggy_amount);
+    const singleSitterCurrency = values.single_sitter_dune_buggy_currency || "AED";
+    formData.append("single_sitter_dune_buggy_amount", isNaN(singleSitterAmount) ? 0 : singleSitterAmount);
+    formData.append("single_sitter_dune_buggy_currency", singleSitterCurrency);
+
+    const childPriceAmount = Number(values.childPrice_amount);
+    const childPriceCurrency = values.childPrice_currency || "AED";
+    formData.append("childPrice_amount", isNaN(childPriceAmount) ? 0 : childPriceAmount);
+    formData.append("childPrice_currency", childPriceCurrency);
+
+    const adultPriceAmount = Number(values.adultPrice_amount);
+    const adultPriceCurrency = values.adultPrice_currency || "AED";
+    formData.append("adultPrice_amount", isNaN(adultPriceAmount) ? 0 : adultPriceAmount);
+    formData.append("adultPrice_currency", adultPriceCurrency);
+
+    // Append other fields
+    formData.append("title", values.title);
+    formData.append("location", values.location);
+    formData.append("duration", values.duration);
+    formData.append("max_adult", values.max_adult);
+    formData.append("child_min_age", values.child_min_age);
+    formData.append("pickup", values.pickup);
+    formData.append("discount", values.discount);
+    formData.append("drop_off", values.drop_off);
+    formData.append("note", values.note);
+    formData.append("refund_policy", values.refund_policy);
+    formData.append("description", values.description);
+
+    // Handle image uploads
+    fileList.forEach((file) => {
+      if (file.originFileObj) {
+        formData.append("images", file.originFileObj);
+      }
+    });
+
+    // Call the mutation to update the package
+    UpdatePackage({ _id: id, data: formData });
+
+  } catch (error) {
+    message.error(
+      error?.message || "An error occurred while submitting the form."
+    );
+  }
+};
+
+
+
+
+
+  
   return (
     <div className="min-h-screen">
       <div className="flex justify-start items-center gap-2">
@@ -100,7 +192,6 @@ const EditPackage = () => {
               <Form.Item
                 name="package-images"
                 label={<p className="text-md">Edit Packages Images</p>}
-                required
               >
                 <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
                   <div className="flex gap-3 flex-wrap">
@@ -197,7 +288,6 @@ const EditPackage = () => {
             style={{}}
           >
             <Input
-              required
               style={{ padding: "6px" }}
               className=" text-md"
               placeholder="Type name"
@@ -209,13 +299,11 @@ const EditPackage = () => {
             style={{}}
           >
             <Input
-              required
               style={{ padding: "6px" }}
               className=" text-md"
               placeholder="Type Location name"
             />
           </Form.Item>
-      
 
           <div className="flex justify-between items-center gap-2">
             <Form.Item
@@ -224,7 +312,6 @@ const EditPackage = () => {
               style={{}}
             >
               <Input
-                required
                 style={{ padding: "6px" }}
                 className=" text-md"
                 placeholder="Type duration"
@@ -235,7 +322,6 @@ const EditPackage = () => {
               label={<p className=" text-md">Max Adults</p>}
             >
               <Input
-                required
                 style={{ padding: "6px" }}
                 className=" text-md"
                 placeholder="Max Adults"
@@ -246,7 +332,6 @@ const EditPackage = () => {
               label={<p className=" text-md">Child Min Age</p>}
             >
               <Input
-                required
                 style={{ padding: "6px" }}
                 className=" text-md"
                 placeholder="Child Min Age"
@@ -254,7 +339,6 @@ const EditPackage = () => {
             </Form.Item>
             <Form.Item name="pickup" label={<p className=" text-md">Pickup</p>}>
               <Input
-                required
                 style={{ padding: "6px" }}
                 className=" text-md"
                 placeholder="Pickup"
@@ -265,7 +349,6 @@ const EditPackage = () => {
               label={<p className=" text-md">Availability</p>}
             >
               <Input
-                required
                 style={{ padding: "6px" }}
                 className=" text-md"
                 placeholder="Availability"
@@ -299,7 +382,6 @@ const EditPackage = () => {
               <h1 className="w-[250px]">Adult Price</h1>
               <Form.Item name="adultPrice" className="text-md w-[150px]">
                 <Input
-                  required
                   style={{ padding: "6px" }}
                   className="text-md"
                   placeholder="00 AED"
@@ -316,7 +398,6 @@ const EditPackage = () => {
               <h1 className="w-[250px]">Child Price</h1>
               <Form.Item name="childPrice" className="text-md w-[150px]">
                 <Input
-                  required
                   style={{ padding: "6px" }}
                   className="text-md"
                   placeholder="00 AED"
@@ -331,9 +412,11 @@ const EditPackage = () => {
 
             <div className="flex justify-between items-center gap-4 mb-4">
               <h1 className="w-[250px]">Single Seater Dune Buggy 30 mins</h1>
-              <Form.Item name="single_sitter_dune_buggy" className="text-md w-[150px]">
+              <Form.Item
+                name="single_sitter_dune_buggy"
+                className="text-md w-[150px]"
+              >
                 <Input
-                  required
                   style={{ padding: "6px" }}
                   className="text-md"
                   placeholder="00 AED"
@@ -350,7 +433,6 @@ const EditPackage = () => {
               <h1 className="w-[250px]">20 Minutes Quad Bike</h1>
               <Form.Item name="quad_bike" className="text-md w-[150px]">
                 <Input
-                  required
                   style={{ padding: "6px" }}
                   className="text-md"
                   placeholder="00 AED"
@@ -367,7 +449,6 @@ const EditPackage = () => {
               <h1 className="w-[250px]">30 Minutes Camel Bike</h1>
               <Form.Item name="camel_bike" className="text-md w-[150px]">
                 <Input
-                  required
                   style={{ padding: "6px" }}
                   className="text-md"
                   placeholder="00 AED"
@@ -384,7 +465,6 @@ const EditPackage = () => {
               <h1 className="w-[250px]">20 Minutes Quad Bike</h1>
               <Form.Item name="quad-bike-2" className="text-md w-[150px]">
                 <Input
-                  required
                   style={{ padding: "6px" }}
                   className="text-md"
                   placeholder="00 AED"
@@ -404,7 +484,6 @@ const EditPackage = () => {
                 className="text-md w-[150px]"
               >
                 <Input
-                  required
                   style={{ padding: "6px" }}
                   className="text-md"
                   placeholder="00 AED"
@@ -421,7 +500,6 @@ const EditPackage = () => {
               <h1 className="w-[250px]">Overall Discount</h1>
               <Form.Item name="discount" className="text-md w-[150px]">
                 <Input
-                  required
                   style={{ padding: "6px" }}
                   className="text-md"
                   placeholder="00 %"
@@ -441,7 +519,6 @@ const EditPackage = () => {
             className="text-md"
           >
             <Input
-              required
               style={{ padding: "6px" }}
               className="text-md"
               placeholder="00:00"
@@ -454,20 +531,14 @@ const EditPackage = () => {
             className="text-md"
           >
             <Input
-              required
               style={{ padding: "6px" }}
               className="text-md"
               placeholder="00:00"
             />
           </Form.Item>
 
-          <Form.Item
-            name="note"
-            label="Important Note"
-            className="text-md"
-          >
+          <Form.Item name="note" label="Important Note" className="text-md">
             <Input.TextArea
-              required
               style={{ padding: "6px" }}
               className="text-md"
               placeholder="Type here"
@@ -480,32 +551,21 @@ const EditPackage = () => {
             className="text-md"
           >
             <Input.TextArea
-              required
               style={{ padding: "6px" }}
               className="text-md"
               placeholder="Type here"
             />
           </Form.Item>
 
-          <Form.Item
-            name="included"
-            label="Included "
-            className="text-md"
-          >
+          <Form.Item name="included" label="Included " className="text-md">
             <Input.TextArea
-              required
               style={{ padding: "6px" }}
               className="text-md"
               placeholder="Type here"
             />
           </Form.Item>
-          <Form.Item
-            name="excluded"
-            label="Excluded"
-            className="text-md"
-          >
+          <Form.Item name="excluded" label="Excluded" className="text-md">
             <Input.TextArea
-              required
               style={{ padding: "6px" }}
               className="text-md"
               placeholder="Type here"
@@ -514,7 +574,6 @@ const EditPackage = () => {
 
           <Form.Item name="tour_plan" label="Tour Plan" className="text-md">
             <Input.TextArea
-              required
               style={{ padding: "6px" }}
               className="text-md"
               placeholder="Type here"
@@ -523,7 +582,6 @@ const EditPackage = () => {
 
           <Form.Item name="description" label="Description" className="text-md">
             <Input.TextArea
-              required
               style={{ padding: "6px" }}
               className="text-md"
               placeholder="Type here"
