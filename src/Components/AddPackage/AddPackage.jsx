@@ -1,20 +1,21 @@
-import { Form, Input, Select, Upload } from "antd";
+import { Form, Input, message, Select, Upload } from "antd";
 import GobackButton from "../Shared/GobackButton";
 import { FaImage, FaPlus, FaTimes } from "react-icons/fa";
 import { useState } from "react";
+import { useCreatePackageMutation } from "../../redux/features/packageApi/packageApi";
 
 const AddPackage = () => {
-  const onFinish = () => {};
+    const [createPackage] = useCreatePackageMutation();
   const [previewCoverImage, setPreviewCoverImage] = useState(null);
   const [Cover, setCover] = useState(null);
+  const [fileList, setFileList] = useState([]);
+  const { Option } = Select;
 
   const handleCoverBeforeUpload = (file) => {
     setCover(file);
     setPreviewCoverImage(URL.createObjectURL(file));
     return false;
   };
-
-  const [fileList, setFileList] = useState([]);
 
   const handleBeforeUpload = (file) => {
     setFileList((prevList) => [...prevList, file]);
@@ -26,7 +27,35 @@ const AddPackage = () => {
       prevList.filter((file) => file.uid !== fileToRemove.uid)
     );
   };
-  const { Option } = Select;
+
+  const onFinish = async (values) => {
+    try {
+      const formData = new FormData();
+
+      Object.keys(values).forEach((key) => {
+        formData.append(key, values[key]);
+      });
+
+      if (Cover) {
+        formData.append("coverImage", Cover);
+      }
+
+      fileList.forEach((file) => {
+        formData.append("packageImages", file);
+      });
+
+      const res = await createPackage(formData).unwrap();
+
+      if (res?.success) {
+        message.success("Package created successfully!");
+      } else {
+        message.error(res?.message || "Failed to create package");
+      }
+    } catch (err) {
+      console.error("Error creating package:", err);
+      message.error("Something went wrong. Please try again.");
+    }
+  };
   return (
     <div className="min-h-screen">
       <div className="flex justify-start items-center gap-2">
@@ -41,7 +70,7 @@ const AddPackage = () => {
           layout="vertical"
           className="w-[70%]  "
         >
-          <div className="w-full flex justify-between items-center gap-5">
+          {/* <div className="w-full flex justify-between items-center gap-5">
             <div className="w-[50%]">
               <Form.Item
                 name="package-images"
@@ -90,6 +119,81 @@ const AddPackage = () => {
               <Form.Item
                 name="cover-image"
                 label={<p className=" text-md">Add Cover Image</p>}
+              >
+                <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
+                  <Upload
+                    showUploadList={false}
+                    maxCount={1}
+                    beforeUpload={handleCoverBeforeUpload}
+                  >
+                    {!previewCoverImage ? (
+                      <div className="flex flex-col items-center">
+                        <FaImage className="text-neutral-400 h-10 w-10" />
+                        <p className="text-neutral-500">Upload Cover Image</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center">
+                        <img
+                          src={previewCoverImage}
+                          alt="Preview"
+                          className="h-24 object-contain"
+                        />
+                        <p className="text-neutral-500">{Cover?.name}</p>
+                      </div>
+                    )}
+                  </Upload>
+                </div>
+              </Form.Item>
+            </div>
+          </div> */}
+          <div className="w-full flex justify-between items-center gap-5">
+            {/* Package Images */}
+            <div className="w-[50%]">
+              <Form.Item
+                name="package-images"
+                label={<p className="text-md">Add Package Images</p>}
+                required
+              >
+                <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
+                  <div className="flex gap-3 flex-wrap">
+                    {fileList.map((file) => (
+                      <div
+                        key={file.uid}
+                        className="relative w-24 h-24 border border-neutral-300 rounded overflow-hidden"
+                      >
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt="preview"
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(file)}
+                          className="absolute top-1 right-1 bg-white rounded-full p-1 text-xs"
+                        >
+                          <FaTimes className="text-red-600" />
+                        </button>
+                      </div>
+                    ))}
+                    <Upload
+                      multiple
+                      showUploadList={false}
+                      beforeUpload={handleBeforeUpload}
+                    >
+                      <div className="w-24 h-24 border border-dashed flex items-center justify-center rounded cursor-pointer hover:bg-gray-100">
+                        <FaPlus className="text-xl text-gray-500" />
+                      </div>
+                    </Upload>
+                  </div>
+                </div>
+              </Form.Item>
+            </div>
+
+            {/* Cover Image */}
+            <div className="w-[50%]">
+              <Form.Item
+                name="cover-image"
+                label={<p className="text-md">Add Cover Image</p>}
               >
                 <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
                   <Upload

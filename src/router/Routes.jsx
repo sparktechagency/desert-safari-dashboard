@@ -73,7 +73,7 @@ export const router = createBrowserRouter([
         element: <AddPackage />,
       },
       {
-        path: "/edit-package",
+        path: "/edit-package/:id",
         element: <EditPackage />,
       },
       {
