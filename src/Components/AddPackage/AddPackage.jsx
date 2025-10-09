@@ -1,21 +1,14 @@
 import { Form, Input, message, Select, Upload } from "antd";
 import GobackButton from "../Shared/GobackButton";
-import { FaImage, FaPlus, FaTimes } from "react-icons/fa";
+import { FaPlus, FaTimes } from "react-icons/fa";
 import { useState } from "react";
 import { useCreatePackageMutation } from "../../redux/features/packageApi/packageApi";
 
 const AddPackage = () => {
-    const [createPackage] = useCreatePackageMutation();
-  const [previewCoverImage, setPreviewCoverImage] = useState(null);
-  const [Cover, setCover] = useState(null);
+  const [createPackage] = useCreatePackageMutation();
+  const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   const { Option } = Select;
-
-  const handleCoverBeforeUpload = (file) => {
-    setCover(file);
-    setPreviewCoverImage(URL.createObjectURL(file));
-    return false;
-  };
 
   const handleBeforeUpload = (file) => {
     setFileList((prevList) => [...prevList, file]);
@@ -28,34 +21,64 @@ const AddPackage = () => {
     );
   };
 
-  const onFinish = async (values) => {
-    try {
-      const formData = new FormData();
+const onFinish = async (values) => {
+  try {
+    const data = {
+      title: values.title || "",
+      location: values.location || "",
+      duration: values.duration || "",
+      max_adult: Number(values.max_adult) || 0,
+      child_min_age: Number(values.child_min_age) || 0,
+      pickup: values.pickup || "",
+      drop_off: values.drop_off || "",
+      availability: values.availability
+        ? Array.isArray(values.availability)
+          ? values.availability
+          : [values.availability]
+        : [],
+      activity: values.activity
+        ? Array.isArray(values.activity)
+          ? values.activity
+          : [values.activity]
+        : [],
+      adultPrice: { amount: Number(values.adultPrice) || 0, currency: "AED" },
+      childPrice: { amount: Number(values.childPrice) || 0, currency: "AED" },
+      single_sitter_dune_buggy: {
+        amount: Number(values.single_sitter_dune_buggy) || 0,
+        currency: "AED",
+      },
+      four_sitter_dune_buggy: {
+        amount: Number(values.four_sitter_dune_buggy) || 0,
+        currency: "AED",
+      },
+      quad_bike: { amount: Number(values.quad_bike) || 0, currency: "AED" },
+      camel_bike: { amount: Number(values.camel_bike) || 0, currency: "AED" },
+      discount: Number(values.discount) || 0,
+      note: values.note || "",
+      refund_policy: values.refund_policy || "",
+      included: values.included ? values.included.split("\n") : [],
+      excluded: values.excluded ? values.excluded.split("\n") : [],
+      tour_plan: values.tour_plan ? values.tour_plan.split("\n") : [],
+      description: values.description || "",
+      images: fileList || [], // array of images (you can append file objects or URLs as needed)
+    };
 
-      Object.keys(values).forEach((key) => {
-        formData.append(key, values[key]);
-      });
+    const res = await createPackage(data).unwrap();
 
-      if (Cover) {
-        formData.append("coverImage", Cover);
-      }
-
-      fileList.forEach((file) => {
-        formData.append("packageImages", file);
-      });
-
-      const res = await createPackage(formData).unwrap();
-
-      if (res?.success) {
-        message.success("Package created successfully!");
-      } else {
-        message.error(res?.message || "Failed to create package");
-      }
-    } catch (err) {
-      console.error("Error creating package:", err);
-      message.error("Something went wrong. Please try again.");
+    if (res?.success) {
+      message.success("Package created successfully!");
+      form.resetFields();
+      setFileList([]);
+    } else {
+      message.error(res?.message || "Failed to create package");
     }
-  };
+  } catch (error) {
+    console.error("Error creating package:", error);
+    message.error("Something went wrong. Please try again.");
+  }
+};
+
+
   return (
     <div className="min-h-screen">
       <div className="flex justify-start items-center gap-2">
@@ -64,22 +87,22 @@ const AddPackage = () => {
       </div>
       <div className="flex justify-center items-center">
         <Form
-          name="add-new-package"
+          form={form}
+          name="Edit-new-package"
           initialValues={{ remember: true }}
           onFinish={onFinish}
           layout="vertical"
           className="w-[70%]  "
         >
-          {/* <div className="w-full flex justify-between items-center gap-5">
-            <div className="w-[50%]">
+          <div className="w-full flex justify-between items-center gap-5">
+            <div className="w-[100%]">
               <Form.Item
                 name="package-images"
-                label={<p className="text-md">Add Packages Images</p>}
-                required
+                label={<p className="text-md">Edit Packages Images</p>}
               >
                 <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
                   <div className="flex gap-3 flex-wrap">
-                    {fileList.map((file) => (
+                    {/* {fileList.map((file) => (
                       <div
                         key={file.uid}
                         className="relative w-24 h-24 border border-neutral-300 rounded overflow-hidden"
@@ -99,70 +122,14 @@ const AddPackage = () => {
                           <FaTimes className="text-red-600" />
                         </button>
                       </div>
-                    ))}
-
-                    <Upload
-                      multiple
-                      showUploadList={false}
-                      beforeUpload={handleBeforeUpload}
-                    >
-                      <div className="w-24 h-24 border border-dashed flex items-center justify-center rounded cursor-pointer hover:bg-gray-100">
-                        <FaPlus className="text-xl text-gray-500" />
-                      </div>
-                    </Upload>
-                  </div>
-                </div>
-              </Form.Item>
-            </div>
-
-            <div className="w-[50%]">
-              <Form.Item
-                name="cover-image"
-                label={<p className=" text-md">Add Cover Image</p>}
-              >
-                <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
-                  <Upload
-                    showUploadList={false}
-                    maxCount={1}
-                    beforeUpload={handleCoverBeforeUpload}
-                  >
-                    {!previewCoverImage ? (
-                      <div className="flex flex-col items-center">
-                        <FaImage className="text-neutral-400 h-10 w-10" />
-                        <p className="text-neutral-500">Upload Cover Image</p>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center">
-                        <img
-                          src={previewCoverImage}
-                          alt="Preview"
-                          className="h-24 object-contain"
-                        />
-                        <p className="text-neutral-500">{Cover?.name}</p>
-                      </div>
-                    )}
-                  </Upload>
-                </div>
-              </Form.Item>
-            </div>
-          </div> */}
-          <div className="w-full flex justify-between items-center gap-5">
-            {/* Package Images */}
-            <div className="w-[50%]">
-              <Form.Item
-                name="package-images"
-                label={<p className="text-md">Add Package Images</p>}
-                required
-              >
-                <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
-                  <div className="flex gap-3 flex-wrap">
+                    ))} */}
                     {fileList.map((file) => (
                       <div
                         key={file.uid}
                         className="relative w-24 h-24 border border-neutral-300 rounded overflow-hidden"
                       >
                         <img
-                          src={URL.createObjectURL(file)}
+                          src={file.url || URL.createObjectURL(file)} // ✅ show server or local image
                           alt="preview"
                           className="w-full h-full object-cover"
                         />
@@ -175,6 +142,7 @@ const AddPackage = () => {
                         </button>
                       </div>
                     ))}
+
                     <Upload
                       multiple
                       showUploadList={false}
@@ -189,11 +157,10 @@ const AddPackage = () => {
               </Form.Item>
             </div>
 
-            {/* Cover Image */}
-            <div className="w-[50%]">
+            {/* <div className="w-[50%]">
               <Form.Item
                 name="cover-image"
-                label={<p className="text-md">Add Cover Image</p>}
+                label={<p className=" text-md">Edit Cover Image</p>}
               >
                 <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
                   <Upload
@@ -219,43 +186,29 @@ const AddPackage = () => {
                   </Upload>
                 </div>
               </Form.Item>
-            </div>
+            </div> */}
           </div>
 
           <Form.Item
-            name="name"
+            name="title"
             label={<p className=" text-md">Package Name</p>}
             style={{}}
           >
             <Input
-              required
               style={{ padding: "6px" }}
               className=" text-md"
               placeholder="Type name"
             />
           </Form.Item>
           <Form.Item
-            name="name"
+            name="location"
             label={<p className=" text-md">Location Name</p>}
             style={{}}
           >
             <Input
-              required
               style={{ padding: "6px" }}
               className=" text-md"
               placeholder="Type Location name"
-            />
-          </Form.Item>
-          <Form.Item
-            name="email"
-            label={<p className=" text-md">Email</p>}
-            style={{}}
-          >
-            <Input
-              required
-              style={{ padding: "6px" }}
-              className=" text-md"
-              placeholder="Your Email"
             />
           </Form.Item>
 
@@ -266,29 +219,26 @@ const AddPackage = () => {
               style={{}}
             >
               <Input
-                required
                 style={{ padding: "6px" }}
                 className=" text-md"
                 placeholder="Type duration"
               />
             </Form.Item>
             <Form.Item
-              name="max-adults"
+              name="max_adult"
               label={<p className=" text-md">Max Adults</p>}
             >
               <Input
-                required
                 style={{ padding: "6px" }}
                 className=" text-md"
                 placeholder="Max Adults"
               />
             </Form.Item>
             <Form.Item
-              name="child-min-age"
+              name="child_min_age"
               label={<p className=" text-md">Child Min Age</p>}
             >
               <Input
-                required
                 style={{ padding: "6px" }}
                 className=" text-md"
                 placeholder="Child Min Age"
@@ -296,7 +246,6 @@ const AddPackage = () => {
             </Form.Item>
             <Form.Item name="pickup" label={<p className=" text-md">Pickup</p>}>
               <Input
-                required
                 style={{ padding: "6px" }}
                 className=" text-md"
                 placeholder="Pickup"
@@ -307,7 +256,6 @@ const AddPackage = () => {
               label={<p className=" text-md">Availability</p>}
             >
               <Input
-                required
                 style={{ padding: "6px" }}
                 className=" text-md"
                 placeholder="Availability"
@@ -341,7 +289,6 @@ const AddPackage = () => {
               <h1 className="w-[250px]">Adult Price</h1>
               <Form.Item name="adultPrice" className="text-md w-[150px]">
                 <Input
-                  required
                   style={{ padding: "6px" }}
                   className="text-md"
                   placeholder="00 AED"
@@ -356,9 +303,8 @@ const AddPackage = () => {
 
             <div className="flex justify-between items-center gap-4 mb-4">
               <h1 className="w-[250px]">Child Price</h1>
-              <Form.Item name="child-price" className="text-md w-[150px]">
+              <Form.Item name="childPrice" className="text-md w-[150px]">
                 <Input
-                  required
                   style={{ padding: "6px" }}
                   className="text-md"
                   placeholder="00 AED"
@@ -373,9 +319,11 @@ const AddPackage = () => {
 
             <div className="flex justify-between items-center gap-4 mb-4">
               <h1 className="w-[250px]">Single Seater Dune Buggy 30 mins</h1>
-              <Form.Item name="single-seater" className="text-md w-[150px]">
+              <Form.Item
+                name="single_sitter_dune_buggy"
+                className="text-md w-[150px]"
+              >
                 <Input
-                  required
                   style={{ padding: "6px" }}
                   className="text-md"
                   placeholder="00 AED"
@@ -390,9 +338,8 @@ const AddPackage = () => {
 
             <div className="flex justify-between items-center gap-4 mb-4">
               <h1 className="w-[250px]">20 Minutes Quad Bike</h1>
-              <Form.Item name="quad-bike" className="text-md w-[150px]">
+              <Form.Item name="quad_bike" className="text-md w-[150px]">
                 <Input
-                  required
                   style={{ padding: "6px" }}
                   className="text-md"
                   placeholder="00 AED"
@@ -407,9 +354,8 @@ const AddPackage = () => {
 
             <div className="flex justify-between items-center gap-4 mb-4">
               <h1 className="w-[250px]">30 Minutes Camel Bike</h1>
-              <Form.Item name="camel-bike" className="text-md w-[150px]">
+              <Form.Item name="camel_bike" className="text-md w-[150px]">
                 <Input
-                  required
                   style={{ padding: "6px" }}
                   className="text-md"
                   placeholder="00 AED"
@@ -426,7 +372,6 @@ const AddPackage = () => {
               <h1 className="w-[250px]">20 Minutes Quad Bike</h1>
               <Form.Item name="quad-bike-2" className="text-md w-[150px]">
                 <Input
-                  required
                   style={{ padding: "6px" }}
                   className="text-md"
                   placeholder="00 AED"
@@ -442,11 +387,10 @@ const AddPackage = () => {
             <div className="flex justify-between items-center gap-4 mb-4">
               <h1 className="w-[250px]">4 Seater Dune Buggy 30 Mins</h1>
               <Form.Item
-                name="4-seater-dune-buggy"
+                name="four_sitter_dune_buggy"
                 className="text-md w-[150px]"
               >
                 <Input
-                  required
                   style={{ padding: "6px" }}
                   className="text-md"
                   placeholder="00 AED"
@@ -461,9 +405,8 @@ const AddPackage = () => {
 
             <div className="flex justify-between items-center gap-4 mb-4">
               <h1 className="w-[250px]">Overall Discount</h1>
-              <Form.Item name="overall-discount" className="text-md w-[150px]">
+              <Form.Item name="discount" className="text-md w-[150px]">
                 <Input
-                  required
                   style={{ padding: "6px" }}
                   className="text-md"
                   placeholder="00 %"
@@ -483,7 +426,6 @@ const AddPackage = () => {
             className="text-md"
           >
             <Input
-              required
               style={{ padding: "6px" }}
               className="text-md"
               placeholder="00:00"
@@ -491,25 +433,19 @@ const AddPackage = () => {
           </Form.Item>
 
           <Form.Item
-            name="expectedDropoff"
+            name="drop_off"
             label="Expected Drop off"
             className="text-md"
           >
             <Input
-              required
               style={{ padding: "6px" }}
               className="text-md"
               placeholder="00:00"
             />
           </Form.Item>
 
-          <Form.Item
-            name="importantNote"
-            label="Important Note"
-            className="text-md"
-          >
+          <Form.Item name="note" label="Important Note" className="text-md">
             <Input.TextArea
-              required
               style={{ padding: "6px" }}
               className="text-md"
               placeholder="Type here"
@@ -517,34 +453,34 @@ const AddPackage = () => {
           </Form.Item>
 
           <Form.Item
-            name="refundPolicy"
+            name="refund_policy"
             label="Cancellation & Refund Policy"
             className="text-md"
           >
             <Input.TextArea
-              required
               style={{ padding: "6px" }}
               className="text-md"
               placeholder="Type here"
             />
           </Form.Item>
 
-          <Form.Item
-            name="includedExcluded"
-            label="Included / Excluded"
-            className="text-md"
-          >
+          <Form.Item name="included" label="Included " className="text-md">
             <Input.TextArea
-              required
+              style={{ padding: "6px" }}
+              className="text-md"
+              placeholder="Type here"
+            />
+          </Form.Item>
+          <Form.Item name="excluded" label="Excluded" className="text-md">
+            <Input.TextArea
               style={{ padding: "6px" }}
               className="text-md"
               placeholder="Type here"
             />
           </Form.Item>
 
-          <Form.Item name="tourPlan" label="Tour Plan" className="text-md">
+          <Form.Item name="tour_plan" label="Tour Plan" className="text-md">
             <Input.TextArea
-              required
               style={{ padding: "6px" }}
               className="text-md"
               placeholder="Type here"
@@ -553,7 +489,6 @@ const AddPackage = () => {
 
           <Form.Item name="description" label="Description" className="text-md">
             <Input.TextArea
-              required
               style={{ padding: "6px" }}
               className="text-md"
               placeholder="Type here"

@@ -1,6 +1,6 @@
 import { Form, Input, message, Select, Upload } from "antd";
 import GobackButton from "../Shared/GobackButton";
-import { FaImage, FaPlus, FaTimes } from "react-icons/fa";
+import { FaPlus, FaTimes } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import {
   useGetSInglePackageQuery,
@@ -159,6 +159,7 @@ const onFinish = (values) => {
 
     // Call the mutation to update the package
     UpdatePackage({ _id: id, data: formData });
+    navigate("/pacakes")
 
   } catch (error) {
     message.error(
