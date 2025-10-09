@@ -1,18 +1,30 @@
 import { Form, Input, Select, Upload } from "antd";
 import GobackButton from "../Shared/GobackButton";
 import { FaImage, FaPlus, FaTimes } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  useGetSInglePackageQuery,
+  useUpdatePackageMutation,
+} from "../../redux/features/packageApi/packageApi";
+import { useNavigate, useParams } from "react-router-dom";
 
 const EditPackage = () => {
-  const onFinish = () => {};
-  const [previewCoverImage, setPreviewCoverImage] = useState(null);
-  const [Cover, setCover] = useState(null);
+  const [form] = Form.useForm();
+  const [UpdatePackage] = useUpdatePackageMutation();
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  const handleCoverBeforeUpload = (file) => {
-    setCover(file);
-    setPreviewCoverImage(URL.createObjectURL(file));
-    return false;
-  };
+  const { data: singleData } = useGetSInglePackageQuery(id);
+  console.log("single package", singleData?.data);
+  const onFinish = () => {};
+  // const [previewCoverImage, setPreviewCoverImage] = useState(null);
+  // const [Cover, setCover] = useState(null);
+
+  // const handleCoverBeforeUpload = (file) => {
+  //   setCover(file);
+  //   setPreviewCoverImage(URL.createObjectURL(file));
+  //   return false;
+  // };
 
   const [fileList, setFileList] = useState([]);
 
@@ -27,6 +39,47 @@ const EditPackage = () => {
     );
   };
   const { Option } = Select;
+
+  useEffect(() => {
+    if (singleData?.data) {
+      const d = singleData.data;
+
+      form.setFieldsValue({
+        title: d.title,
+        location: d.location,
+        duration: d.duration,
+        max_adult: d.max_adult,
+        child_min_age: d.child_min_age,
+        pickup: d.pickup,
+        availability: d.availability?.join(", "), // or keep array if using MultiSelect
+        activity: d.activity?.join(", "),
+        adultPrice: d.adultPrice.amount,
+        childPrice: d.childPrice.amount,
+        single_sitter_dune_buggy: d.single_sitter_dune_buggy.amount,
+        four_sitter_dune_buggy: d.four_sitter_dune_buggy.amount,
+        quad_bike: d.quad_bike.amount,
+        camel_bike: d.camel_bike.amount,
+        discount: d.discount,
+        drop_off: d.drop_off,
+        note: d.note,
+        refund_policy: d.refund_policy,
+        included: d.included?.join(", "),
+        excluded: d.excluded?.join(", "),
+        tour_plan: d.tour_plan?.join("\n"),
+        description: d.description,
+      });
+
+      // Prefill existing images for preview
+      setFileList(
+        d.images.map((url, index) => ({
+          uid: index.toString(),
+          name: `image-${index}`,
+          status: "done",
+          url,
+        }))
+      );
+    }
+  }, [singleData, form]);
   return (
     <div className="min-h-screen">
       <div className="flex justify-start items-center gap-2">
@@ -35,6 +88,7 @@ const EditPackage = () => {
       </div>
       <div className="flex justify-center items-center">
         <Form
+          form={form}
           name="Edit-new-package"
           initialValues={{ remember: true }}
           onFinish={onFinish}
@@ -42,7 +96,7 @@ const EditPackage = () => {
           className="w-[70%]  "
         >
           <div className="w-full flex justify-between items-center gap-5">
-            <div className="w-[50%]">
+            <div className="w-[100%]">
               <Form.Item
                 name="package-images"
                 label={<p className="text-md">Edit Packages Images</p>}
@@ -50,7 +104,7 @@ const EditPackage = () => {
               >
                 <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
                   <div className="flex gap-3 flex-wrap">
-                    {fileList.map((file) => (
+                    {/* {fileList.map((file) => (
                       <div
                         key={file.uid}
                         className="relative w-24 h-24 border border-neutral-300 rounded overflow-hidden"
@@ -61,6 +115,25 @@ const EditPackage = () => {
                           className="w-full h-full object-cover"
                           height={100}
                           width={100}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(file)}
+                          className="absolute top-1 right-1 bg-white rounded-full p-1 text-xs"
+                        >
+                          <FaTimes className="text-red-600" />
+                        </button>
+                      </div>
+                    ))} */}
+                    {fileList.map((file) => (
+                      <div
+                        key={file.uid}
+                        className="relative w-24 h-24 border border-neutral-300 rounded overflow-hidden"
+                      >
+                        <img
+                          src={file.url || URL.createObjectURL(file)} // ✅ show server or local image
+                          alt="preview"
+                          className="w-full h-full object-cover"
                         />
                         <button
                           type="button"
@@ -86,7 +159,7 @@ const EditPackage = () => {
               </Form.Item>
             </div>
 
-            <div className="w-[50%]">
+            {/* <div className="w-[50%]">
               <Form.Item
                 name="cover-image"
                 label={<p className=" text-md">Edit Cover Image</p>}
@@ -115,11 +188,11 @@ const EditPackage = () => {
                   </Upload>
                 </div>
               </Form.Item>
-            </div>
+            </div> */}
           </div>
 
           <Form.Item
-            name="name"
+            name="title"
             label={<p className=" text-md">Package Name</p>}
             style={{}}
           >
@@ -131,7 +204,7 @@ const EditPackage = () => {
             />
           </Form.Item>
           <Form.Item
-            name="name"
+            name="location"
             label={<p className=" text-md">Location Name</p>}
             style={{}}
           >
@@ -142,18 +215,7 @@ const EditPackage = () => {
               placeholder="Type Location name"
             />
           </Form.Item>
-          <Form.Item
-            name="email"
-            label={<p className=" text-md">Email</p>}
-            style={{}}
-          >
-            <Input
-              required
-              style={{ padding: "6px" }}
-              className=" text-md"
-              placeholder="Your Email"
-            />
-          </Form.Item>
+      
 
           <div className="flex justify-between items-center gap-2">
             <Form.Item
@@ -169,7 +231,7 @@ const EditPackage = () => {
               />
             </Form.Item>
             <Form.Item
-              name="max-adults"
+              name="max_adult"
               label={<p className=" text-md">Max Adults</p>}
             >
               <Input
@@ -180,7 +242,7 @@ const EditPackage = () => {
               />
             </Form.Item>
             <Form.Item
-              name="child-min-age"
+              name="child_min_age"
               label={<p className=" text-md">Child Min Age</p>}
             >
               <Input
@@ -252,7 +314,7 @@ const EditPackage = () => {
 
             <div className="flex justify-between items-center gap-4 mb-4">
               <h1 className="w-[250px]">Child Price</h1>
-              <Form.Item name="child-price" className="text-md w-[150px]">
+              <Form.Item name="childPrice" className="text-md w-[150px]">
                 <Input
                   required
                   style={{ padding: "6px" }}
@@ -269,7 +331,7 @@ const EditPackage = () => {
 
             <div className="flex justify-between items-center gap-4 mb-4">
               <h1 className="w-[250px]">Single Seater Dune Buggy 30 mins</h1>
-              <Form.Item name="single-seater" className="text-md w-[150px]">
+              <Form.Item name="single_sitter_dune_buggy" className="text-md w-[150px]">
                 <Input
                   required
                   style={{ padding: "6px" }}
@@ -286,7 +348,7 @@ const EditPackage = () => {
 
             <div className="flex justify-between items-center gap-4 mb-4">
               <h1 className="w-[250px]">20 Minutes Quad Bike</h1>
-              <Form.Item name="quad-bike" className="text-md w-[150px]">
+              <Form.Item name="quad_bike" className="text-md w-[150px]">
                 <Input
                   required
                   style={{ padding: "6px" }}
@@ -303,7 +365,7 @@ const EditPackage = () => {
 
             <div className="flex justify-between items-center gap-4 mb-4">
               <h1 className="w-[250px]">30 Minutes Camel Bike</h1>
-              <Form.Item name="camel-bike" className="text-md w-[150px]">
+              <Form.Item name="camel_bike" className="text-md w-[150px]">
                 <Input
                   required
                   style={{ padding: "6px" }}
@@ -338,7 +400,7 @@ const EditPackage = () => {
             <div className="flex justify-between items-center gap-4 mb-4">
               <h1 className="w-[250px]">4 Seater Dune Buggy 30 Mins</h1>
               <Form.Item
-                name="4-seater-dune-buggy"
+                name="four_sitter_dune_buggy"
                 className="text-md w-[150px]"
               >
                 <Input
@@ -357,7 +419,7 @@ const EditPackage = () => {
 
             <div className="flex justify-between items-center gap-4 mb-4">
               <h1 className="w-[250px]">Overall Discount</h1>
-              <Form.Item name="overall-discount" className="text-md w-[150px]">
+              <Form.Item name="discount" className="text-md w-[150px]">
                 <Input
                   required
                   style={{ padding: "6px" }}
@@ -387,7 +449,7 @@ const EditPackage = () => {
           </Form.Item>
 
           <Form.Item
-            name="expectedDropoff"
+            name="drop_off"
             label="Expected Drop off"
             className="text-md"
           >
@@ -400,7 +462,7 @@ const EditPackage = () => {
           </Form.Item>
 
           <Form.Item
-            name="importantNote"
+            name="note"
             label="Important Note"
             className="text-md"
           >
@@ -413,7 +475,7 @@ const EditPackage = () => {
           </Form.Item>
 
           <Form.Item
-            name="refundPolicy"
+            name="refund_policy"
             label="Cancellation & Refund Policy"
             className="text-md"
           >
@@ -426,8 +488,20 @@ const EditPackage = () => {
           </Form.Item>
 
           <Form.Item
-            name="includedExcluded"
-            label="Included / Excluded"
+            name="included"
+            label="Included "
+            className="text-md"
+          >
+            <Input.TextArea
+              required
+              style={{ padding: "6px" }}
+              className="text-md"
+              placeholder="Type here"
+            />
+          </Form.Item>
+          <Form.Item
+            name="excluded"
+            label="Excluded"
             className="text-md"
           >
             <Input.TextArea
@@ -438,7 +512,7 @@ const EditPackage = () => {
             />
           </Form.Item>
 
-          <Form.Item name="tourPlan" label="Tour Plan" className="text-md">
+          <Form.Item name="tour_plan" label="Tour Plan" className="text-md">
             <Input.TextArea
               required
               style={{ padding: "6px" }}

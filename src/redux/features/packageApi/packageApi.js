@@ -19,7 +19,7 @@ const packageApi = baseApi.injectEndpoints({
     }),
     deletPackge: builder.mutation({
       query: (_id) => ({
-        url: `/event/delete-event/${_id}`,
+        url: `/package/delete-package/${_id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["create-event"],
@@ -32,6 +32,13 @@ const packageApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["create-event"],
     }),
+    getSInglePackage: builder.query({
+      query: (_id) => ({
+        url: `/package/single-package/${_id}`,
+        method: "GET",
+      }),
+      providesTags: ["create-event"],
+    }),
   }),
 });
 
@@ -40,4 +47,5 @@ export const {
   useGetAllPackageQuery,
   useDeletPackgeMutation,
   useUpdatePackageMutation,
+  useGetSInglePackageQuery
 } = packageApi;

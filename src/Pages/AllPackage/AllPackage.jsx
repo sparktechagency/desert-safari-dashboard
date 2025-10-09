@@ -9,13 +9,13 @@ import {
   useCreatePackageMutation,
   useDeletPackgeMutation,
   useGetAllPackageQuery,
-  useUpdatePackageMutation,
+
 } from "../../redux/features/packageApi/packageApi";
 
 const AllPackage = () => {
   const { data: getAllpackageData } = useGetAllPackageQuery();
   const [deletPackge] = useDeletPackgeMutation();
-  const [UpdatePackage] = useUpdatePackageMutation();
+
   const [createPackage] = useCreatePackageMutation();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -41,6 +41,7 @@ const AllPackage = () => {
   const handleEditPackage = (pkgId) => navigate(`/edit-package/${pkgId}`);
 
   const handleDelete = (pkgId) => {
+    console.log(pkgId);
     Swal.fire({
       title: "Are you sure?",
       text: "You won’t be able to revert this!",
@@ -121,13 +122,13 @@ const AllPackage = () => {
             <div className="absolute top-5 right-6 flex gap-3 text-gray-600">
               <button
                 onClick={() => handleEditPackage(pkg._id)}
-                className="hover:text-blue-500"
+                className="hover:text-blue-500 text-blue-500"
               >
                 <FaEdit />
               </button>
               <button
                 onClick={() => handleDelete(pkg._id)}
-                className="hover:text-red-500"
+                className="hover:text-red-500 text-red-500"
               >
                 <FaTrash />
               </button>
