@@ -4,42 +4,32 @@ import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import GobackButton from "../../Components/Shared/GobackButton";
 import Swal from "sweetalert2";
-
-const faqData = [
-  {
-    question: "What are the best tours offered by Oasis Palm Tourism in Dubai?",
-    answer:
-      "Here is a detailed description of the best tours that Oasis Palm Tourism offers, including desert safaris, city tours, and more.",
-  },
-  {
-    question: "Is hotel pickup and drop-off included in your Dubai tours?",
-    answer:
-      "Yes, most of our Dubai tours include hotel pickup and drop-off for your convenience.",
-  },
-];
+import { useGetallfaqQuery } from "../../redux/features/faqApi/faqApi";
 
 const Faq = () => {
   const [openIndex, setOpenIndex] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
- 
   const [editIndex, setEditIndex] = useState(null);
   const [newFaq, setNewFaq] = useState({ question: "", answer: "" });
-
   const toggleAnswer = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
-const [form] = Form.useForm();
+
+  const { data: getAllFaqData } = useGetallfaqQuery();
+  console.log(getAllFaqData?.data?.result);
+  const faqData = getAllFaqData?.data?.result || [];
+  const [form] = Form.useForm();
   const [editForm] = Form.useForm();
 
   const handleAddFaq = () => {
     faqData.push(newFaq);
-    setShowAddModal(false); 
+    setShowAddModal(false);
   };
 
   const handleEditFaq = () => {
-    faqData[editIndex] = newFaq; 
-    setShowEditModal(false); 
+    faqData[editIndex] = newFaq;
+    setShowEditModal(false);
   };
 
   const handleDeleteFaq = () => {
@@ -79,7 +69,7 @@ const [form] = Form.useForm();
           <div key={index} className="bg-white p-4 shadow rounded-lg">
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-medium text-gray-800">
-                {faq.question}
+                {faq.Ques}
               </h3>
               <Button
                 type="text"
@@ -92,7 +82,7 @@ const [form] = Form.useForm();
 
             {openIndex === index && (
               <div className="mt-4">
-                <p className="text-gray-700">{faq.answer}</p>
+                <p className="text-gray-700">{faq.Answere}</p>
               </div>
             )}
 
@@ -104,15 +94,13 @@ const [form] = Form.useForm();
                   setShowEditModal(true);
                 }}
               />
-              <FaTrash
-               onClick={handleDeleteFaq}
-              />
+              <FaTrash onClick={handleDeleteFaq} />
             </div>
           </div>
         ))}
       </div>
 
-     <Modal
+      <Modal
         title="Add FAQ"
         open={showAddModal}
         onCancel={() => setShowAddModal(false)}
