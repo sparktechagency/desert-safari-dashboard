@@ -1,39 +1,49 @@
-import { Input, message, Modal, Upload, Form } from "antd";
-import img1 from "../../assets/image/1.png";
+import { Input, message, Modal, Upload, Form, Pagination } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { FaEdit, FaImage, FaTrash } from "react-icons/fa";
 import GobackButton from "../../Components/Shared/GobackButton";
 import Swal from "sweetalert2";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import {
+  useCreateBlogsMutation,
+  useDeleteBlogsMutation,
+  useGetallBlogsQuery,
+  useUpdateBlogsMutation,
+} from "../../redux/features/blogApi/blogApi";
 
 const Blogs = () => {
-  const blogsData = [
-    {
-      title: "The Ultimate Guide to Dubai Desert Safari What to Expect",
-      description:
-        "Experience the magic of the Arabian desert with our detailed guide. From thrilling dune bashing to serene camel rides, discover every adventure waiting for you.",
-      imageUrl: img1,
-    },
-  ];
-
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [editorValue, setEditorValue] = useState("");
   const [editingBlog, setEditingBlog] = useState(null);
-
   const [previewCoverImage, setPreviewCoverImage] = useState(null);
   const [Cover, setCover] = useState(null);
-
-  // For Edit Blog
   const [previewEditImage, setPreviewEditImage] = useState(null);
   const [EditCover, setEditCover] = useState(null);
+  const [pageSize, setPageSize] = useState(10);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [searchText, setSearchText] = useState();
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
+  const [createBlogs] = useCreateBlogsMutation();
+  const [updateBlogs] = useUpdateBlogsMutation();
+  const [deleteBlogs] = useDeleteBlogsMutation();
 
+  const { data: allBlogsData, refetch } = useGetallBlogsQuery({
+    page: pageNumber,
+    limit: pageSize,
+    title: searchText || undefined,
+  });
+
+  const blogsData = allBlogsData?.data?.result;
+  console.log(allBlogsData);
+
+  useEffect(() => {
+    refetch(); // refresh data when search, page or pageSize changes
+  }, [pageNumber, pageSize, searchText, refetch]);
+
+  const showModal = () => setIsModalVisible(true);
   const handleCancel = () => {
     setIsModalVisible(false);
     setEditorValue("");
@@ -43,8 +53,8 @@ const Blogs = () => {
 
   const showEditModal = (blog) => {
     setEditingBlog(blog);
-    setEditorValue(blog.description);
-    setPreviewEditImage(blog.imageUrl);
+    setEditorValue(blog.article);
+    setPreviewEditImage(blog.image);
     setIsEditModalVisible(true);
   };
 
@@ -55,7 +65,7 @@ const Blogs = () => {
     setEditCover(null);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async (_id) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -64,23 +74,43 @@ const Blogs = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
+        await deleteBlogs(_id);
+        refetch();
         Swal.fire("Deleted!", "Your blog has been deleted.", "success");
       }
     });
   };
 
-  const handleFinish = (values) => {
-    console.log("Blog Data:", { ...values, description: editorValue });
-    message.success("Blog added successfully!");
-    handleCancel();
+  const handleFinish = async (values) => {
+    try {
+      const formData = new FormData();
+      formData.append("title", values.title);
+      formData.append("article", editorValue);
+      if (Cover) formData.append("image", Cover);
+      await createBlogs(formData);
+      handleCancel();
+      refetch();
+      message.success("Blog created successfully!");
+    } catch (error) {
+      message.error(error.message || "Failed to create blog");
+    }
   };
 
-  const handleEditFinish = (values) => {
-    console.log("Edited Blog Data:", { ...values, description: editorValue });
-    message.success("Blog updated successfully!");
-    handleEditCancel();
+  const handleEditFinish = async (values) => {
+    try {
+      const formData = new FormData();
+      formData.append("title", values.title);
+      formData.append("article", editorValue);
+      if (EditCover) formData.append("image", EditCover);
+      await updateBlogs({ _id: editingBlog._id, data: formData });
+      handleEditCancel();
+      refetch();
+      message.success("Blog updated successfully!");
+    } catch (error) {
+      message.error(error.message || "Failed to update blog");
+    }
   };
 
   const handleCoverBeforeUpload = (file) => {
@@ -109,6 +139,8 @@ const Blogs = () => {
             size="large"
             prefix={<SearchOutlined style={{ cursor: "pointer" }} />}
             className="w-60"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
           />
           <button
             onClick={showModal}
@@ -120,23 +152,24 @@ const Blogs = () => {
       </div>
 
       <div className="space-y-3">
-        {blogsData.map((blog, index) => (
+        {blogsData?.map((blog, index) => (
           <div
             key={index}
             className="flex items-center bg-secondary p-3 rounded-md shadow-sm"
           >
             <div className="w-[15%]">
               <img
-                src={blog.imageUrl}
+                src={blog.image}
                 alt={blog.title}
                 className="w-32 h-20 object-cover rounded"
               />
             </div>
             <div className="w-[65%] px-3">
               <h2 className="text-lg font-semibold">{blog.title}</h2>
-              <p className="text-sm text-gray-700 line-clamp-2">
-                {blog.description}
-              </p>
+              <p
+                className="text-sm text-gray-700 line-clamp-2"
+                dangerouslySetInnerHTML={{ __html: blog.article }}
+              ></p>
             </div>
             <div className="w-[20%] flex justify-end items-center gap-4 text-gray-600">
               <button
@@ -145,7 +178,10 @@ const Blogs = () => {
               >
                 <FaEdit />
               </button>
-              <button className="hover:text-red-500" onClick={handleDelete}>
+              <button
+                className="hover:text-red-500"
+                onClick={() => handleDelete(blog._id)}
+              >
                 <FaTrash />
               </button>
             </div>
@@ -153,6 +189,7 @@ const Blogs = () => {
         ))}
       </div>
 
+      {/* Add Blog Modal */}
       <Modal
         title="Add Blog"
         open={isModalVisible}
@@ -216,7 +253,7 @@ const Blogs = () => {
               placeholder="Write your blog here..."
             />
           </Form.Item>
-          <Form.Item type="submit">
+          <Form.Item>
             <button
               type="submit"
               className="w-full bg-primary text-white py-3 rounded-md"
@@ -227,6 +264,7 @@ const Blogs = () => {
         </Form>
       </Modal>
 
+      {/* Edit Blog Modal */}
       <Modal
         title="Edit Blog"
         open={isEditModalVisible}
@@ -237,9 +275,7 @@ const Blogs = () => {
         <Form
           layout="vertical"
           onFinish={handleEditFinish}
-          initialValues={{
-            title: editingBlog?.title,
-          }}
+          initialValues={{ title: editingBlog?.title }}
         >
           <div className="flex justify-between items-center gap-5">
             <div className="w-[50%]">
@@ -296,7 +332,7 @@ const Blogs = () => {
               placeholder="Write your blog here..."
             />
           </Form.Item>
-          <Form.Item type="submit">
+          <Form.Item>
             <button
               type="submit"
               className="w-full bg-primary text-white py-3 rounded-md"
@@ -306,6 +342,18 @@ const Blogs = () => {
           </Form.Item>
         </Form>
       </Modal>
+
+      {/* Pagination */}
+      <Pagination
+        total={allBlogsData?.data?.total || 0}
+        pageSize={pageSize}
+        current={pageNumber}
+        onChange={(page, size) => {
+          setPageNumber(page);
+          setPageSize(size);
+        }}
+        className="mt-5 flex justify-center"
+      />
     </div>
   );
 };
