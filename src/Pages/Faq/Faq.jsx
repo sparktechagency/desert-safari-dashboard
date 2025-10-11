@@ -4,35 +4,72 @@ import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import GobackButton from "../../Components/Shared/GobackButton";
 import Swal from "sweetalert2";
-import { useGetallfaqQuery } from "../../redux/features/faqApi/faqApi";
+import {
+  useCreateFaqMutation,
+  useDeleteFaqMutation,
+  useGetallfaqQuery,
+  useUpdateFaqMutation,
+} from "../../redux/features/faqApi/faqApi";
 
 const Faq = () => {
   const [openIndex, setOpenIndex] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
-  const [newFaq, setNewFaq] = useState({ question: "", answer: "" });
-  const toggleAnswer = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
+  const [editFaqId, setEditFaqId] = useState(null);
+  console.log(editFaqId);
 
-  const { data: getAllFaqData } = useGetallfaqQuery();
-  console.log(getAllFaqData?.data?.result);
+  const { data: getAllFaqData, refetch } = useGetallfaqQuery();
+  const [createFaq] = useCreateFaqMutation();
+  const [deleteFaq] = useDeleteFaqMutation();
+  const [updateFaq] = useUpdateFaqMutation();
+
   const faqData = getAllFaqData?.data?.result || [];
   const [form] = Form.useForm();
   const [editForm] = Form.useForm();
 
-  const handleAddFaq = () => {
-    faqData.push(newFaq);
-    setShowAddModal(false);
+  const toggleAnswer = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
   };
 
-  const handleEditFaq = () => {
-    faqData[editIndex] = newFaq;
-    setShowEditModal(false);
+  const onAddFinish = async (values) => {
+    const payload = {
+      Ques: values.question,
+      Answere: values.answer,
+    };
+
+    try {
+      await createFaq(payload).unwrap();
+      Swal.fire("Success!", "FAQ added successfully!", "success");
+      form.resetFields();
+      setShowAddModal(false);
+      refetch();
+    } catch (error) {
+      Swal.fire(error?.data?.message || "Error!", "Failed to add FAQ", "error");
+    }
   };
 
-  const handleDeleteFaq = () => {
+  const onEditFinish = async (values) => {
+    const payload = {
+      Ques: values.question,
+      Answere: values.answer,
+    };
+
+    try {
+      await updateFaq({ _id: editFaqId, data: payload }).unwrap();
+      Swal.fire("Success!", "FAQ updated successfully!", "success");
+      editForm.resetFields();
+      setShowEditModal(false);
+      refetch();
+    } catch (error) {
+      Swal.fire(
+        error?.data?.message || "Error!",
+        "Failed to update FAQ",
+        "error"
+      );
+    }
+  };
+
+  const handleDeleteFaq = (_id) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -41,9 +78,19 @@ const Faq = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        Swal.fire("Deleted!", "Your blog has been deleted.", "success");
+        try {
+          await deleteFaq(_id).unwrap();
+          Swal.fire("Deleted!", "FAQ has been deleted.", "success");
+          refetch();
+        } catch (error) {
+          Swal.fire(
+            error?.data?.message || "Error!",
+            "Failed to delete FAQ",
+            "error"
+          );
+        }
       }
     });
   };
@@ -57,7 +104,6 @@ const Faq = () => {
         </div>
         <button
           className=" bg-primary px-6 py-2 text-white rounded-md"
-          icon={<PlusOutlined />}
           onClick={() => setShowAddModal(true)}
         >
           Add FAQ
@@ -66,11 +112,9 @@ const Faq = () => {
 
       <div className="space-y-4">
         {faqData.map((faq, index) => (
-          <div key={index} className="bg-white p-4 shadow rounded-lg">
+          <div key={faq._id} className="bg-white p-4 shadow rounded-lg">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-medium text-gray-800">
-                {faq.Ques}
-              </h3>
+              <h3 className="text-xl font-medium text-gray-800">{faq.Ques}</h3>
               <Button
                 type="text"
                 icon={
@@ -89,12 +133,15 @@ const Faq = () => {
             <div className="flex justify-end space-x-4 mt-4">
               <FaEdit
                 onClick={() => {
-                  setNewFaq(faq);
-                  setEditIndex(index);
+                  setEditFaqId(faq._id);
+                  editForm.setFieldsValue({
+                    question: faq.Ques,
+                    answer: faq.Answere,
+                  });
                   setShowEditModal(true);
                 }}
               />
-              <FaTrash onClick={handleDeleteFaq} />
+              <FaTrash onClick={() => handleDeleteFaq(faq._id)} />
             </div>
           </div>
         ))}
@@ -104,16 +151,9 @@ const Faq = () => {
         title="Add FAQ"
         open={showAddModal}
         onCancel={() => setShowAddModal(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setShowAddModal(false)}>
-            Cancel
-          </Button>,
-          <Button key="confirm" type="primary" onClick={handleAddFaq}>
-            Confirm
-          </Button>,
-        ]}
+        footer={null}
       >
-        <Form layout="vertical" form={form}>
+        <Form layout="vertical" form={form} onFinish={onAddFinish}>
           <Form.Item
             name="question"
             label="Question"
@@ -128,6 +168,9 @@ const Faq = () => {
           >
             <Input.TextArea rows={4} placeholder="Enter answer" />
           </Form.Item>
+          <Button type="primary" htmlType="submit" block>
+            Add FAQ
+          </Button>
         </Form>
       </Modal>
 
@@ -135,16 +178,9 @@ const Faq = () => {
         title="Edit FAQ"
         open={showEditModal}
         onCancel={() => setShowEditModal(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setShowEditModal(false)}>
-            Cancel
-          </Button>,
-          <Button key="confirm" type="primary" onClick={handleEditFaq}>
-            Save
-          </Button>,
-        ]}
+        footer={null}
       >
-        <Form layout="vertical" form={editForm}>
+        <Form layout="vertical" form={editForm} onFinish={onEditFinish}>
           <Form.Item
             name="question"
             label="Question"
@@ -159,6 +195,9 @@ const Faq = () => {
           >
             <Input.TextArea rows={4} placeholder="Enter answer" />
           </Form.Item>
+          <Button type="primary" htmlType="submit" block>
+            Save Changes
+          </Button>
         </Form>
       </Modal>
     </div>
