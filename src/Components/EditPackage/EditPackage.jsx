@@ -1,31 +1,31 @@
 import { DatePicker, Form, Input, message, Select, Upload } from "antd";
 import GobackButton from "../Shared/GobackButton";
-import { FaImage, FaPlus, FaTimes } from "react-icons/fa";
+import {  FaPlus, FaTimes } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import {
   useGetSInglePackageQuery,
   useUpdatePackageMutation,
 } from "../../redux/features/packageApi/packageApi";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import moment from "moment";
 
 const EditPackage = () => {
   const [form] = Form.useForm();
   const [UpdatePackage] = useUpdatePackageMutation();
   const { id } = useParams();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const { data: singleData } = useGetSInglePackageQuery(id);
   console.log("single package", singleData?.data);
 
-  const [previewCoverImage, setPreviewCoverImage] = useState(null);
-  const [Cover, setCover] = useState(null);
+  // const [previewCoverImage, setPreviewCoverImage] = useState(null);
+  // const [Cover, setCover] = useState(null);
 
-  const handleCoverBeforeUpload = (file) => {
-    setCover(file);
-    setPreviewCoverImage(URL.createObjectURL(file));
-    return false;
-  };
+  // const handleCoverBeforeUpload = (file) => {
+  //   setCover(file);
+  //   setPreviewCoverImage(URL.createObjectURL(file));
+  //   return false;
+  // };
 
   const [fileList, setFileList] = useState([]);
 
@@ -72,6 +72,7 @@ const EditPackage = () => {
         excluded: d.excluded?.join(", "),
         tour_plan: d.tour_plan?.join("\n"),
         description: d.description,
+        coverImage: d.coverImage,
       });
 
       // Prefill existing images for preview
@@ -157,18 +158,21 @@ const EditPackage = () => {
       formData.append("data", JSON.stringify(data));
 
       // ✅ Single Cover Image
-      if (Cover) {
-        formData.append("coverImage", Cover);
-      }
+      // if (Cover) {
+      //   formData.append("coverImage", Cover);
+      // }
+
+     
+
       (fileList || [])
         .map((f) => f.originFileObj ?? f)
         .forEach((file) => {
-          formData.append("image", file, file.name || "image");
+          formData.append("images", file, file.name || "image");
         });
 
-      console.log(...formData);
+      // console.log(...formData);
 
-      const res = await UpdatePackage(formData).unwrap();
+      const res = await UpdatePackage({ _id: id, data: formData }).unwrap();
 
       if (res?.success) {
         message.success("Package created successfully!");
@@ -201,7 +205,7 @@ const EditPackage = () => {
           <div className="w-full flex justify-between items-center gap-5">
             <div className="w-[100%]">
               <Form.Item
-                name="package-images"
+                name="images"
                 label={<p className="text-md">Edit Packages Images</p>}
               >
                 <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
@@ -212,28 +216,7 @@ const EditPackage = () => {
                         className="relative w-24 h-24 border border-neutral-300 rounded overflow-hidden"
                       >
                         <img
-                          src={URL.createObjectURL(file)}
-                          alt="preview"
-                          className="w-full h-full object-cover"
-                          height={100}
-                          width={100}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(file)}
-                          className="absolute top-1 right-1 bg-white rounded-full p-1 text-xs"
-                        >
-                          <FaTimes className="text-red-600" />
-                        </button>
-                      </div>
-                    ))}
-                    {fileList.map((file) => (
-                      <div
-                        key={file.uid}
-                        className="relative w-24 h-24 border border-neutral-300 rounded overflow-hidden"
-                      >
-                        <img
-                          src={file.url || URL.createObjectURL(file)} // ✅ show server or local image
+                          src={file.url || URL.createObjectURL(file)}
                           alt="preview"
                           className="w-full h-full object-cover"
                         />
@@ -261,9 +244,9 @@ const EditPackage = () => {
               </Form.Item>
             </div>
 
-            <div className="w-[50%]">
+            {/* <div className="w-[50%]">
               <Form.Item
-                name="cover-image"
+                name="coverImage"
                 label={<p className=" text-md">Edit Cover Image</p>}
               >
                 <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
@@ -290,7 +273,7 @@ const EditPackage = () => {
                   </Upload>
                 </div>
               </Form.Item>
-            </div>
+            </div> */}
           </div>
 
           <Form.Item
@@ -355,6 +338,7 @@ const EditPackage = () => {
                 placeholder="Pickup"
               />
             </Form.Item>
+
             <Form.Item label={<p className="text-md">Availability</p>}>
               <div className="flex gap-2">
                 <Form.Item
@@ -374,7 +358,24 @@ const EditPackage = () => {
                 <Form.Item
                   name={["availability", "end"]}
                   dependencies={[["availability", "start"]]}
-                  rules={[{ required: true, message: "End date is required" }]}
+                  rules={[
+                    { required: true, message: "End date is required" },
+                    // ({ getFieldValue }) => ({
+                    //   validator(_, value) {
+                    //     const start = getFieldValue(["availability", "start"]);
+                    //     if (
+                    //       !start ||
+                    //       !value ||
+                    //       value.isSameOrAfter(start, "day")
+                    //     ) {
+                    //       return Promise.resolve();
+                    //     }
+                    //     return Promise.reject(
+                    //       new Error("End date must be after start date")
+                    //     );
+                    //   },
+                    // }),
+                  ]}
                   className="mb-0"
                 >
                   <DatePicker
@@ -385,6 +386,7 @@ const EditPackage = () => {
                 </Form.Item>
               </div>
             </Form.Item>
+
             <Form.Item
               name="activity"
               label={<p className="text-md">Activity</p>}
