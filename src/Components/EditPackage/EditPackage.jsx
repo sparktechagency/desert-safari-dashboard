@@ -1,12 +1,13 @@
-import { Form, Input, message, Select, Upload } from "antd";
+import { DatePicker, Form, Input, message, Select, Upload } from "antd";
 import GobackButton from "../Shared/GobackButton";
-import { FaPlus, FaTimes } from "react-icons/fa";
+import { FaImage, FaPlus, FaTimes } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import {
   useGetSInglePackageQuery,
   useUpdatePackageMutation,
 } from "../../redux/features/packageApi/packageApi";
 import { useNavigate, useParams } from "react-router-dom";
+import moment from "moment";
 
 const EditPackage = () => {
   const [form] = Form.useForm();
@@ -51,7 +52,11 @@ const EditPackage = () => {
         max_adult: d.max_adult,
         child_min_age: d.child_min_age,
         pickup: d.pickup,
-        availability: d.availability?.join(", "), // or keep array if using MultiSelect
+        // availability: d.availability?.join(", "),
+        availability: {
+          start: d.availability?.start ? moment(d.availability.start) : null,
+          end: d.availability?.end ? moment(d.availability.end) : null,
+        },
         activity: d.activity?.join(", "),
         adultPrice: d.adultPrice.amount,
         childPrice: d.childPrice.amount,
@@ -81,113 +86,100 @@ const EditPackage = () => {
     }
   }, [singleData, form]);
 
-  const onFinish = (values) => {
-    const formData = new FormData();
-
-    try {
-      // Ensure values.activity is an array
-      const activity = Array.isArray(values.activity) ? values.activity : [];
-      formData.append("activity", activity.join(", "));
-
-      // Ensure values.availability is an array
-      const availability = Array.isArray(values.availability)
-        ? values.availability
-        : [];
-      formData.append("availability", availability.join(", "));
-
-      // Ensure values.included is an array
-      const included = Array.isArray(values.included) ? values.included : [];
-      formData.append("included", included.join(", "));
-
-      // Ensure values.excluded is an array
-      const excluded = Array.isArray(values.excluded) ? values.excluded : [];
-      formData.append("excluded", excluded.join(", "));
-
-      // Ensure values.tour_plan is an array (if needed)
-      const tourPlan = Array.isArray(values.tour_plan) ? values.tour_plan : [];
-      formData.append("tour_plan", tourPlan.join("\n"));
-
-      // Handle price fields (e.g., camel_bike, quad_bike, etc.)
-      const camelBikeAmount = Number(values.camel_bike_amount);
-      const camelBikeCurrency = values.camel_bike_currency || "AED";
-      formData.append(
-        "camel_bike_amount",
-        isNaN(camelBikeAmount) ? 0 : camelBikeAmount
-      );
-      formData.append("camel_bike_currency", camelBikeCurrency);
-
-      const quadBikeAmount = Number(values.quad_bike_amount);
-      const quadBikeCurrency = values.quad_bike_currency || "AED";
-      formData.append(
-        "quad_bike_amount",
-        isNaN(quadBikeAmount) ? 0 : quadBikeAmount
-      );
-      formData.append("quad_bike_currency", quadBikeCurrency);
-
-      const fourSitterAmount = Number(values.four_sitter_dune_buggy_amount);
-      const fourSitterCurrency =
-        values.four_sitter_dune_buggy_currency || "AED";
-      formData.append(
-        "four_sitter_dune_buggy_amount",
-        isNaN(fourSitterAmount) ? 0 : fourSitterAmount
-      );
-      formData.append("four_sitter_dune_buggy_currency", fourSitterCurrency);
-
-      const singleSitterAmount = Number(values.single_sitter_dune_buggy_amount);
-      const singleSitterCurrency =
-        values.single_sitter_dune_buggy_currency || "AED";
-      formData.append(
-        "single_sitter_dune_buggy_amount",
-        isNaN(singleSitterAmount) ? 0 : singleSitterAmount
-      );
-      formData.append(
-        "single_sitter_dune_buggy_currency",
-        singleSitterCurrency
-      );
-
-      const childPriceAmount = Number(values.childPrice_amount);
-      const childPriceCurrency = values.childPrice_currency || "AED";
-      formData.append(
-        "childPrice_amount",
-        isNaN(childPriceAmount) ? 0 : childPriceAmount
-      );
-      formData.append("childPrice_currency", childPriceCurrency);
-
-      const adultPriceAmount = Number(values.adultPrice_amount);
-      const adultPriceCurrency = values.adultPrice_currency || "AED";
-      formData.append(
-        "adultPrice_amount",
-        isNaN(adultPriceAmount) ? 0 : adultPriceAmount
-      );
-      formData.append("adultPrice_currency", adultPriceCurrency);
-
-      // Append other fields
-      formData.append("title", values.title);
-      formData.append("location", values.location);
-      formData.append("duration", values.duration);
-      formData.append("max_adult", values.max_adult);
-      formData.append("child_min_age", values.child_min_age);
-      formData.append("pickup", values.pickup);
-      formData.append("discount", values.discount);
-      formData.append("drop_off", values.drop_off);
-      formData.append("note", values.note);
-      formData.append("refund_policy", values.refund_policy);
-      formData.append("description", values.description);
-
-      // Handle image uploads
-      fileList.forEach((file) => {
-        if (file.originFileObj) {
-          formData.append("images", file.originFileObj);
+  const onFinish = async (values) => {
+    const availabilityObj = values.availability
+      ? {
+          start: values.availability.start?.format("YYYY-MM-DD"),
+          end: values.availability.end?.format("YYYY-MM-DD"),
         }
-      });
+      : undefined;
+    const allowedActivities = [
+      "Dune Bashing",
+      "Camel Ride",
+      "Quad Biking",
+      "Dune Buggy Ride",
+      "Single Sitter Dune Buggy Ride",
+      "4 Sitter Dune Buggy Ride",
+      "Tea, Coffee, & Soft Drinks",
+      "Henna Tattoos",
+      "Fire Show in the Desert",
+      "Arabic Costumes",
+      "Shisha Smoking",
+      "Falcon To Take Pictures",
+      "Sand-Boarding",
+      "Belly Dance Show",
+    ];
 
-      // Call the mutation to update the package
-      UpdatePackage({ _id: id, data: formData });
-      navigate("/pacakes");
+    const formattedActivity = values.activity
+      ? Array.isArray(values.activity)
+        ? values.activity.filter((item) => allowedActivities.includes(item))
+        : allowedActivities.includes(values.activity)
+        ? [values.activity]
+        : []
+      : [];
+    const imageUrls = fileList.map((file) => file.uploadedUrl);
+    console.log(imageUrls);
+    try {
+      const formData = new FormData();
+      const data = {
+        title: values.title,
+        location: values.location,
+        duration: values.duration,
+        max_adult: Number(values.max_adult) || 0,
+        child_min_age: Number(values.child_min_age) || 0,
+        pickup: values.pickup,
+        drop_off: values.drop_off,
+
+        availability: availabilityObj,
+
+        activity: formattedActivity,
+        adultPrice: { amount: Number(values.adultPrice) || 0, currency: "AED" },
+        childPrice: { amount: Number(values.childPrice) || 0, currency: "AED" },
+        single_sitter_dune_buggy: {
+          amount: Number(values.single_sitter_dune_buggy) || 0,
+          currency: "AED",
+        },
+        four_sitter_dune_buggy: {
+          amount: Number(values.four_sitter_dune_buggy) || 0,
+          currency: "AED",
+        },
+        quad_bike: { amount: Number(values.quad_bike) || 0, currency: "AED" },
+        camel_bike: { amount: Number(values.camel_bike) || 0, currency: "AED" },
+        discount: Number(values.discount) || 0,
+        note: values.note,
+        refund_policy: values.refund_policy,
+        included: values.included ? values.included.split("\n") : [],
+        excluded: values.excluded ? values.excluded.split("\n") : [],
+        tour_plan: values.tour_plan ? values.tour_plan.split("\n") : [],
+        description: values.description,
+      };
+      console.log(data);
+      formData.append("data", JSON.stringify(data));
+
+      // ✅ Single Cover Image
+      if (Cover) {
+        formData.append("coverImage", Cover);
+      }
+      (fileList || [])
+        .map((f) => f.originFileObj ?? f)
+        .forEach((file) => {
+          formData.append("image", file, file.name || "image");
+        });
+
+      console.log(...formData);
+
+      const res = await UpdatePackage(formData).unwrap();
+
+      if (res?.success) {
+        message.success("Package created successfully!");
+        form.resetFields();
+        setFileList([]);
+      } else {
+        message.error(res?.message || "Failed to create package");
+      }
     } catch (error) {
-      message.error(
-        error?.message || "An error occurred while submitting the form."
-      );
+      console.error("Error creating package:", error);
+      message.error("Something went wrong. Please try again.");
     }
   };
 
@@ -269,7 +261,7 @@ const EditPackage = () => {
               </Form.Item>
             </div>
 
-            {/* <div className="w-[50%]">
+            <div className="w-[50%]">
               <Form.Item
                 name="cover-image"
                 label={<p className=" text-md">Edit Cover Image</p>}
@@ -298,7 +290,7 @@ const EditPackage = () => {
                   </Upload>
                 </div>
               </Form.Item>
-            </div> */}
+            </div>
           </div>
 
           <Form.Item
@@ -363,15 +355,35 @@ const EditPackage = () => {
                 placeholder="Pickup"
               />
             </Form.Item>
-            <Form.Item
-              name="availability"
-              label={<p className=" text-md">Availability</p>}
-            >
-              <Input
-                style={{ padding: "6px" }}
-                className=" text-md"
-                placeholder="Availability"
-              />
+            <Form.Item label={<p className="text-md">Availability</p>}>
+              <div className="flex gap-2">
+                <Form.Item
+                  name={["availability", "start"]}
+                  rules={[
+                    { required: true, message: "Start date is required" },
+                  ]}
+                  className="mb-0"
+                >
+                  <DatePicker
+                    style={{ padding: "6px" }}
+                    className="text-md"
+                    placeholder="Start Date"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name={["availability", "end"]}
+                  dependencies={[["availability", "start"]]}
+                  rules={[{ required: true, message: "End date is required" }]}
+                  className="mb-0"
+                >
+                  <DatePicker
+                    style={{ padding: "6px" }}
+                    className="text-md"
+                    placeholder="End Date"
+                  />
+                </Form.Item>
+              </div>
             </Form.Item>
             <Form.Item
               name="activity"
