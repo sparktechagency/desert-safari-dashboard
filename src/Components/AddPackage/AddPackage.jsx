@@ -8,10 +8,12 @@ const AddPackage = () => {
   const [createPackage] = useCreatePackageMutation();
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
+  console.log("fileList", fileList);
   const { Option } = Select;
 
   const handleBeforeUpload = (file) => {
     setFileList((prevList) => [...prevList, file]);
+
     return false;
   };
 
@@ -23,7 +25,7 @@ const AddPackage = () => {
 
   const [previewCoverImage, setPreviewCoverImage] = useState(null);
   const [Cover, setCover] = useState(null);
-  console.log(Cover);
+  // console.log(Cover);
 
   const handleCoverBeforeUpload = (file) => {
     setCover(file);
@@ -62,7 +64,8 @@ const AddPackage = () => {
         ? [values.activity]
         : []
       : [];
-
+    const imageUrls = fileList.map((file) => file.uploadedUrl);
+    console.log(imageUrls);
     try {
       const formData = new FormData();
       const data = {
@@ -96,8 +99,6 @@ const AddPackage = () => {
         excluded: values.excluded ? values.excluded.split("\n") : [],
         tour_plan: values.tour_plan ? values.tour_plan.split("\n") : [],
         description: values.description,
-        // images: fileList || [], // array of images (you can append file objects or URLs as needed)
-        // coverImage: Cover || null, // single cover image (you can append file object or URL as needed)
       };
       console.log(data);
       formData.append("data", JSON.stringify(data));
@@ -106,9 +107,13 @@ const AddPackage = () => {
       if (Cover) {
         formData.append("coverImage", Cover);
       }
-      if (fileList) {
-        formData.append("images", fileList || []);
-      }
+      (fileList || [])
+        .map((f) => f.originFileObj ?? f)
+        .forEach((file) => {
+          formData.append("image", file, file.name || "image");
+        });
+
+     
 
       console.log(...formData);
 
@@ -145,39 +150,18 @@ const AddPackage = () => {
           <div className="w-full flex justify-between items-center gap-5">
             <div className="w-[50%]">
               <Form.Item
-                name="package-images"
+                name="images"
                 label={<p className="text-md">Edit Packages Images</p>}
               >
                 <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
                   <div className="flex gap-3 flex-wrap">
-                    {/* {fileList.map((file) => (
-                      <div
-                        key={file.uid}
-                        className="relative w-24 h-24 border border-neutral-300 rounded overflow-hidden"
-                      >
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt="preview"
-                          className="w-full h-full object-cover"
-                          height={100}
-                          width={100}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(file)}
-                          className="absolute top-1 right-1 bg-white rounded-full p-1 text-xs"
-                        >
-                          <FaTimes className="text-red-600" />
-                        </button>
-                      </div>
-                    ))} */}
                     {fileList.map((file) => (
                       <div
                         key={file.uid}
                         className="relative w-24 h-24 border border-neutral-300 rounded overflow-hidden"
                       >
                         <img
-                          src={file.url || URL.createObjectURL(file)} // ✅ show server or local image
+                          src={file.url || URL.createObjectURL(file)}
                           alt="preview"
                           className="w-full h-full object-cover"
                         />

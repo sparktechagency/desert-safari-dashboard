@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { Input, DatePicker, Modal, Pagination, ConfigProvider } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
@@ -6,7 +7,6 @@ import Swal from "sweetalert2";
 import GobackButton from "../../Components/Shared/GobackButton";
 import { useNavigate } from "react-router-dom";
 import {
-  useCreatePackageMutation,
   useDeletPackgeMutation,
   useGetAllPackageQuery,
 } from "../../redux/features/packageApi/packageApi";
@@ -18,9 +18,8 @@ const AllPackage = () => {
     page: currentPage,
     limit: pageSize,
   });
+  console.log(getAllpackageData?.data?.meta?.total);
   const [deletPackge] = useDeletPackgeMutation();
-
-  const [createPackage] = useCreatePackageMutation();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPackage, setSelectedPackage] = useState(null);
@@ -299,22 +298,13 @@ const AllPackage = () => {
       </Modal>
 
       {/* pagination: */}
-      <ConfigProvider
-        theme={{
-          components: {
-            // Pagination: {
-            //   itemActiveBg: "#fb5a10",
-            //   itemBg: "rgba(0,0,0,0)",
-            //   colorText: "white",
-            // },
-          },
-        }}
-      >
-        <div className=" mt-14">
+      <ConfigProvider theme={{}}>
+        <div className=" mt-5 flex justify-end">
           <Pagination
-            defaultCurrent={1}
+            current={currentPage}
             onChange={handlePageChange}
-            total={30}
+            pageSize={pageSize}
+            total={getAllpackageData?.data?.meta?.total}
           />
         </div>
       </ConfigProvider>

@@ -3,10 +3,10 @@ import { baseApi } from "../../api/baseApi";
 const packageApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createPackage: builder.mutation({
-      query: (data) => ({
+      query: (formData) => ({
         url: "/package/create-package",
         method: "POST",
-        body: data,
+        body: formData,
       }),
       invalidatesTags: ["create-event"],
     }),
