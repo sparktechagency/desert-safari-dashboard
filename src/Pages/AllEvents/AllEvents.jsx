@@ -1,6 +1,17 @@
+/* eslint-disable react/prop-types */
 import { FaImage, FaPen, FaTrashAlt } from "react-icons/fa";
 import { useState } from "react";
-import { ConfigProvider, Form, Input, Modal, TimePicker, Upload } from "antd";
+import {
+  ConfigProvider,
+  Form,
+  Input,
+  Modal,
+  TimePicker,
+  Upload,
+  InputNumber,
+  Tag,
+  message,
+} from "antd";
 import { useForm } from "antd/es/form/Form";
 import Swal from "sweetalert2";
 import GobackButton from "../../Components/Shared/GobackButton";
@@ -11,6 +22,91 @@ import {
   useUpdateEventMutation,
 } from "../../redux/features/eventsApi/eventsApi";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
+
+const TIME_FORMAT = "h:mm A"; 
+
+function parseTimeToDayjs(value) {
+  if (!value) return null;
+  const tryFormat = dayjs(value, TIME_FORMAT, true);
+  if (tryFormat.isValid()) return tryFormat;
+  const fallback = dayjs(value);
+  return fallback.isValid() ? fallback : null;
+}
+
+function FeaturesInput({
+  value = [],
+  onChange,
+  maxItems = 10,
+  maxLength = 80,
+  placeholder = "Type a feature and press Enter",
+}) {
+  const [draft, setDraft] = useState("");
+
+  const normalized = (s) => s.trim();
+  const exists = (arr, s) =>
+    arr.some((x) => x.toLowerCase() === s.toLowerCase());
+
+  const commit = () => {
+    const text = normalized(draft);
+    if (!text) return;
+
+    if (value.length >= maxItems) {
+      message.warning(`You can add at most ${maxItems} features.`);
+      return;
+    }
+    if (text.length > maxLength) {
+      message.warning(`Feature is too long (>${maxLength} chars).`);
+      return;
+    }
+    if (exists(value, text)) {
+      setDraft("");
+      return;
+    }
+    const next = [...value, text];
+    onChange?.(next);
+    setDraft("");
+  };
+
+  const onKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      commit(); 
+    }
+  };
+
+  const removeAt = (idx) => {
+    const next = value.filter((_, i) => i !== idx);
+    onChange?.(next);
+  };
+
+  return (
+    <div className="w-full">
+      <div className="flex flex-wrap gap-2 mb-2">
+        {Array.isArray(value) &&
+          value.map((item, idx) => (
+            <Tag key={`${item}-${idx}`} closable onClose={() => removeAt(idx)}>
+              {item}
+            </Tag>
+          ))}
+      </div>
+      <Input
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onKeyDown={onKeyDown}
+        onBlur={commit}
+        placeholder={placeholder}
+        allowClear
+      />
+      <div className="text-xs text-neutral-500 mt-1">
+        Press <span className="font-semibold">Enter</span> to add. Commas are
+        allowed in a feature.
+      </div>
+    </div>
+  );
+}
 
 const AllEvents = () => {
   const { data: allEventsData } = useGetAllEventsQuery();
@@ -20,7 +116,6 @@ const AllEvents = () => {
 
   const data = allEventsData?.data?.result ?? [];
 
-  // Use separate forms for Add and Edit to avoid crosstalk
   const [addForm] = useForm();
   const [editForm] = useForm();
 
@@ -33,33 +128,38 @@ const AllEvents = () => {
   const handleBeforeUpload = (file) => {
     setBanner(file);
     setPreviewImage(URL.createObjectURL(file));
-    return false; // prevent antd from auto-uploading
+    return false; 
   };
 
   const handleAddModal = () => {
     setIsModalOpen(true);
-    // ensure clean state when opening Add
     setPreviewImage(null);
     setBanner(null);
     addForm.resetFields();
+    addForm.setFieldsValue({ features: [] }); 
   };
 
-  // FIX #1: accept the full event object (not just _id) so we can prefill
   const handleEditModal = (event) => {
     setEditingEvent(event);
 
-    // Prefill the edit form with existing values
     editForm.setFieldsValue({
       title: event.title,
       description: event.description,
-      startTime: event.start_time ? dayjs(event.start_time) : null,
-      endTime: event.end_time ? dayjs(event.end_time) : null,
+      startTime: parseTimeToDayjs(event.start_time),
+      endTime: parseTimeToDayjs(event.end_time),
+      features: Array.isArray(event.features) ? event.features : [],
+      max_child:
+        typeof event.max_child === "number"
+          ? event.max_child
+          : Number(event.max_child) || undefined,
+      max_adult:
+        typeof event.max_adult === "number"
+          ? event.max_adult
+          : Number(event.max_adult) || undefined,
     });
 
-    // Show existing image unless a new one is picked
     setPreviewImage(event.image || null);
     setBanner(null);
-
     setIsEditModalOpen(true);
   };
 
@@ -80,15 +180,24 @@ const AllEvents = () => {
 
   const onFinish = async (values) => {
     try {
-      const startTime = values.startTime ? values.startTime.toDate() : null;
-      const endTime = values.endTime ? values.endTime.toDate() : null;
+      const startTime = values.startTime ? dayjs(values.startTime) : null;
+      const endTime = values.endTime ? dayjs(values.endTime) : null;
 
       const formData = new FormData();
       formData.append("title", values.title);
       formData.append("description", values.description);
-      if (startTime) formData.append("start_time", startTime.toISOString());
-      if (endTime) formData.append("end_time", endTime.toISOString());
-      // FIX #2: only append image if selected; avoids sending null/empty
+      if (values.max_adult !== undefined)
+        formData.append("max_adult", String(values.max_adult));
+      if (values.max_child !== undefined)
+        formData.append("max_child", String(values.max_child));
+
+      (values.features || []).forEach((f) => {
+        formData.append("features", f);
+      });
+
+      if (startTime)
+        formData.append("start_time", startTime.format(TIME_FORMAT));
+      if (endTime) formData.append("end_time", endTime.format(TIME_FORMAT));
       if (banner) formData.append("image", banner);
 
       const response = await createEvents(formData).unwrap();
@@ -106,18 +215,25 @@ const AllEvents = () => {
 
   const onEditFinish = async (values) => {
     try {
-      const startTime = values.startTime ? values.startTime.toDate() : null;
-      const endTime = values.endTime ? values.endTime.toDate() : null;
+      const startTime = values.startTime ? dayjs(values.startTime) : null;
+      const endTime = values.endTime ? dayjs(values.endTime) : null;
 
       const formData = new FormData();
       formData.append("title", values.title);
       formData.append("description", values.description);
-      if (startTime) formData.append("start_time", startTime.toISOString());
-      if (endTime) formData.append("end_time", endTime.toISOString());
-      // Only include new image if user picked one
+      if (values.max_adult !== undefined)
+        formData.append("max_adult", String(values.max_adult));
+      if (values.max_child !== undefined)
+        formData.append("max_child", String(values.max_child));
+      (values.features || []).forEach((f) => {
+        formData.append("features", f);
+      });
+
+      if (startTime)
+        formData.append("start_time", startTime.format(TIME_FORMAT));
+      if (endTime) formData.append("end_time", endTime.format(TIME_FORMAT));
       if (banner) formData.append("image", banner);
 
-      // FIX #3: use the correct id from the stored event object
       const response = await UpdateEvent({
         _id: editingEvent?._id,
         data: formData,
@@ -150,18 +266,18 @@ const AllEvents = () => {
           await deletEvent(_id).unwrap();
           Swal.fire({
             title: "Deleted!",
-            text: "Your file has been deleted.",
+            text: "Your event has been deleted.",
             icon: "success",
           });
         } catch (error) {
-          Swal.fire(error.message);
+          Swal.fire(error?.message || "Delete failed");
         }
       }
     });
   };
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen">
       <div className="flex justify-between items-center my-6 px-6">
         <div className="flex justify-center items-center gap-2">
           <GobackButton />
@@ -178,47 +294,57 @@ const AllEvents = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-6 justify-end items-end">
+      {/* Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-6">
         {data.map((event) => (
-          <div key={event._id} className="relative rounded-lg  ">
-            <div
-              className="absolute inset-0"
-              style={{
-                backgroundImage: `linear-gradient(to left, rgba(216,101,48,0.8), rgba(0,0,0,0.2)), url(${event.image})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
+          <div
+            key={event._id}
+            className="relative rounded-lg overflow-hidden group"
+          >
+            <img
+              src={event.image}
+              alt={event.title}
+              className="absolute inset-0 w-full h-full object-cover"
             />
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-l from-[rgba(216,101,48,0.8)] to-[rgba(0,0,0,0.2)]" />
 
-            <div className="absolute top-3 left-3 z-20 flex justify-center items-center gap-2">
+            {/* Actions */}
+            <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
               <button
                 onClick={() => handleDelete(event._id)}
                 className="text-2xl text-white rounded-full p-1 shadow hover:scale-110 transition"
+                title="Delete"
               >
                 <FaTrashAlt />
               </button>
-              {/* FIX #1 usage: pass the whole event object */}
               <button
                 onClick={() => handleEditModal(event)}
                 className="text-2xl text-white rounded-full p-1 shadow hover:scale-110 transition"
+                title="Edit"
               >
                 <FaPen />
               </button>
             </div>
 
-            <div className="border-2 border-red-500 p-2 w-full">
-              <div className="relative z-10 p-5 text-white border-2 flex flex-col justify-end items-end">
-                <h2 className="font-bold text-2xl mb-3">{event.title}</h2>
+            <div className="relative z-10 p-5 text-white flex flex-col justify-end min-h-[260px]">
+              <h2 className="font-bold text-2xl mb-2">{event.title}</h2>
 
-                <div className="bg-orange-200 text-black inline-block px-3 py-1 rounded-md mb-3 font-medium">
-                  {new Date(event.start_time).toLocaleString()} -{" "}
-                  {new Date(event.end_time).toLocaleString()}
-                </div>
-
-                <div className="bg-white text-black px-4 py-2 rounded-md mb-3 font-semibold">
-                  {event.description}
-                </div>
+              <div className="bg-orange-200 text-black inline-block px-3 py-1 rounded-md mb-3 font-medium">
+                {event.start_time} — {event.end_time}
               </div>
+
+              <div className="bg-white/95 text-black px-4 py-2 rounded-md mb-3 font-semibold">
+                {event.description}
+              </div>
+
+              {Array.isArray(event.features) && event.features.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {event.features.map((f, idx) => (
+                    <Tag key={`${event._id}-feature-${idx}`}>{f}</Tag>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -274,18 +400,61 @@ const AllEvents = () => {
               label="Event Name"
               rules={[{ required: true, message: "Please enter event name" }]}
             >
-              <Input
-                placeholder="Enter event name"
-                className="text-md border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]"
-              />
+              <Input placeholder="Enter event name" />
+            </Form.Item>
+
+            <Form.Item
+              name="features"
+              label="Features"
+              rules={[
+                {
+                  validator: (_, value) =>
+                    Array.isArray(value) && value.length > 0
+                      ? Promise.resolve()
+                      : Promise.reject(
+                          new Error("Please add at least one feature")
+                        ),
+                },
+              ]}
+            >
+              <FeaturesInput />
             </Form.Item>
 
             <div className="flex gap-2">
               <Form.Item name="startTime" label="Start Time" className="flex-1">
-                <TimePicker className="w-full border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]" />
+                <TimePicker
+                  className="w-full"
+                  use12Hours
+                  format={TIME_FORMAT}
+                />
               </Form.Item>
               <Form.Item name="endTime" label="End Time" className="flex-1">
-                <TimePicker className="w-full border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]" />
+                <TimePicker
+                  className="w-full"
+                  use12Hours
+                  format={TIME_FORMAT}
+                />
+              </Form.Item>
+            </div>
+
+            <div className="flex gap-2">
+              <Form.Item
+                name="max_child"
+                label="Max Child"
+                rules={[{ required: true, message: "Please enter Max Child" }]}
+              >
+                <InputNumber
+                  className="w-full"
+                  min={0}
+                  placeholder="e.g., 12"
+                />
+              </Form.Item>
+              <Form.Item
+                name="max_adult"
+                label="Max Adult"
+                rules={[{ required: true, message: "Please enter Max Adult" }]}
+              >
+                <InputNumber className="w-full" min={0} placeholder="e.g., 6" />
               </Form.Item>
             </div>
 
@@ -294,11 +463,7 @@ const AllEvents = () => {
               label="Description"
               rules={[{ required: true, message: "Please enter description" }]}
             >
-              <Input.TextArea
-                placeholder="Enter description"
-                rows={4}
-                className="border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]"
-              />
+              <Input.TextArea placeholder="Enter description" rows={4} />
             </Form.Item>
 
             <Form.Item>
@@ -351,18 +516,61 @@ const AllEvents = () => {
               label="Event Name"
               rules={[{ required: true, message: "Please enter event name" }]}
             >
-              <Input
-                placeholder="Enter event name"
-                className="text-md border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]"
-              />
+              <Input placeholder="Enter event name" />
+            </Form.Item>
+
+            <Form.Item
+              name="features"
+              label="Features"
+              rules={[
+                {
+                  validator: (_, value) =>
+                    Array.isArray(value) && value.length > 0
+                      ? Promise.resolve()
+                      : Promise.reject(
+                          new Error("Please add at least one feature")
+                        ),
+                },
+              ]}
+            >
+              <FeaturesInput />
             </Form.Item>
 
             <div className="flex gap-2">
               <Form.Item name="startTime" label="Start Time" className="flex-1">
-                <TimePicker className="w-full border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]" />
+                <TimePicker
+                  className="w-full"
+                  use12Hours
+                  format={TIME_FORMAT}
+                />
               </Form.Item>
               <Form.Item name="endTime" label="End Time" className="flex-1">
-                <TimePicker className="w-full border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]" />
+                <TimePicker
+                  className="w-full"
+                  use12Hours
+                  format={TIME_FORMAT}
+                />
+              </Form.Item>
+            </div>
+
+            <div className="flex gap-2">
+              <Form.Item
+                name="max_child"
+                label="Max Child"
+                rules={[{ required: true, message: "Please enter Max Child" }]}
+              >
+                <InputNumber
+                  className="w-full"
+                  min={0}
+                  placeholder="e.g., 12"
+                />
+              </Form.Item>
+              <Form.Item
+                name="max_adult"
+                label="Max Adult"
+                rules={[{ required: true, message: "Please enter Max Adult" }]}
+              >
+                <InputNumber className="w-full" min={0} placeholder="e.g., 6" />
               </Form.Item>
             </div>
 
@@ -371,11 +579,7 @@ const AllEvents = () => {
               label="Description"
               rules={[{ required: true, message: "Please enter description" }]}
             >
-              <Input.TextArea
-                placeholder="Enter description"
-                rows={4}
-                className="border-[#fb5a10] focus:border-[#fb5a10] focus:ring-[#fb5a10]"
-              />
+              <Input.TextArea placeholder="Enter description" rows={4} />
             </Form.Item>
 
             <Form.Item>
