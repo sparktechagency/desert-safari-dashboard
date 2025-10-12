@@ -11,8 +11,8 @@ const packageApi = baseApi.injectEndpoints({
       invalidatesTags: ["create-event"],
     }),
     getAllPackage: builder.query({
-      query: () => ({
-        url: "/package/allPackage",
+      query: ({ page, limit }) => ({
+        url: `/package/allPackage?limit=${limit}&page=${page}`,
         method: "GET",
       }),
       providesTags: ["create-event"],
@@ -47,5 +47,5 @@ export const {
   useGetAllPackageQuery,
   useDeletPackgeMutation,
   useUpdatePackageMutation,
-  useGetSInglePackageQuery
+  useGetSInglePackageQuery,
 } = packageApi;

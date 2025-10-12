@@ -17,14 +17,14 @@ const EditPackage = () => {
   const { data: singleData } = useGetSInglePackageQuery(id);
   console.log("single package", singleData?.data);
 
-  // const [previewCoverImage, setPreviewCoverImage] = useState(null);
-  // const [Cover, setCover] = useState(null);
+  const [previewCoverImage, setPreviewCoverImage] = useState(null);
+  const [Cover, setCover] = useState(null);
 
-  // const handleCoverBeforeUpload = (file) => {
-  //   setCover(file);
-  //   setPreviewCoverImage(URL.createObjectURL(file));
-  //   return false;
-  // };
+  const handleCoverBeforeUpload = (file) => {
+    setCover(file);
+    setPreviewCoverImage(URL.createObjectURL(file));
+    return false;
+  };
 
   const [fileList, setFileList] = useState([]);
 
@@ -81,98 +81,116 @@ const EditPackage = () => {
     }
   }, [singleData, form]);
 
+  const onFinish = (values) => {
+    const formData = new FormData();
 
-const onFinish = (values) => {
-  const formData = new FormData();
+    try {
+      // Ensure values.activity is an array
+      const activity = Array.isArray(values.activity) ? values.activity : [];
+      formData.append("activity", activity.join(", "));
 
-  try {
-    // Ensure values.activity is an array
-    const activity = Array.isArray(values.activity) ? values.activity : [];
-    formData.append("activity", activity.join(", "));
+      // Ensure values.availability is an array
+      const availability = Array.isArray(values.availability)
+        ? values.availability
+        : [];
+      formData.append("availability", availability.join(", "));
 
-    // Ensure values.availability is an array
-    const availability = Array.isArray(values.availability) ? values.availability : [];
-    formData.append("availability", availability.join(", "));
+      // Ensure values.included is an array
+      const included = Array.isArray(values.included) ? values.included : [];
+      formData.append("included", included.join(", "));
 
-    // Ensure values.included is an array
-    const included = Array.isArray(values.included) ? values.included : [];
-    formData.append("included", included.join(", "));
+      // Ensure values.excluded is an array
+      const excluded = Array.isArray(values.excluded) ? values.excluded : [];
+      formData.append("excluded", excluded.join(", "));
 
-    // Ensure values.excluded is an array
-    const excluded = Array.isArray(values.excluded) ? values.excluded : [];
-    formData.append("excluded", excluded.join(", "));
+      // Ensure values.tour_plan is an array (if needed)
+      const tourPlan = Array.isArray(values.tour_plan) ? values.tour_plan : [];
+      formData.append("tour_plan", tourPlan.join("\n"));
 
-    // Ensure values.tour_plan is an array (if needed)
-    const tourPlan = Array.isArray(values.tour_plan) ? values.tour_plan : [];
-    formData.append("tour_plan", tourPlan.join("\n"));
+      // Handle price fields (e.g., camel_bike, quad_bike, etc.)
+      const camelBikeAmount = Number(values.camel_bike_amount);
+      const camelBikeCurrency = values.camel_bike_currency || "AED";
+      formData.append(
+        "camel_bike_amount",
+        isNaN(camelBikeAmount) ? 0 : camelBikeAmount
+      );
+      formData.append("camel_bike_currency", camelBikeCurrency);
 
-    // Handle price fields (e.g., camel_bike, quad_bike, etc.)
-    const camelBikeAmount = Number(values.camel_bike_amount);
-    const camelBikeCurrency = values.camel_bike_currency || "AED";
-    formData.append("camel_bike_amount", isNaN(camelBikeAmount) ? 0 : camelBikeAmount);
-    formData.append("camel_bike_currency", camelBikeCurrency);
+      const quadBikeAmount = Number(values.quad_bike_amount);
+      const quadBikeCurrency = values.quad_bike_currency || "AED";
+      formData.append(
+        "quad_bike_amount",
+        isNaN(quadBikeAmount) ? 0 : quadBikeAmount
+      );
+      formData.append("quad_bike_currency", quadBikeCurrency);
 
-    const quadBikeAmount = Number(values.quad_bike_amount);
-    const quadBikeCurrency = values.quad_bike_currency || "AED";
-    formData.append("quad_bike_amount", isNaN(quadBikeAmount) ? 0 : quadBikeAmount);
-    formData.append("quad_bike_currency", quadBikeCurrency);
+      const fourSitterAmount = Number(values.four_sitter_dune_buggy_amount);
+      const fourSitterCurrency =
+        values.four_sitter_dune_buggy_currency || "AED";
+      formData.append(
+        "four_sitter_dune_buggy_amount",
+        isNaN(fourSitterAmount) ? 0 : fourSitterAmount
+      );
+      formData.append("four_sitter_dune_buggy_currency", fourSitterCurrency);
 
-    const fourSitterAmount = Number(values.four_sitter_dune_buggy_amount);
-    const fourSitterCurrency = values.four_sitter_dune_buggy_currency || "AED";
-    formData.append("four_sitter_dune_buggy_amount", isNaN(fourSitterAmount) ? 0 : fourSitterAmount);
-    formData.append("four_sitter_dune_buggy_currency", fourSitterCurrency);
+      const singleSitterAmount = Number(values.single_sitter_dune_buggy_amount);
+      const singleSitterCurrency =
+        values.single_sitter_dune_buggy_currency || "AED";
+      formData.append(
+        "single_sitter_dune_buggy_amount",
+        isNaN(singleSitterAmount) ? 0 : singleSitterAmount
+      );
+      formData.append(
+        "single_sitter_dune_buggy_currency",
+        singleSitterCurrency
+      );
 
-    const singleSitterAmount = Number(values.single_sitter_dune_buggy_amount);
-    const singleSitterCurrency = values.single_sitter_dune_buggy_currency || "AED";
-    formData.append("single_sitter_dune_buggy_amount", isNaN(singleSitterAmount) ? 0 : singleSitterAmount);
-    formData.append("single_sitter_dune_buggy_currency", singleSitterCurrency);
+      const childPriceAmount = Number(values.childPrice_amount);
+      const childPriceCurrency = values.childPrice_currency || "AED";
+      formData.append(
+        "childPrice_amount",
+        isNaN(childPriceAmount) ? 0 : childPriceAmount
+      );
+      formData.append("childPrice_currency", childPriceCurrency);
 
-    const childPriceAmount = Number(values.childPrice_amount);
-    const childPriceCurrency = values.childPrice_currency || "AED";
-    formData.append("childPrice_amount", isNaN(childPriceAmount) ? 0 : childPriceAmount);
-    formData.append("childPrice_currency", childPriceCurrency);
+      const adultPriceAmount = Number(values.adultPrice_amount);
+      const adultPriceCurrency = values.adultPrice_currency || "AED";
+      formData.append(
+        "adultPrice_amount",
+        isNaN(adultPriceAmount) ? 0 : adultPriceAmount
+      );
+      formData.append("adultPrice_currency", adultPriceCurrency);
 
-    const adultPriceAmount = Number(values.adultPrice_amount);
-    const adultPriceCurrency = values.adultPrice_currency || "AED";
-    formData.append("adultPrice_amount", isNaN(adultPriceAmount) ? 0 : adultPriceAmount);
-    formData.append("adultPrice_currency", adultPriceCurrency);
+      // Append other fields
+      formData.append("title", values.title);
+      formData.append("location", values.location);
+      formData.append("duration", values.duration);
+      formData.append("max_adult", values.max_adult);
+      formData.append("child_min_age", values.child_min_age);
+      formData.append("pickup", values.pickup);
+      formData.append("discount", values.discount);
+      formData.append("drop_off", values.drop_off);
+      formData.append("note", values.note);
+      formData.append("refund_policy", values.refund_policy);
+      formData.append("description", values.description);
 
-    // Append other fields
-    formData.append("title", values.title);
-    formData.append("location", values.location);
-    formData.append("duration", values.duration);
-    formData.append("max_adult", values.max_adult);
-    formData.append("child_min_age", values.child_min_age);
-    formData.append("pickup", values.pickup);
-    formData.append("discount", values.discount);
-    formData.append("drop_off", values.drop_off);
-    formData.append("note", values.note);
-    formData.append("refund_policy", values.refund_policy);
-    formData.append("description", values.description);
+      // Handle image uploads
+      fileList.forEach((file) => {
+        if (file.originFileObj) {
+          formData.append("images", file.originFileObj);
+        }
+      });
 
-    // Handle image uploads
-    fileList.forEach((file) => {
-      if (file.originFileObj) {
-        formData.append("images", file.originFileObj);
-      }
-    });
+      // Call the mutation to update the package
+      UpdatePackage({ _id: id, data: formData });
+      navigate("/pacakes");
+    } catch (error) {
+      message.error(
+        error?.message || "An error occurred while submitting the form."
+      );
+    }
+  };
 
-    // Call the mutation to update the package
-    UpdatePackage({ _id: id, data: formData });
-    navigate("/pacakes")
-
-  } catch (error) {
-    message.error(
-      error?.message || "An error occurred while submitting the form."
-    );
-  }
-};
-
-
-
-
-
-  
   return (
     <div className="min-h-screen">
       <div className="flex justify-start items-center gap-2">
@@ -196,7 +214,7 @@ const onFinish = (values) => {
               >
                 <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
                   <div className="flex gap-3 flex-wrap">
-                    {/* {fileList.map((file) => (
+                    {fileList.map((file) => (
                       <div
                         key={file.uid}
                         className="relative w-24 h-24 border border-neutral-300 rounded overflow-hidden"
@@ -216,7 +234,7 @@ const onFinish = (values) => {
                           <FaTimes className="text-red-600" />
                         </button>
                       </div>
-                    ))} */}
+                    ))}
                     {fileList.map((file) => (
                       <div
                         key={file.uid}
@@ -359,21 +377,31 @@ const onFinish = (values) => {
               name="activity"
               label={<p className="text-md">Activity</p>}
             >
-              <Select placeholder="Select an activity">
-                <Option value="dune-bashing">Dune Bashing</Option>
-                <Option value="camel-ride">Camel Ride</Option>
-                <Option value="quad-biking">Quad Biking</Option>
-                <Option value="dune-buggy-ride">Dune Buggy Ride</Option>
-                <Option value="tea-coffee-soft-drinks">
+              <Select mode="multiple" placeholder="Select Activities">
+                <Option value="Dune Bashing">Dune Bashing</Option>
+                <Option value="Camel Ride">Camel Ride</Option>
+                <Option value="Quad Biking">Quad Biking</Option>
+                <Option value="Dune Buggy Ride">Dune Buggy Ride</Option>
+                <Option value="Single Sitter Dune Buggy Ride">
+                  Single Sitter Dune Buggy Ride
+                </Option>
+                <Option value="4 Sitter Dune Buggy Ride">
+                  4 Sitter Dune Buggy Ride
+                </Option>
+                <Option value="Tea, Coffee, & Soft Drinks">
                   Tea, Coffee, & Soft Drinks
                 </Option>
-                <Option value="henna-tattoos">Henna Tattoos</Option>
-                <Option value="fire-show">Fire Show in the Desert</Option>
-                <Option value="arabic-costumes">Arabic Costumes</Option>
-                <Option value="shisha-smoking">Shisha Smoking</Option>
-                <Option value="falcon-pictures">Falcon To Take Pictures</Option>
-                <Option value="sand-boarding">Sand-Boarding</Option>
-                <Option value="belly-dance">Belly Dance Show</Option>
+                <Option value="Henna Tattoos">Henna Tattoos</Option>
+                <Option value="Fire Show in the Desert">
+                  Fire Show in the Desert
+                </Option>
+                <Option value="Arabic Costumes">Arabic Costumes</Option>
+                <Option value="Shisha Smoking">Shisha Smoking</Option>
+                <Option value="Falcon To Take Pictures">
+                  Falcon To Take Pictures
+                </Option>
+                <Option value="Sand-Boarding">Sand-Boarding</Option>
+                <Option value="Belly Dance Show">Belly Dance Show</Option>
               </Select>
             </Form.Item>
           </div>

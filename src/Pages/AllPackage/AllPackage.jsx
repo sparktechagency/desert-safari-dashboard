@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Input, DatePicker, Modal } from "antd";
+import { Input, DatePicker, Modal, Pagination, ConfigProvider } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
@@ -9,11 +9,15 @@ import {
   useCreatePackageMutation,
   useDeletPackgeMutation,
   useGetAllPackageQuery,
-
 } from "../../redux/features/packageApi/packageApi";
 
 const AllPackage = () => {
-  const { data: getAllpackageData } = useGetAllPackageQuery();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(6);
+  const { data: getAllpackageData } = useGetAllPackageQuery({
+    page: currentPage,
+    limit: pageSize,
+  });
   const [deletPackge] = useDeletPackgeMutation();
 
   const [createPackage] = useCreatePackageMutation();
@@ -71,11 +75,13 @@ const AllPackage = () => {
     setSelectedPackage(null);
     setIsModalVisible(false);
   };
-
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center my-4 gap-3">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
         <div className="flex justify-center items-center gap-2">
           <GobackButton />
           <h1 className="text-2xl font-bold">All Packages</h1>
@@ -113,7 +119,7 @@ const AllPackage = () => {
             className="bg-white rounded-md shadow-md p-5 relative"
           >
             <img
-              src={pkg.images?.[0] || "https://via.placeholder.com/300"}
+              src={pkg.coverImage}
               alt={pkg.title}
               className="w-full h-48 object-cover rounded-md"
             />
@@ -160,7 +166,7 @@ const AllPackage = () => {
       {/* Details Modal */}
       <Modal
         title={selectedPackage?.title}
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleModalClose}
         footer={null}
         width={700}
@@ -168,9 +174,7 @@ const AllPackage = () => {
         {selectedPackage && (
           <div>
             <img
-              src={
-                selectedPackage.images?.[0] || "https://via.placeholder.com/400"
-              }
+              src={selectedPackage.coverImage}
               alt={selectedPackage.title}
               className="w-full h-64 object-cover rounded-md mb-4"
             />
@@ -181,6 +185,65 @@ const AllPackage = () => {
             <p>
               <strong>Duration:</strong> {selectedPackage.duration}
             </p>
+            <p>
+              <strong>Max Adults:</strong> {selectedPackage.max_adult}
+            </p>
+            <p>
+              <strong>Child minimun Age:</strong>{" "}
+              {selectedPackage.child_min_age}
+            </p>
+            <p>
+              <strong>Activity:</strong>{" "}
+              {selectedPackage.activity?.map((a) => a).join(", ")}
+            </p>
+            <p>
+              <strong>Single Sitter dune Buggy:</strong>{" "}
+              {selectedPackage.single_sitter_dune_buggy?.amount}{" "}
+              {selectedPackage.single_sitter_dune_buggy?.currency}
+            </p>
+            <p>
+              <strong>Four sitter dune buggy:</strong>{" "}
+              {selectedPackage.four_sitter_dune_buggy?.amount}{" "}
+              {selectedPackage.four_sitter_dune_buggy?.currency}
+            </p>
+            <p>
+              <strong>Adult Price:</strong> {selectedPackage.adultPrice?.amount}{" "}
+              {selectedPackage.adultPrice?.currency}
+            </p>
+            <p>
+              <strong>Child Price:</strong> {selectedPackage.childPrice?.amount}{" "}
+              {selectedPackage.childPrice?.currency}
+            </p>
+            <p>
+              <strong>Quad Bike:</strong> {selectedPackage.quad_bike?.amount}{" "}
+              {selectedPackage.quad_bike?.currency}
+            </p>
+            <p>
+              <strong>Camel Bike:</strong> {selectedPackage.camel_bike?.amount}{" "}
+              {selectedPackage.camel_bike?.currency}
+            </p>
+            <p>
+              <strong>Original Price:</strong>{" "}
+              {selectedPackage.original_price?.amount}{" "}
+              {selectedPackage.original_price?.currency}
+            </p>
+            <p>
+              <strong>Discounted Price:</strong>{" "}
+              {selectedPackage.discount_price?.amount}{" "}
+              {selectedPackage.discount_price?.currency}
+            </p>
+            <p>
+              <strong>Discount:</strong> {selectedPackage.discount}%
+            </p>
+            <p>
+              <strong>Note:</strong> {selectedPackage.note}
+            </p>
+            <p>
+              <strong>Availability:</strong>{" "}
+              {selectedPackage.availability?.start} to{" "}
+              {selectedPackage.availability?.end}
+            </p>
+
             <p>
               <strong>Pickup Time:</strong> {selectedPackage.pickup}
             </p>
@@ -217,9 +280,44 @@ const AllPackage = () => {
                 ))}
               </ul>
             </div>
+            {selectedPackage.images?.length > 0 && (
+              <div className="mt-3">
+                <h4 className="font-semibold">Gallery:</h4>
+                <div className="grid grid-cols-3 gap-2">
+                  {selectedPackage.images.map((img, idx) => (
+                    <img
+                      key={idx}
+                      src={img}
+                      className="w-full h-28 object-cover rounded-md"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </Modal>
+
+      {/* pagination: */}
+      <ConfigProvider
+        theme={{
+          components: {
+            // Pagination: {
+            //   itemActiveBg: "#fb5a10",
+            //   itemBg: "rgba(0,0,0,0)",
+            //   colorText: "white",
+            // },
+          },
+        }}
+      >
+        <div className=" mt-14">
+          <Pagination
+            defaultCurrent={1}
+            onChange={handlePageChange}
+            total={30}
+          />
+        </div>
+      </ConfigProvider>
     </div>
   );
 };

@@ -1,6 +1,6 @@
-import { Form, Input, message, Select, Upload } from "antd";
+import { DatePicker, Form, Input, message, Select, Upload } from "antd";
 import GobackButton from "../Shared/GobackButton";
-import { FaPlus, FaTimes } from "react-icons/fa";
+import { FaImage, FaPlus, FaTimes } from "react-icons/fa";
 import { useState } from "react";
 import { useCreatePackageMutation } from "../../redux/features/packageApi/packageApi";
 
@@ -21,63 +21,111 @@ const AddPackage = () => {
     );
   };
 
-const onFinish = async (values) => {
-  try {
-    const data = {
-      title: values.title || "",
-      location: values.location || "",
-      duration: values.duration || "",
-      max_adult: Number(values.max_adult) || 0,
-      child_min_age: Number(values.child_min_age) || 0,
-      pickup: values.pickup || "",
-      drop_off: values.drop_off || "",
-      availability: values.availability
-        ? Array.isArray(values.availability)
-          ? values.availability
-          : [values.availability]
-        : [],
-      activity: values.activity
-        ? Array.isArray(values.activity)
-          ? values.activity
-          : [values.activity]
-        : [],
-      adultPrice: { amount: Number(values.adultPrice) || 0, currency: "AED" },
-      childPrice: { amount: Number(values.childPrice) || 0, currency: "AED" },
-      single_sitter_dune_buggy: {
-        amount: Number(values.single_sitter_dune_buggy) || 0,
-        currency: "AED",
-      },
-      four_sitter_dune_buggy: {
-        amount: Number(values.four_sitter_dune_buggy) || 0,
-        currency: "AED",
-      },
-      quad_bike: { amount: Number(values.quad_bike) || 0, currency: "AED" },
-      camel_bike: { amount: Number(values.camel_bike) || 0, currency: "AED" },
-      discount: Number(values.discount) || 0,
-      note: values.note || "",
-      refund_policy: values.refund_policy || "",
-      included: values.included ? values.included.split("\n") : [],
-      excluded: values.excluded ? values.excluded.split("\n") : [],
-      tour_plan: values.tour_plan ? values.tour_plan.split("\n") : [],
-      description: values.description || "",
-      images: fileList || [], // array of images (you can append file objects or URLs as needed)
-    };
+  const [previewCoverImage, setPreviewCoverImage] = useState(null);
+  const [Cover, setCover] = useState(null);
+  console.log(Cover);
 
-    const res = await createPackage(data).unwrap();
+  const handleCoverBeforeUpload = (file) => {
+    setCover(file);
+    setPreviewCoverImage(URL.createObjectURL(file));
+    return false;
+  };
 
-    if (res?.success) {
-      message.success("Package created successfully!");
-      form.resetFields();
-      setFileList([]);
-    } else {
-      message.error(res?.message || "Failed to create package");
+  const onFinish = async (values) => {
+    const availabilityObj = values.availability
+      ? {
+          start: values.availability.start?.format("YYYY-MM-DD"),
+          end: values.availability.end?.format("YYYY-MM-DD"),
+        }
+      : undefined;
+    const allowedActivities = [
+      "Dune Bashing",
+      "Camel Ride",
+      "Quad Biking",
+      "Dune Buggy Ride",
+      "Single Sitter Dune Buggy Ride",
+      "4 Sitter Dune Buggy Ride",
+      "Tea, Coffee, & Soft Drinks",
+      "Henna Tattoos",
+      "Fire Show in the Desert",
+      "Arabic Costumes",
+      "Shisha Smoking",
+      "Falcon To Take Pictures",
+      "Sand-Boarding",
+      "Belly Dance Show",
+    ];
+
+    const formattedActivity = values.activity
+      ? Array.isArray(values.activity)
+        ? values.activity.filter((item) => allowedActivities.includes(item))
+        : allowedActivities.includes(values.activity)
+        ? [values.activity]
+        : []
+      : [];
+
+    try {
+      const formData = new FormData();
+      const data = {
+        title: values.title,
+        location: values.location,
+        duration: values.duration,
+        max_adult: Number(values.max_adult) || 0,
+        child_min_age: Number(values.child_min_age) || 0,
+        pickup: values.pickup,
+        drop_off: values.drop_off,
+
+        availability: availabilityObj,
+
+        activity: formattedActivity,
+        adultPrice: { amount: Number(values.adultPrice) || 0, currency: "AED" },
+        childPrice: { amount: Number(values.childPrice) || 0, currency: "AED" },
+        single_sitter_dune_buggy: {
+          amount: Number(values.single_sitter_dune_buggy) || 0,
+          currency: "AED",
+        },
+        four_sitter_dune_buggy: {
+          amount: Number(values.four_sitter_dune_buggy) || 0,
+          currency: "AED",
+        },
+        quad_bike: { amount: Number(values.quad_bike) || 0, currency: "AED" },
+        camel_bike: { amount: Number(values.camel_bike) || 0, currency: "AED" },
+        discount: Number(values.discount) || 0,
+        note: values.note,
+        refund_policy: values.refund_policy,
+        included: values.included ? values.included.split("\n") : [],
+        excluded: values.excluded ? values.excluded.split("\n") : [],
+        tour_plan: values.tour_plan ? values.tour_plan.split("\n") : [],
+        description: values.description,
+        // images: fileList || [], // array of images (you can append file objects or URLs as needed)
+        // coverImage: Cover || null, // single cover image (you can append file object or URL as needed)
+      };
+      console.log(data);
+      formData.append("data", JSON.stringify(data));
+
+      // ✅ Single Cover Image
+      if (Cover) {
+        formData.append("coverImage", Cover);
+      }
+      if (fileList) {
+        formData.append("images", fileList || []);
+      }
+
+      console.log(...formData);
+
+      const res = await createPackage(formData).unwrap();
+
+      if (res?.success) {
+        message.success("Package created successfully!");
+        form.resetFields();
+        setFileList([]);
+      } else {
+        message.error(res?.message || "Failed to create package");
+      }
+    } catch (error) {
+      console.error("Error creating package:", error);
+      message.error("Something went wrong. Please try again.");
     }
-  } catch (error) {
-    console.error("Error creating package:", error);
-    message.error("Something went wrong. Please try again.");
-  }
-};
-
+  };
 
   return (
     <div className="min-h-screen">
@@ -95,7 +143,7 @@ const onFinish = async (values) => {
           className="w-[70%]  "
         >
           <div className="w-full flex justify-between items-center gap-5">
-            <div className="w-[100%]">
+            <div className="w-[50%]">
               <Form.Item
                 name="package-images"
                 label={<p className="text-md">Edit Packages Images</p>}
@@ -157,10 +205,10 @@ const onFinish = async (values) => {
               </Form.Item>
             </div>
 
-            {/* <div className="w-[50%]">
+            <div className="w-[50%]">
               <Form.Item
-                name="cover-image"
-                label={<p className=" text-md">Edit Cover Image</p>}
+                name="coverImage"
+                label={<p className=" text-md">Add Cover Image</p>}
               >
                 <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
                   <Upload
@@ -186,7 +234,7 @@ const onFinish = async (values) => {
                   </Upload>
                 </div>
               </Form.Item>
-            </div> */}
+            </div>
           </div>
 
           <Form.Item
@@ -251,35 +299,84 @@ const onFinish = async (values) => {
                 placeholder="Pickup"
               />
             </Form.Item>
-            <Form.Item
-              name="availability"
-              label={<p className=" text-md">Availability</p>}
-            >
-              <Input
-                style={{ padding: "6px" }}
-                className=" text-md"
-                placeholder="Availability"
-              />
+
+            <Form.Item label={<p className="text-md">Availability</p>}>
+              <div className="flex gap-2">
+                <Form.Item
+                  name={["availability", "start"]}
+                  rules={[
+                    { required: true, message: "Start date is required" },
+                  ]}
+                  className="mb-0"
+                >
+                  <DatePicker
+                    style={{ padding: "6px" }}
+                    className="text-md"
+                    placeholder="Start Date"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name={["availability", "end"]}
+                  dependencies={[["availability", "start"]]}
+                  rules={[
+                    { required: true, message: "End date is required" },
+                    // ({ getFieldValue }) => ({
+                    //   validator(_, value) {
+                    //     const start = getFieldValue(["availability", "start"]);
+                    //     if (
+                    //       !start ||
+                    //       !value ||
+                    //       value.isSameOrAfter(start, "day")
+                    //     ) {
+                    //       return Promise.resolve();
+                    //     }
+                    //     return Promise.reject(
+                    //       new Error("End date must be after start date")
+                    //     );
+                    //   },
+                    // }),
+                  ]}
+                  className="mb-0"
+                >
+                  <DatePicker
+                    style={{ padding: "6px" }}
+                    className="text-md"
+                    placeholder="End Date"
+                  />
+                </Form.Item>
+              </div>
             </Form.Item>
+
             <Form.Item
               name="activity"
               label={<p className="text-md">Activity</p>}
             >
-              <Select placeholder="Select an activity">
-                <Option value="dune-bashing">Dune Bashing</Option>
-                <Option value="camel-ride">Camel Ride</Option>
-                <Option value="quad-biking">Quad Biking</Option>
-                <Option value="dune-buggy-ride">Dune Buggy Ride</Option>
-                <Option value="tea-coffee-soft-drinks">
+              <Select mode="multiple" placeholder="Select Activities">
+                <Option value="Dune Bashing">Dune Bashing</Option>
+                <Option value="Camel Ride">Camel Ride</Option>
+                <Option value="Quad Biking">Quad Biking</Option>
+                <Option value="Dune Buggy Ride">Dune Buggy Ride</Option>
+                <Option value="Single Sitter Dune Buggy Ride">
+                  Single Sitter Dune Buggy Ride
+                </Option>
+                <Option value="4 Sitter Dune Buggy Ride">
+                  4 Sitter Dune Buggy Ride
+                </Option>
+                <Option value="Tea, Coffee, & Soft Drinks">
                   Tea, Coffee, & Soft Drinks
                 </Option>
-                <Option value="henna-tattoos">Henna Tattoos</Option>
-                <Option value="fire-show">Fire Show in the Desert</Option>
-                <Option value="arabic-costumes">Arabic Costumes</Option>
-                <Option value="shisha-smoking">Shisha Smoking</Option>
-                <Option value="falcon-pictures">Falcon To Take Pictures</Option>
-                <Option value="sand-boarding">Sand-Boarding</Option>
-                <Option value="belly-dance">Belly Dance Show</Option>
+                <Option value="Henna Tattoos">Henna Tattoos</Option>
+                <Option value="Fire Show in the Desert">
+                  Fire Show in the Desert
+                </Option>
+                <Option value="Arabic Costumes">Arabic Costumes</Option>
+                <Option value="Shisha Smoking">Shisha Smoking</Option>
+                <Option value="Falcon To Take Pictures">
+                  Falcon To Take Pictures
+                </Option>
+                <Option value="Sand-Boarding">Sand-Boarding</Option>
+                <Option value="Belly Dance Show">Belly Dance Show</Option>
               </Select>
             </Form.Item>
           </div>
