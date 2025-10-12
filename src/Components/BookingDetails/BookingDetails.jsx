@@ -16,8 +16,6 @@ const BookingDetails = () => {
   const [isRejected, setIsRejected] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
 
-  const handleReject = () => setIsRejected(true);
-  const handleApprove = () => setIsApproved(true);
 
   const handleConfirmReject = () => {
     setIsRejected(false);

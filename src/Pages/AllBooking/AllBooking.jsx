@@ -1,5 +1,12 @@
 /* eslint-disable no-unused-vars */
-import { ConfigProvider, DatePicker, Input, Space, Table } from "antd";
+import {
+  ConfigProvider,
+  DatePicker,
+  Input,
+  Pagination,
+  Space,
+  Table,
+} from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { MdArrowOutward } from "react-icons/md";
@@ -22,7 +29,7 @@ const AllBooking = () => {
   const bookingData =
     allBookingData?.data?.result?.map((item) => ({
       key: item._id,
-          _id: item._id,
+      _id: item._id,
       name: item.customer_name,
       email: item.customer_email,
       contact: item.customer_phone,
@@ -33,10 +40,10 @@ const AllBooking = () => {
       images: item.images,
     })) || [];
 
-const handleBookingDetails = (bookingId) => {
-  console.log("Booking ID:", bookingId);
-  navigate(`/booking-details/${bookingId}`, { state: { bookingId } }); // fixed syntax
-};;
+  const handleBookingDetails = (bookingId) => {
+    console.log("Booking ID:", bookingId);
+    navigate(`/booking-details/${bookingId}`, { state: { bookingId } }); // fixed syntax
+  };
 
   const columns = [
     {
@@ -134,6 +141,17 @@ const handleBookingDetails = (bookingId) => {
         dataSource={bookingData}
         pagination={false}
       />
+
+      <Pagination
+        total={allBookingData?.data?.total || 0}
+        current={currentPage}
+        pageSize={pageSize}
+        onChange={(page, pageSize) => {
+          setCurrentPage(page);
+          setPageSize(pageSize);
+        }}
+        className="my-4 flex justify-end"
+      ></Pagination>
     </div>
   );
 };
