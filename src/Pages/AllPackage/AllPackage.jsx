@@ -96,10 +96,10 @@ const AllPackage = () => {
             className="w-60"
           />
 
-          <DatePicker
+          {/* <DatePicker
             style={{ width: 200, height: 40 }}
             onChange={handleDateChange}
-          />
+          /> */}
 
           <button
             onClick={handleAddPackage}

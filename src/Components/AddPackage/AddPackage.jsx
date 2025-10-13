@@ -113,8 +113,6 @@ const AddPackage = () => {
           formData.append("image", file, file.name || "image");
         });
 
-     
-
       console.log(...formData);
 
       const res = await createPackage(formData).unwrap();
@@ -151,9 +149,9 @@ const AddPackage = () => {
             <div className="w-[50%]">
               <Form.Item
                 name="images"
-                label={<p className="text-md">Edit Packages Images</p>}
+                label={<p className="text-md">Add Packages Images</p>}
               >
-                <div className="border-2 border-[#fb5a10] h-32 p-5 flex justify-center items-center rounded-md">
+                <div className="border-2 border-[#fb5a10] h-auto p-3 flex justify-center items-center rounded-md">
                   <div className="flex gap-3 flex-wrap">
                     {fileList.map((file) => (
                       <div
@@ -336,7 +334,11 @@ const AddPackage = () => {
               name="activity"
               label={<p className="text-md">Activity</p>}
             >
-              <Select mode="multiple" placeholder="Select Activities">
+              <Select
+                mode="multiple"
+                placeholder="Select Activities"
+                style={{ width: 200 }}
+              >
                 <Option value="Dune Bashing">Dune Bashing</Option>
                 <Option value="Camel Ride">Camel Ride</Option>
                 <Option value="Quad Biking">Quad Biking</Option>
