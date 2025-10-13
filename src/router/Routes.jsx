@@ -6,7 +6,6 @@ import ForgatePassword from "../Pages/Auth/ForgatePassword/ForgatePassword";
 import Newpass from "../Pages/Auth/NewPass/Newpass";
 import VerifyPass from "../Pages/Auth/VerifyPass/VerifyPass";
 
-
 import MakeAdmin from "../Pages/MakeAdmin/MakeAdmin";
 import Category from "../Pages/Category/Category";
 import AboutUs from "../Pages/Settings/AboutUS/AboutUs";
@@ -23,6 +22,7 @@ import Faq from "../Pages/Faq/Faq";
 import AddPackage from "../Components/AddPackage/AddPackage";
 import EditPackage from "../Components/EditPackage/EditPackage";
 import Refund from "../Pages/Settings/Refund/Refund";
+import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter([
   {
@@ -43,85 +43,90 @@ export const router = createBrowserRouter([
     path: "/new-password",
     element: <Newpass></Newpass>,
   },
-
   {
-    path: "/",
-    element: <MainLayout />,
+    element: <PrivateRoute />,
     children: [
       {
         path: "/",
-        element: <Analytics />,
-      },
-      {
-        path: "/booking-details/:id",
-        element: <BookingDetails />,
-      },
-      {
-        path: "/all-booking",
-        element: <AllBooking />,
-      },
-      {
-        path: "/all-events",
-        element: <AllEvents />,
-      },
-      {
-        path: "/pacakes",
-        element: <AllPackage />,
-      },
-      {
-        path: "/add-package",
-        element: <AddPackage />,
-      },
-      {
-        path: "/edit-package/:id",
-        element: <EditPackage />,
-      },
-      {
-        path: "/blog",
-        element: <Blogs />,
-      },
-      {
-        path: "/faq",
-        element: <Faq />,
-      },
 
-      {
-        path: "/add-category",
-        element: <Category></Category>,
-      },
+        element: <MainLayout />,
+        children: [
+          {
+            path: "/",
+            element: <Analytics />,
+          },
+          {
+            path: "/booking-details/:id",
+            element: <BookingDetails />,
+          },
+          {
+            path: "/all-booking",
+            element: <AllBooking />,
+          },
+          {
+            path: "/all-events",
+            element: <AllEvents />,
+          },
+          {
+            path: "/pacakes",
+            element: <AllPackage />,
+          },
+          {
+            path: "/add-package",
+            element: <AddPackage />,
+          },
+          {
+            path: "/edit-package/:id",
+            element: <EditPackage />,
+          },
+          {
+            path: "/blog",
+            element: <Blogs />,
+          },
+          {
+            path: "/faq",
+            element: <Faq />,
+          },
 
-      {
-        path: "/make-admin",
-        element: <MakeAdmin />,
-      },
+          {
+            path: "/add-category",
+            element: <Category></Category>,
+          },
 
-      // setting:
-      {
-        path: "/settings/about-us",
-        element: <AboutUs />,
-      },
+          {
+            path: "/make-admin",
+            element: <MakeAdmin />,
+          },
 
-      {
-        path: "/settings/privacy-policy",
-        element: <PrivacyPolicy />,
-      },
-      {
-        path: "/settings/terms-condition",
-        element: <TermsCondition />,
-      },
-      {
-        path: "/settings/refund",
-        element: <Refund />,
-      },
+          // setting:
+          {
+            path: "/settings/about-us",
+            element: <AboutUs />,
+          },
 
-      // Admin profile:
-      {
-        path: "/admin-profile",
-        element: <AdminProfile />,
-      },
-      {
-        path: "/notification",
-        element: <Notifications />,
+          {
+            path: "/settings/privacy-policy",
+            element: <PrivacyPolicy />,
+          },
+          {
+            path: "/settings/terms-condition",
+            element: <TermsCondition />,
+          },
+          {
+            path: "/settings/refund",
+            element: <Refund />,
+          },
+
+          // Admin profile:
+          {
+            path: "/admin-profile",
+            element: <AdminProfile />,
+          },
+          {
+            path: "/notification",
+            element: <Notifications />,
+          },
+        ],
       },
     ],
   },

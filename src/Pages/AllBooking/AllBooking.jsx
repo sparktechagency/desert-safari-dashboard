@@ -106,7 +106,6 @@ const AllBooking = () => {
     },
   ];
 
-  const handleSearch = () => {};
   const handleDateChange = (date, dateString) => {
     setDate(dateString);
   };
@@ -119,14 +118,14 @@ const AllBooking = () => {
           <h1 className="text-2xl font-bold">All Booking</h1>
         </div>
         <div className="flex gap-2 items-center">
-          <Input
+          {/* <Input
             placeholder="Search package name"
             value=""
             onChange={handleSearch}
             size="large"
             prefix={<SearchOutlined style={{ cursor: "pointer" }} />}
             className="w-60"
-          />
+          /> */}
 
           <DatePicker
             style={{ width: 200, height: 40 }}

@@ -3,10 +3,18 @@ import { baseApi } from "../../api/baseApi";
 const BookingApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllBooking: builder.query({
-      query: ({ page, limit }) => ({
-        url: `/booking/allBooking?limit=1&page=${page}&limit=${limit}`,
-        method: "GET",
-      }),
+      query: ({ page, limit, date }) => {
+        const queryParams = new URLSearchParams();
+
+        if (page) queryParams.append("page", page);
+        if (limit) queryParams.append("limit", limit);
+        if (date) queryParams.append("date", date);
+
+        return {
+          url: `/booking/allBooking?${queryParams.toString()}`,
+          method: "GET",
+        };
+      },
       providesTags: ["create-booking"],
     }),
 
