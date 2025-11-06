@@ -1,8 +1,23 @@
-import { Form, Input } from "antd";
-import { Link } from "react-router-dom";
+import { Form, Input, message } from "antd";
+import {  useNavigate } from "react-router-dom";
+import { useForgatePasswordMutation } from "../../../redux/features/auth/authApi";
 const ForgatePassword = () => {
+       const navigate = useNavigate()
+    const [forgatePassword] = useForgatePasswordMutation()
     const onFinish = (values) => {
-        console.log("Received values of form: ", values);
+        try {
+            const email = values.email;
+            const response = forgatePassword({email}).unwrap();
+            if (!response) {
+                message.error("Email not found");
+            } else {
+                message.success("OTP sent successfully");
+                navigate('/varification', { state: { email } });
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
@@ -44,14 +59,14 @@ const ForgatePassword = () => {
 
 
                                 <Form.Item className="text-center">
-                                    <Link to="/varification">
+                               
                                         <button
                                             className="bg-primary text-center w-full  p-2 font-semibold text-white px-10 py-2 rounded-2xl shadow-lg"
                                             type="submit"
                                         >
                                             Send a code
                                         </button>
-                                    </Link>
+                                 
                                 </Form.Item>
                             </Form>
                         </div>

@@ -2,101 +2,45 @@
 import { ConfigProvider, Input, Space, Table } from "antd";
 import { useState } from "react";
 
-import { SearchOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
-import { FaArrowTrendUp } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
 import { MdArrowOutward } from "react-icons/md";
+import { useGetAllBookingQuery } from "../../redux/features/bookingApi/bookingApi";
 const RecentBooking = () => {
-  const userData = [
-    {
-      id: "#1239",
-      name: "Mr. Mahmud",
-      email: "mr101@mail.ru",
-      total_booking: 20,
-      contact: "(+33) 7 00 55 59 27",
-      location: "Corona, Michigan",
-      address: "76/4 R no. 60/1 Rue des Saints-Paris, 75005 Paris",
-      date: "07/04/2025 - 6:30 PM",
-      gender: "Male",
-      is_active: "true",
-      booking: [
-        {
-          name: "No of Adults",
-          quantity: 5,
-          price: 2500,
-        },
-        {
-          name: "Single Seater Dune Buggy 30 mins",
-          quantity: 2,
-          price: 900,
-        },
-        {
-          name: "20 Minutes Quad Bike",
-          quantity: 1,
-          price: 1100,
-        },
-        {
-          name: "4 Seater Dune Buggy 30 mins",
-          quantity: 1,
-          price: 700,
-        },
-      ],
-      total_price: 5200,
-      profileImage: "/path/to/profile-image.jpg",
-    },
-    {
-      id: "#1238",
-      name: "Lily",
-      email: "xterris@gmail.com",
-      total_booking: 20,
-      contact: "(+33) 7 00 55 59 27",
-      location: "Great Falls, Maryland",
-      address: "123 Rue des Lilas, Paris, 75008",
-      date: "07/04/2025 - 6:30 PM",
-      gender: "Female",
-      is_active: "true",
-      booking: [
-        {
-          name: "No of Adults",
-          quantity: 4,
-          price: 2500,
-        },
-        {
-          name: "Single Seater Dune Buggy 30 mins",
-          quantity: 3,
-          price: 900,
-        },
-        {
-          name: "20 Minutes Quad Bike",
-          quantity: 2,
-          price: 1100,
-        },
-        {
-          name: "4 Seater Dune Buggy 30 mins",
-          quantity: 1,
-          price: 700,
-        },
-      ],
-      total_price: 6500,
-      profileImage: "/path/to/profile-image.jpg",
-    },
-  ];
+  const [date, setDate] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [bookingId, setBookingId] = useState(null);
+  const navigate = useNavigate();
+  const { data: allBookingData, isLoading } = useGetAllBookingQuery({
+    page: currentPage,
+    limit: pageSize,
+    date,
+  });
 
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [email, setEmail] = useState("");
+  const bookingData =
+    allBookingData?.data?.result?.slice(0, 2)?.map((item) => ({
+      key: item._id,
+      _id: item._id,
+      name: item.customer_name,
+      email: item.customer_email,
+      contact: item.customer_phone,
+      date: item.date,
+      address: item.pickup_location,
+      total_price: item.pricing?.grand_total,
+      tour_title: item.title,
+      images: item.images,
+    })) || [];
 
-  const handleSearch = () => {};
-
-  const handleSession = (record) => {
-    console.log(record);
+  const handleBookingDetails = (bookingId) => {
+    console.log("Booking ID:", bookingId);
+    navigate(`/booking-details/${bookingId}`, { state: { bookingId } });
   };
 
   const columns = [
     {
       title: "Sl No",
-      dataIndex: "slno",
       key: "slno",
-      render: (text, record, index) => index + 1,
+      render: (_, __, index) => index + 1,
     },
     {
       title: "Name",
@@ -112,14 +56,10 @@ const RecentBooking = () => {
       dataIndex: "date",
       key: "date",
     },
-
     {
       title: "Phone Number",
       key: "contact",
-      render: (_, record) => {
-        const contact = record.contact || "N/A";
-        return <p>{contact}</p>;
-      },
+      render: (_, record) => <p>{record.contact || "N/A"}</p>,
     },
     {
       title: "Email",
@@ -129,12 +69,8 @@ const RecentBooking = () => {
     {
       title: "Location",
       key: "address",
-      render: (_, record) => {
-        const address = record?.address || "N/A";
-        return <p>{address}</p>;
-      },
+      render: (_, record) => <p>{record.address || "N/A"}</p>,
     },
-
     {
       title: "Action",
       key: "action",
@@ -151,9 +87,10 @@ const RecentBooking = () => {
           }}
         >
           <Space size="middle">
-            <Link to="/booking-details">
-             <MdArrowOutward className="text-primary h-5 w-5" />
-            </Link>
+            <MdArrowOutward
+              onClick={() => handleBookingDetails(record._id)}
+              className="text-primary h-5 w-5"
+            />
           </Space>
         </ConfigProvider>
       ),
@@ -166,7 +103,6 @@ const RecentBooking = () => {
         <h3 className="text-xl md:text-3xl font-semibold  px-2 md:px-0">
           Recent Booking
         </h3>
-       
       </div>
       <div className="bg-white overflow-x-auto">
         <ConfigProvider
@@ -181,7 +117,7 @@ const RecentBooking = () => {
         >
           <Table
             columns={columns}
-            dataSource={userData || []}
+            dataSource={bookingData || []}
             pagination={false}
             rowKey="id"
           />

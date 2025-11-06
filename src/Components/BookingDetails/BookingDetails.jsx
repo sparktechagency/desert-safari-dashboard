@@ -1,64 +1,88 @@
 import { useState } from "react";
 import { TiLocationOutline } from "react-icons/ti";
 import { Modal, Table } from "antd";
-
-import img1 from "../../assets/image/1.png";
-import img2 from "../../assets/image/2.png";
-import img3 from "../../assets/image/3.png";
-import img4 from "../../assets/image/4.png";
 import { IoCar } from "react-icons/io5";
 import { CgEditBlackPoint } from "react-icons/cg";
 import GobackButton from "../Shared/GobackButton";
+import { useGetSingleBookingQuery } from "../../redux/features/bookingApi/bookingApi";
+import { useLocation } from "react-router-dom";
 
 const BookingDetails = () => {
+  const location = useLocation();
+  const bookingId = location.state?.bookingId;
+
+  const { data: singleBookingData } = useGetSingleBookingQuery(bookingId);
+
   const [isRejected, setIsRejected] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
 
-  const handleReject = () => {
-    setIsRejected(true);
-  };
-
-  const handleApprove = () => {
-    setIsApproved(true);
-  };
 
   const handleConfirmReject = () => {
     setIsRejected(false);
-    Modal.success({
-      content: "Booking Rejected!",
-    });
+    Modal.success({ content: "Booking Rejected!" });
   };
 
   const handleConfirmApprove = () => {
     setIsApproved(false);
-    Modal.success({
-      content: "Booking Approved!",
-    });
+    Modal.success({ content: "Booking Approved!" });
   };
 
-  const bookingData = [
-    { key: 1, name: "No of Adults", quantity: 5, price: "AED 2500" },
-    {
-      key: 2,
-      name: "Single Seater Dune Buggy 30 mins",
-      quantity: 2,
-      price: "AED 900",
-    },
-    { key: 3, name: "20 Minutes Quad Bike", quantity: 2, price: "AED 1100" },
-    {
-      key: 4,
-      name: "4 Seater Dune Buggy 30 Mins",
-      quantity: 1,
-      price: "AED 700",
-    },
-    { name: "Total", quantity: "", price: "AED 5200" },
+  if (!singleBookingData?.data) {
+    return <p>Loading booking details...</p>;
+  }
+
+  const booking = singleBookingData.data;
+
+  // Guests Table
+  const guestsData = [
+    { key: 1, type: "Adults", quantity: booking.adults },
+    { key: 2, type: "Children", quantity: booking.children },
   ];
 
-  const columns = [
+  const guestsColumns = [
+    { title: "Type", dataIndex: "type", key: "type" },
+    { title: "Quantity", dataIndex: "quantity", key: "quantity" },
+  ];
+
+  // Tour Options Table
+  const tourOptionsData = booking.tour_options.map((option, index) => ({
+    key: index + 1,
+    name: option.name
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase()),
+    quantity: option.quantity,
+    price: `${option.currency} ${option.amount * option.quantity}`,
+  }));
+
+  const tourColumns = [
     { title: "No", dataIndex: "key", key: "key" },
-    { title: "Name", dataIndex: "name", key: "name" },
+    { title: "Tour Name", dataIndex: "name", key: "name" },
     { title: "Quantity", dataIndex: "quantity", key: "quantity" },
     { title: "Price", dataIndex: "price", key: "price" },
+  ];
+
+  // Pricing Table
+  const pricingData = [
+    {
+      key: 1,
+      name: "Tour Price",
+      amount: `${booking.currency} ${booking.pricing.tour_price}`,
+    },
+    {
+      key: 2,
+      name: "Additional Price",
+      amount: `${booking.currency} ${booking.pricing.additional_price}`,
+    },
+    {
+      key: 3,
+      name: "Grand Total",
+      amount: `${booking.currency} ${booking.pricing.grand_total}`,
+    },
+  ];
+
+  const pricingColumns = [
+    { title: "Description", dataIndex: "name", key: "name" },
+    { title: "Amount", dataIndex: "amount", key: "amount" },
   ];
 
   return (
@@ -66,45 +90,83 @@ const BookingDetails = () => {
       <div>
         <div className="flex justify-start items-center gap-2">
           <GobackButton />
-          <h1 className="text-2xl font-bold">57 Heritage Desert Experience</h1>
+          <h1 className="text-2xl font-bold">{booking.title}</h1>
         </div>
-     
+
         <div className="flex justify-start items-center gap-2">
           <TiLocationOutline className="h-5 w-5 text-primary my-4" />
-          <p className="text-xl">United Arab Emirates</p>
+          <p className="text-xl">{booking.location}</p>
         </div>
       </div>
 
       <div className="my-4 w-full flex gap-5">
-        <div className="w-[50%] ">
-          <img src={img1} alt="Desert Experience" className="w-full h-auto" />
+        <div className="w-[50%]">
+          <img
+            src={booking.images[0]}
+            alt="Desert Experience"
+            className="w-full h-auto"
+          />
         </div>
-        <div className="w-[50%] ">
-          <img src={img2} alt="Desert Safari" className="w-full mb-5" />
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-3 ">
-            <img src={img3} alt="Desert Safari" className=" w-full" />
-            <img src={img4} alt="Desert Safari " className=" w-full" />
+        <div className="w-[50%]">
+          <img
+            src={booking.images[1]}
+            alt="Desert Safari"
+            className="w-full mb-5"
+          />
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-3">
+            {booking.images.slice(2, 4).map((img, idx) => (
+              <img
+                key={idx}
+                src={img}
+                alt={`Desert Safari ${idx + 3}`}
+                className="w-full"
+              />
+            ))}
           </div>
         </div>
       </div>
 
-      <div className="bg-secondary py-2 px-5 my-4 ">
-        <h1 className="text-xl font-semibold ">Book VIP Desert Safari Dubai</h1>
+      <div className="bg-secondary py-2 px-5 my-4">
+        <h1 className="text-xl font-semibold">Book VIP Desert Safari Dubai</h1>
       </div>
 
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-5 justify-start items-center my-4">
         <h1 className="text-2xl">
-          Date: <span className="text-primary"> 07/04/2025 - 6:30 PM</span>{" "}
+          Date: <span className="text-primary">{booking.date}</span>
         </h1>
         <div className="flex justify-start items-center gap-2">
           <IoCar className="text-primary h-14 w-20" />
           <div>
             <h1 className="text-xl">Activity</h1>
-            <p className="text-sm text-gray-500">Dune Bashing</p>
+            <p className="text-sm text-gray-500">
+              {booking.tour_options
+                .map((o) => o.name.replace(/_/g, " "))
+                .join(", ")}
+            </p>
           </div>
         </div>
       </div>
-      <Table columns={columns} dataSource={bookingData} pagination={false} />
+
+      <h2 className="text-xl font-semibold my-3">Guests</h2>
+      <Table
+        columns={guestsColumns}
+        dataSource={guestsData}
+        pagination={false}
+      />
+
+      <h2 className="text-xl font-semibold my-3">Tour Options</h2>
+      <Table
+        columns={tourColumns}
+        dataSource={tourOptionsData}
+        pagination={false}
+      />
+
+      <h2 className="text-xl font-semibold my-3">Pricing</h2>
+      <Table
+        columns={pricingColumns}
+        dataSource={pricingData}
+        pagination={false}
+      />
 
       <div className="my-4">
         <div className="flex justify-start items-center gap-2">
@@ -112,38 +174,32 @@ const BookingDetails = () => {
           <p className="text-2xl font-bold">Personal Information</p>
         </div>
         <p className="text-xl my-1">
-          <span className="font-semibold">Name: </span> Nahid Hossain
+          <span className="font-semibold">Name: </span> {booking.customer_name}
         </p>
         <p className="text-xl my-1">
-          <span className="font-semibold">Email: </span> workwithnahid@gmail.com
+          <span className="font-semibold">Email: </span>{" "}
+          {booking.customer_email}
         </p>
         <p className="text-xl my-1">
-          <span className="font-semibold">Phone Number: </span> 01840560614
+          <span className="font-semibold">Phone Number: </span>{" "}
+          {booking.customer_phone}
         </p>
         <p className="text-xl my-1">
-          <span className="font-semibold">Country: </span> Bangladesh
+          <span className="font-semibold">Country: </span>{" "}
+          {booking.customer_country}
         </p>
         <p className="text-xl my-1">
-          <span className="font-semibold">Pickup location: </span> Badda, Dhaka
+          <span className="font-semibold">Pickup location: </span>{" "}
+          {booking.pickup_location}
         </p>
         <p className="text-xl my-1">
-          <span className="font-semibold"> Transaction ID: </span> 255424FD34
+          <span className="font-semibold">Payment Status: </span>{" "}
+          {booking.payment_status}
         </p>
-      </div>
-
-      <div className="my-8 flex justify-center items-center gap-5">
-        <button
-          onClick={handleApprove}
-          className="bg-blue-500 text-white px-16 py-3 rounded-md text-md"
-        >
-          Approve
-        </button>
-        <button
-          onClick={handleReject}
-          className="bg-primary text-white px-16 py-3 rounded-md text-md"
-        >
-          Reject
-        </button>
+        <p className="text-xl my-1">
+          <span className="font-semibold">Transaction ID: </span>{" "}
+          {booking.stripe_sessionId}
+        </p>
       </div>
 
       {isRejected && (

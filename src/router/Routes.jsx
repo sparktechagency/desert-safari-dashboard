@@ -5,7 +5,6 @@ import SignIn from "../Pages/Auth/SignIn/SignIn";
 import ForgatePassword from "../Pages/Auth/ForgatePassword/ForgatePassword";
 import Newpass from "../Pages/Auth/NewPass/Newpass";
 import VerifyPass from "../Pages/Auth/VerifyPass/VerifyPass";
-import ContinuePage from "../Pages/Auth/ContinuePage/ContinuePage";
 
 import MakeAdmin from "../Pages/MakeAdmin/MakeAdmin";
 import Category from "../Pages/Category/Category";
@@ -23,6 +22,7 @@ import Faq from "../Pages/Faq/Faq";
 import AddPackage from "../Components/AddPackage/AddPackage";
 import EditPackage from "../Components/EditPackage/EditPackage";
 import Refund from "../Pages/Settings/Refund/Refund";
+import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter([
   {
@@ -44,87 +44,89 @@ export const router = createBrowserRouter([
     element: <Newpass></Newpass>,
   },
   {
-    path: "/continue-page",
-    element: <ContinuePage />,
-  },
-  {
-    path: "/",
-    element: <MainLayout />,
+    element: <PrivateRoute />,
     children: [
       {
         path: "/",
-        element: <Analytics />,
-      },
-      {
-        path: "/booking-details",
-        element: <BookingDetails />,
-      },
-      {
-        path: "/all-booking",
-        element: <AllBooking />,
-      },
-      {
-        path: "/all-events",
-        element: <AllEvents />,
-      },
-      {
-        path: "/pacakes",
-        element: <AllPackage />,
-      },
-      {
-        path: "/add-package",
-        element: <AddPackage />,
-      },
-      {
-        path: "/edit-package",
-        element: <EditPackage />,
-      },
-      {
-        path: "/blog",
-        element: <Blogs />,
-      },
-      {
-        path: "/faq",
-        element: <Faq />,
-      },
 
-      {
-        path: "/add-category",
-        element: <Category></Category>,
-      },
+        element: <MainLayout />,
+        children: [
+          {
+            path: "/",
+            element: <Analytics />,
+          },
+          {
+            path: "/booking-details/:id",
+            element: <BookingDetails />,
+          },
+          {
+            path: "/all-booking",
+            element: <AllBooking />,
+          },
+          {
+            path: "/all-events",
+            element: <AllEvents />,
+          },
+          {
+            path: "/pacakes",
+            element: <AllPackage />,
+          },
+          {
+            path: "/add-package",
+            element: <AddPackage />,
+          },
+          {
+            path: "/edit-package/:id",
+            element: <EditPackage />,
+          },
+          {
+            path: "/blog",
+            element: <Blogs />,
+          },
+          {
+            path: "/faq",
+            element: <Faq />,
+          },
 
-      {
-        path: "/make-admin",
-        element: <MakeAdmin />,
-      },
+          {
+            path: "/add-category",
+            element: <Category></Category>,
+          },
 
-      // setting:
-      {
-        path: "/settings/about-us",
-        element: <AboutUs />,
-      },
+          {
+            path: "/make-admin",
+            element: <MakeAdmin />,
+          },
 
-      {
-        path: "/settings/privacy-policy",
-        element: <PrivacyPolicy />,
-      },
-      {
-        path: "/settings/terms-condition",
-        element: <TermsCondition />,
-      },
-      {
-        path: "/settings/refund",
-        element: <Refund />,
-      },
+          // setting:
+          {
+            path: "/settings/about-us",
+            element: <AboutUs />,
+          },
 
-      // Admin profile:
-      {
-        path: "/admin-profile",
-        element: <AdminProfile />,
-      },
-      {
-        path: "/notification",
-        element: <Notifications />,
+          {
+            path: "/settings/privacy-policy",
+            element: <PrivacyPolicy />,
+          },
+          {
+            path: "/settings/terms-condition",
+            element: <TermsCondition />,
+          },
+          {
+            path: "/settings/refund",
+            element: <Refund />,
+          },
+
+          // Admin profile:
+          {
+            path: "/admin-profile",
+            element: <AdminProfile />,
+          },
+          {
+            path: "/notification",
+            element: <Notifications />,
+          },
+        ],
       },
     ],
   },
