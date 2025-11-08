@@ -25,7 +25,15 @@ const BookingApi = baseApi.injectEndpoints({
       }),
       providesTags: ["create-booking"],
     }),
+    // dashboard stats:
+    getbookingStats: builder.query({
+      query: (year) => ({
+        url: `/user/dashboard/stats/${year}`,
+        method: "GET",
+      }),
+      providesTags: ["bookings"],
+    }),
   }),
 });
 
-export const { useGetAllBookingQuery, useGetSingleBookingQuery } = BookingApi;
+export const { useGetAllBookingQuery, useGetSingleBookingQuery , useGetbookingStatsQuery} = BookingApi;

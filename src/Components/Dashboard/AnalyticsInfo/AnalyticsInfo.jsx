@@ -3,7 +3,7 @@ import { Col } from "antd";
 import { FaUsers } from "react-icons/fa";
 import { useGetAllBookingQuery } from "../../../redux/features/bookingApi/bookingApi";
 import { useState } from "react";
-// import earning from "../../../assets/image/income.png";
+import earning from "../../../assets/image/income.png";
 
 const AnalyticsInfo = () => {
   const [date, setDate] = useState("");
@@ -15,8 +15,8 @@ const AnalyticsInfo = () => {
     date,
   });
   return (
-    <div className="mb-10">
-      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+    <div className="">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* earning */}
         <Col>
           <div className="flex flex-col justify-start  border-r-2 py-4 px-6 bg-secondary rounded-md gap-5  h-auto md:h-28">
@@ -34,7 +34,7 @@ const AnalyticsInfo = () => {
           </div>
         </Col>
 
-        {/* <Col>
+        <Col>
           <div className="flex flex-col justify-start  border-r-2 py-4 px-6 bg-secondary rounded-md gap-5  h-auto md:h-28">
             <div className="flex  gap-3 items-cenetr">
               <p className="p-3 rounded-full bg-white flex justify-center items-center">
@@ -46,7 +46,7 @@ const AnalyticsInfo = () => {
               </div>
             </div>
           </div>
-        </Col> */}
+        </Col>
       </div>
     </div>
   );

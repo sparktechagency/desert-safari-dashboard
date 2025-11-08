@@ -9,37 +9,32 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useGetbookingStatsQuery } from "../../../redux/features/bookingApi/bookingApi";
 
 const SubscriptionGrowth = () => {
-  const [selectedYear, setSelectedYear] = useState(dayjs().year(2025));
+  const [selectedYear, setSelectedYear] = useState(dayjs().year());
+  const { data: bookingData, refetch } = useGetbookingStatsQuery(selectedYear);
 
-  // Mock data
-  const mockData = [
-    { name: "Jan", earnings: 10 },
-    { name: "Feb", earnings: 20 },
-    { name: "Mar", earnings: 30 },
-    { name: "Apr", earnings: 70 },
-    { name: "May", earnings: 65 },
-    { name: "Jun", earnings: 40 },
-    { name: "Jul", earnings: 30 },
-    { name: "Aug", earnings: 45 },
-    { name: "Sep", earnings: 40 },
-    { name: "Oct", earnings: 60 },
-    { name: "Nov", earnings: 80 },
-    { name: "Dec", earnings: 90 },
-  ];
+  const chartData = bookingData?.data?.monthlyData?.map((item) => ({
+    name: item.month,
+    earnings: item.total,
+  })) || [];
 
   const onChange = (date, dateString) => {
     setSelectedYear(dateString);
   };
+
+  useEffect(() => {
+    refetch();
+  }, [selectedYear, refetch]);
 
   return (
     <div className="mt-4 p-4">
       <div className="bg-gray-50 rounded-lg shadow px-4 py-6">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <h1 className="text-lg md:text-xl font-medium">
-            Total booking Overview
+            Total Booking Overview
           </h1>
           <DatePicker
             onChange={onChange}
@@ -53,13 +48,8 @@ const SubscriptionGrowth = () => {
         <div className="mt-6" style={{ height: "300px" }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
-              data={mockData}
-              margin={{
-                top: 10,
-                right: 20,
-                left: -10,
-                bottom: 0,
-              }}
+              data={chartData}
+              margin={{ top: 10, right: 20, left: -10, bottom: 0 }}
             >
               <defs>
                 <linearGradient id="colorEarnings" x1="0" y1="0" x2="0" y2="1">
@@ -69,7 +59,7 @@ const SubscriptionGrowth = () => {
               </defs>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
-              <YAxis tickFormatter={(value) => `${value}%`} />
+              <YAxis />
               <Tooltip />
               <Area
                 type="monotone"
