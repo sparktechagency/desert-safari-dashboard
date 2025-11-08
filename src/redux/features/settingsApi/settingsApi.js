@@ -64,6 +64,34 @@ const SettingsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["refund-policy"],
     }),
+
+    // profile APi:
+    getAdminProfile: builder.query({
+      query: () => ({
+        url: "/user/my-profile",
+        method: "GET",
+      }),
+      providesTags: ["profile"],
+    }),
+
+    updateProfile: builder.mutation({
+      query: (data) => ({
+        url: "/user/edit-profile",
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["profile"],
+    }),
+
+    // chnage passwor:
+    changePass: builder.mutation({
+      query: (data) => ({
+        url: "/auth/changePassword",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["changePassword"],
+    }),
   }),
 });
 
@@ -74,7 +102,9 @@ export const {
   useGetPrivacyPolicyQuery,
   useCreateTermsAndConditionsMutation,
   useGetTermsAndConditionsQuery,
-
   useGetAllRefundQuery,
   useCreateRefundMutation,
+  useGetAdminProfileQuery,
+  useUpdateProfileMutation,
+  useChangePassMutation
 } = SettingsApi;

@@ -1,5 +1,5 @@
 import brandlogo from "./Logo.png"
-import user from "./user.png"
+import user from "./user.jpg"
 import home from "./home.png"
 import blockUser from "./blockUser.png"
 import patient from "./patient.png"

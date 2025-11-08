@@ -6,7 +6,8 @@ import { ConfigProvider, Drawer } from "antd";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { FaX } from "react-icons/fa6";
 import brandlogo from "../../assets/image/Logo.png";
-import user from "../../assets/image/user.png";
+import user from "../../assets/image/user.jpg";
+import { useGetAdminProfileQuery } from "../../redux/features/settingsApi/settingsApi";
 
 const MainLayout = () => {
   const [drawer, setDrawer] = useState(false);
@@ -26,7 +27,7 @@ const MainLayout = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
+  const { data: adminData } = useGetAdminProfileQuery();
   return (
     <div className="h-screen flex flex-col">
       <header className="h-20 bg-primary flex justify-between items-center px-2 md:px-20 gap-2 sticky top-0 z-50">
@@ -55,7 +56,9 @@ const MainLayout = () => {
                 alt="User"
                 className="w-10 h-10 rounded-full border border-primary"
               />
-              <p className="md:text-xl font-semibold">Rabeya Akter</p>
+              <p className="md:text-xl font-semibold">
+                {adminData?.data?.name}
+              </p>
             </div>
           </Link>
         </div>
