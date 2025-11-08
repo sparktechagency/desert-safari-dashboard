@@ -25,7 +25,7 @@ const MakeAdmin = () => {
     const onFinish = (values) => {
         console.log('Success:', values);
     };
-    // table data:
+    // table data::
 
     const data = [
         {
