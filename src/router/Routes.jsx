@@ -23,6 +23,7 @@ import AddPackage from "../Components/AddPackage/AddPackage";
 import EditPackage from "../Components/EditPackage/EditPackage";
 import Refund from "../Pages/Settings/Refund/Refund";
 import PrivateRoute from "./PrivateRoute";
+import TransferOption from "../Pages/TransferOption/TransferOption";
 
 export const router = createBrowserRouter([
   {
@@ -68,7 +69,7 @@ export const router = createBrowserRouter([
             element: <AllEvents />,
           },
           {
-            path: "/pacakes",
+            path: "/packages",
             element: <AllPackage />,
           },
           {
@@ -82,6 +83,10 @@ export const router = createBrowserRouter([
           {
             path: "/blog",
             element: <Blogs />,
+          },
+          {
+            path: "/transfer-option",
+            element: <TransferOption />,
           },
           {
             path: "/faq",

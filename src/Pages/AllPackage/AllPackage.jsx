@@ -222,6 +222,50 @@ const AllPackage = () => {
               {selectedPackage.camel_bike?.currency}
             </p>
             <p>
+              <strong>Camel Bike:</strong> {selectedPackage.camel_bike?.amount}{" "}
+              {selectedPackage.camel_bike?.currency}
+            </p>
+            <p>
+              <strong>Tea / Coffee / Soft Drinks:</strong>{" "}
+              {selectedPackage.tea_cofee_soft_drinks?.amount}{" "}
+              {selectedPackage.tea_cofee_soft_drinks?.currency}
+            </p>
+            <p>
+              <strong>Hena Tattoos:</strong>{" "}
+              {selectedPackage.hena_tattos?.amount}{" "}
+              {selectedPackage.hena_tattos?.currency}
+            </p>
+            <p>
+              <strong>Fire Show:</strong> {selectedPackage.fire_show?.amount}{" "}
+              {selectedPackage.fire_show?.currency}
+            </p>
+            <p>
+              <strong>Arabic Costume:</strong>{" "}
+              {selectedPackage.arabic_costume?.amount}{" "}
+              {selectedPackage.arabic_costume?.currency}
+            </p>
+            <p>
+              <strong>Shisha Smoking:</strong>{" "}
+              {selectedPackage.shisha_smoking?.amount}{" "}
+              {selectedPackage.shisha_smoking?.currency}
+            </p>
+            <p>
+              <strong>Falcon Picture:</strong>{" "}
+              {selectedPackage.falcon_picture?.amount}{" "}
+              {selectedPackage.falcon_picture?.currency}
+            </p>
+            <p>
+              <strong>Sand Boarding:</strong>{" "}
+              {selectedPackage.sand_boarding?.amount}{" "}
+              {selectedPackage.sand_boarding?.currency}
+            </p>
+            <p>
+              <strong>Belly Dance:</strong>{" "}
+              {selectedPackage.belly_dance?.amount}{" "}
+              {selectedPackage.belly_dance?.currency}
+            </p>
+
+            <p>
               <strong>Original Price:</strong>{" "}
               {selectedPackage.original_price?.amount}{" "}
               {selectedPackage.original_price?.currency}

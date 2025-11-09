@@ -1,19 +1,19 @@
 import { DatePicker, Form, Input, message, Select, Upload } from "antd";
 import GobackButton from "../Shared/GobackButton";
-import {  FaPlus, FaTimes } from "react-icons/fa";
+import { FaPlus, FaTimes } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import {
   useGetSInglePackageQuery,
   useUpdatePackageMutation,
 } from "../../redux/features/packageApi/packageApi";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 
 const EditPackage = () => {
   const [form] = Form.useForm();
-  const [UpdatePackage] = useUpdatePackageMutation();
+  const [UpdatePackage, { isLoading }] = useUpdatePackageMutation();
   const { id } = useParams();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const { data: singleData } = useGetSInglePackageQuery(id);
   console.log("single package", singleData?.data);
@@ -62,6 +62,8 @@ const EditPackage = () => {
         childPrice: d.childPrice.amount,
         single_sitter_dune_buggy: d.single_sitter_dune_buggy.amount,
         four_sitter_dune_buggy: d.four_sitter_dune_buggy.amount,
+        dune_buggy_ride: d.dune_buggy_ride?.amount,
+
         quad_bike: d.quad_bike.amount,
         camel_bike: d.camel_bike.amount,
         discount: d.discount,
@@ -73,6 +75,14 @@ const EditPackage = () => {
         tour_plan: d.tour_plan?.join("\n"),
         description: d.description,
         coverImage: d.coverImage,
+        tea_cofee_soft_drinks: d?.tea_cofee_soft_drinks?.amount || 0,
+        hena_tattos: d?.hena_tattos?.amount || 0,
+        fire_show: d?.fire_show?.amount || 0,
+        arabic_costume: d?.arabic_costume?.amount || 0,
+        shisha_smoking: d?.shisha_smoking?.amount || 0,
+        falcon_picture: d?.falcon_picture?.amount || 0,
+        sand_boarding: d?.sand_boarding?.amount || 0,
+        belly_dance: d?.belly_dance?.amount || 0,
       });
 
       // Prefill existing images for preview
@@ -122,6 +132,39 @@ const EditPackage = () => {
     console.log(imageUrls);
     try {
       const formData = new FormData();
+      // const data = {
+      //   title: values.title,
+      //   location: values.location,
+      //   duration: values.duration,
+      //   max_adult: Number(values.max_adult) || 0,
+      //   child_min_age: Number(values.child_min_age) || 0,
+      //   pickup: values.pickup,
+      //   drop_off: values.drop_off,
+
+      //   availability: availabilityObj,
+
+      //   activity: formattedActivity,
+      //   adultPrice: { amount: Number(values.adultPrice) || 0, currency: "AED" },
+      //   childPrice: { amount: Number(values.childPrice) || 0, currency: "AED" },
+      //   single_sitter_dune_buggy: {
+      //     amount: Number(values.single_sitter_dune_buggy) || 0,
+      //     currency: "AED",
+      //   },
+      //   four_sitter_dune_buggy: {
+      //     amount: Number(values.four_sitter_dune_buggy) || 0,
+      //     currency: "AED",
+      //   },
+      //   quad_bike: { amount: Number(values.quad_bike) || 0, currency: "AED" },
+      //   camel_bike: { amount: Number(values.camel_bike) || 0, currency: "AED" },
+      //   discount: Number(values.discount) || 0,
+      //   note: values.note,
+      //   refund_policy: values.refund_policy,
+      //   included: values.included ? values.included.split("\n") : [],
+      //   excluded: values.excluded ? values.excluded.split("\n") : [],
+      //   tour_plan: values.tour_plan ? values.tour_plan.split("\n") : [],
+      //   description: values.description,
+      // };
+
       const data = {
         title: values.title,
         location: values.location,
@@ -130,9 +173,7 @@ const EditPackage = () => {
         child_min_age: Number(values.child_min_age) || 0,
         pickup: values.pickup,
         drop_off: values.drop_off,
-
         availability: availabilityObj,
-
         activity: formattedActivity,
         adultPrice: { amount: Number(values.adultPrice) || 0, currency: "AED" },
         childPrice: { amount: Number(values.childPrice) || 0, currency: "AED" },
@@ -144,8 +185,41 @@ const EditPackage = () => {
           amount: Number(values.four_sitter_dune_buggy) || 0,
           currency: "AED",
         },
+        dune_buggy_ride: {
+          amount: Number(values.dune_buggy_ride) || 0,
+          currency: "AED",
+        },
         quad_bike: { amount: Number(values.quad_bike) || 0, currency: "AED" },
         camel_bike: { amount: Number(values.camel_bike) || 0, currency: "AED" },
+        tea_cofee_soft_drinks: {
+          amount: Number(values.tea_cofee_soft_drinks) || 0,
+          currency: "AED",
+        },
+        hena_tattos: {
+          amount: Number(values.hena_tattos) || 0,
+          currency: "AED",
+        },
+        fire_show: { amount: Number(values.fire_show) || 0, currency: "AED" },
+        arabic_costume: {
+          amount: Number(values.arabic_costume) || 0,
+          currency: "AED",
+        },
+        shisha_smoking: {
+          amount: Number(values.shisha_smoking) || 0,
+          currency: "AED",
+        },
+        falcon_picture: {
+          amount: Number(values.falcon_picture) || 0,
+          currency: "AED",
+        },
+        sand_boarding: {
+          amount: Number(values.sand_boarding) || 0,
+          currency: "AED",
+        },
+        belly_dance: {
+          amount: Number(values.belly_dance) || 0,
+          currency: "AED",
+        },
         discount: Number(values.discount) || 0,
         note: values.note,
         refund_policy: values.refund_policy,
@@ -154,6 +228,7 @@ const EditPackage = () => {
         tour_plan: values.tour_plan ? values.tour_plan.split("\n") : [],
         description: values.description,
       };
+
       console.log(data);
       formData.append("data", JSON.stringify(data));
 
@@ -162,28 +237,37 @@ const EditPackage = () => {
       //   formData.append("coverImage", Cover);
       // }
 
-     
+      // ✅ Add existing image URLs (kept ones)
+      const existingImages = fileList
+        .filter((f) => f.url && !f.originFileObj)
+        .map((f) => f.url);
+      if (existingImages.length > 0) {
+        formData.append("existingImages", JSON.stringify(existingImages));
+      }
 
-      (fileList || [])
-        .map((f) => f.originFileObj ?? f)
-        .forEach((file) => {
-          formData.append("images", file, file.name || "image");
-        });
+      // ✅ Add newly uploaded images safely
+      const newImages = fileList.filter((f) => f.originFileObj instanceof Blob);
+      newImages.forEach((file) => {
+        formData.append("images", file.originFileObj, file.name || "image.jpg");
+      });
 
-      // console.log(...formData);
+    
 
       const res = await UpdatePackage({ _id: id, data: formData }).unwrap();
 
       if (res?.success) {
-        message.success("Package created successfully!");
+        message.success("Package Updated successfully!");
         form.resetFields();
         setFileList([]);
+        navigate("/packages")
       } else {
-        message.error(res?.message || "Failed to create package");
+        message.error(res?.message || "Failed to Update package");
       }
     } catch (error) {
-      console.error("Error creating package:", error);
-      message.error("Something went wrong. Please try again.");
+      console.error("Error Updating package:", error);
+      message.error(
+        error?.message || "Something went wrong. Please try again."
+      );
     }
   };
 
@@ -505,22 +589,6 @@ const EditPackage = () => {
             </div>
 
             <div className="flex justify-between items-center gap-4 mb-4">
-              <h1 className="w-[250px]">20 Minutes Quad Bike</h1>
-              <Form.Item name="quad-bike-2" className="text-md w-[150px]">
-                <Input
-                  style={{ padding: "6px" }}
-                  className="text-md"
-                  placeholder="00 AED"
-                />
-              </Form.Item>
-              <Form.Item name="currency" className="w-[100px]">
-                <Select placeholder="AED">
-                  <Option value="AED">AED</Option>
-                </Select>
-              </Form.Item>
-            </div>
-
-            <div className="flex justify-between items-center gap-4 mb-4">
               <h1 className="w-[250px]">4 Seater Dune Buggy 30 Mins</h1>
               <Form.Item
                 name="four_sitter_dune_buggy"
@@ -538,7 +606,148 @@ const EditPackage = () => {
                 </Select>
               </Form.Item>
             </div>
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Dune Buggy Ride</h1>
+              <Form.Item name="dune_buggy_ride" className="text-md w-[150px]">
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
 
+            {/* Tea, Coffee, Soft Drinks */}
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Tea, Coffee & Soft Drinks</h1>
+              <Form.Item
+                name="tea_cofee_soft_drinks"
+                className="text-md w-[150px]"
+              >
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+
+            {/* Henna Tattoos */}
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Henna Tattoos</h1>
+              <Form.Item name="hena_tattos" className="text-md w-[150px]">
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Fire Show</h1>
+              <Form.Item name="fire_show" className="text-md w-[150px]">
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Arabic Costume</h1>
+              <Form.Item name="arabic_costume" className="text-md w-[150px]">
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Shisha Smoking</h1>
+              <Form.Item name="shisha_smoking" className="text-md w-[150px]">
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Falcon Picture</h1>
+              <Form.Item name="falcon_picture" className="text-md w-[150px]">
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Sand Boarding</h1>
+              <Form.Item name="sand_boarding" className="text-md w-[150px]">
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Belly Dance</h1>
+              <Form.Item name="belly_dance" className="text-md w-[150px]">
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
             <div className="flex justify-between items-center gap-4 mb-4">
               <h1 className="w-[250px]">Overall Discount</h1>
               <Form.Item name="discount" className="text-md w-[150px]">
@@ -556,11 +765,7 @@ const EditPackage = () => {
             </div>
           </div>
 
-          <Form.Item
-            name="expectedPickup"
-            label="Expected Pickup"
-            className="text-md"
-          >
+          <Form.Item name="pickup" label="Expected Pickup" className="text-md">
             <Input
               style={{ padding: "6px" }}
               className="text-md"
@@ -635,7 +840,7 @@ const EditPackage = () => {
               className="text-center w-full  p-2 font-bold text-2xl bg-primary  text-white px-10 py-2 rounded-md shadow-lg"
               type="submit"
             >
-              Upload
+              {isLoading ? "Uploading..." : "Upload"}
             </button>
           </Form.Item>
         </Form>

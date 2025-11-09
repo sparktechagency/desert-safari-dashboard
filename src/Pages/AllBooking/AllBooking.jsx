@@ -81,6 +81,11 @@ const AllBooking = () => {
       render: (_, record) => <p>{record.address || "N/A"}</p>,
     },
     {
+      title: "Transfer Option",
+      key: "transfer_option",
+      render: (_, record) => <p>{record?.transfer_option || "N/A"}</p>,
+    },
+    {
       title: "Action",
       key: "action",
       render: (_, record) => (
