@@ -1,5 +1,13 @@
-import { Input, message, Modal, Upload, Form, Pagination } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import {
+  Input,
+  message,
+  Modal,
+  Upload,
+  Form,
+  Pagination,
+  ConfigProvider,
+  Button,
+} from "antd";
 import { FaEdit, FaImage, FaTrash } from "react-icons/fa";
 import GobackButton from "../../Components/Shared/GobackButton";
 import Swal from "sweetalert2";
@@ -130,7 +138,6 @@ const Blogs = () => {
     refetch();
   };
 
-  // ✅ When clicking the "clear" (×) icon
   const handleClearSearch = () => {
     setSearchText("");
     refetch();
@@ -144,18 +151,45 @@ const Blogs = () => {
         </div>
 
         <div className="flex flex-wrap gap-2 items-center">
-          <Search
-            allowClear
-            placeholder="Search blog by title"
-            onSearch={handleSearch}
-            enterButton
-            onChange={(e) => {
-              if (e.target.value === "") {
-                handleClearSearch();
-              }
-            }}
-            style={{ width: 250 }}
-          />
+      <ConfigProvider
+  theme={{
+    components: {
+      Button: {
+        defaultActiveBorderColor: "rgb(250,84,28)",
+        defaultActiveColor: "rgb(250,84,28)",
+        defaultBg: "rgb(250,84,28)",
+        defaultColor: "rgb(255,255,255)",
+        defaultHoverBg: "rgb(250,84,28)",
+        defaultHoverBorderColor: "rgb(250,84,28)",
+        defaultHoverColor: "rgb(255,255,255)",
+      },
+    },
+  }}
+>
+  <Search
+    allowClear
+    placeholder="Search blog by title"
+    onSearch={handleSearch}
+    onChange={(e) => {
+      if (e.target.value === "") {
+        handleClearSearch();
+      }
+    }}
+    // enterButton={
+    //   <Button
+    //     type="default"
+    //     style={{
+    //       backgroundColor: "rgb(250,84,28)",
+    //       color: "#fff",
+    //       borderColor: "rgb(250,84,28)",
+    //     }}
+    //   >
+    //     Search
+    //   </Button>
+    // }
+    style={{ width: 250 }}
+  />
+</ConfigProvider>
 
           <button
             onClick={showModal}
