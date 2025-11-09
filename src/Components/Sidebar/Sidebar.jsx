@@ -3,7 +3,7 @@ import { useEffect, useState, useMemo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { AiOutlineSetting } from "react-icons/ai";
 import { FiUser, FiLogOut } from "react-icons/fi";
-import { BiChevronDown } from "react-icons/bi";
+import { BiChevronDown, BiTransferAlt } from "react-icons/bi";
 import { MdDashboard, MdPrivacyTip } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import { RiTerminalWindowLine } from "react-icons/ri";
@@ -11,6 +11,7 @@ import { GrMapLocation } from "react-icons/gr";
 import { SiHomeassistantcommunitystore } from "react-icons/si";
 import { SlNotebook } from "react-icons/sl";
 import { LuArrowRightLeft, LuFileQuestion } from "react-icons/lu";
+import { LiaCarSolid } from "react-icons/lia";
 
 const Sidebar = ({ onClose, closeDrawer }) => {
   const location = useLocation();
@@ -43,6 +44,11 @@ const Sidebar = ({ onClose, closeDrawer }) => {
         icon: <SlNotebook className="h-5 w-5" />,
         label: "Add Blog",
         Link: "/blog",
+      },
+      {
+        icon: <BiTransferAlt className="h-5 w-5" />,
+        label: "Transfer Option",
+        Link: "/transfer-option",
       },
       {
         icon: <LuFileQuestion className="h-5 w-5" />,

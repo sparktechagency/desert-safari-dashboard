@@ -24,7 +24,7 @@ const Blogs = () => {
   const [EditCover, setEditCover] = useState(null);
   const [pageSize, setPageSize] = useState(10);
   const [pageNumber, setPageNumber] = useState(1);
-  const [searchText, setSearchText] = useState();
+  const [searchText, setSearchText] = useState("");
 
   const [createBlogs] = useCreateBlogsMutation();
   const [updateBlogs] = useUpdateBlogsMutation();
@@ -33,14 +33,14 @@ const Blogs = () => {
   const { data: allBlogsData, refetch } = useGetallBlogsQuery({
     page: pageNumber,
     limit: pageSize,
-    title: searchText || undefined,
+    title: searchText ,
   });
 
   const blogsData = allBlogsData?.data?.result;
-  console.log(allBlogsData);
+  console.log(blogsData);
 
   useEffect(() => {
-    refetch(); // refresh data when search, page or pageSize changes
+    refetch(); 
   }, [pageNumber, pageSize, searchText, refetch]);
 
   const showModal = () => setIsModalVisible(true);
