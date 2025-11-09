@@ -3,14 +3,15 @@ import GobackButton from "../Shared/GobackButton";
 import { FaImage, FaPlus, FaTimes } from "react-icons/fa";
 import { useState } from "react";
 import { useCreatePackageMutation } from "../../redux/features/packageApi/packageApi";
+import { useNavigate } from "react-router-dom";
 
 const AddPackage = () => {
-  const [createPackage] = useCreatePackageMutation();
+  const [createPackage, { isLoading }] = useCreatePackageMutation();
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   console.log("fileList", fileList);
   const { Option } = Select;
-
+  const navigate = useNavigate();
   const handleBeforeUpload = (file) => {
     setFileList((prevList) => [...prevList, file]);
 
@@ -92,7 +93,41 @@ const AddPackage = () => {
         },
         quad_bike: { amount: Number(values.quad_bike) || 0, currency: "AED" },
         camel_bike: { amount: Number(values.camel_bike) || 0, currency: "AED" },
+        tea_cofee_soft_drinks: {
+          amount: Number(values.tea_cofee_soft_drinks) || 0,
+          currency: "AED",
+        },
+        hena_tattos: {
+          amount: Number(values.hena_tattos) || 0,
+          currency: "AED",
+        },
+        fire_show: { amount: Number(values.fire_show) || 0, currency: "AED" },
+        arabic_costume: {
+          amount: Number(values.arabic_costume) || 0,
+          currency: "AED",
+        },
+        shisha_smoking: {
+          amount: Number(values.shisha_smoking) || 0,
+          currency: "AED",
+        },
+        falcon_picture: {
+          amount: Number(values.falcon_picture) || 0,
+          currency: "AED",
+        },
+        sand_boarding: {
+          amount: Number(values.sand_boarding) || 0,
+          currency: "AED",
+        },
+        belly_dance: {
+          amount: Number(values.belly_dance) || 0,
+          currency: "AED",
+        },
+        dune_buggy_ride: {
+          amount: Number(values.dune_buggy_ride) || 0,
+          currency: "AED",
+        },
         discount: Number(values.discount) || 0,
+
         note: values.note,
         refund_policy: values.refund_policy,
         included: values.included ? values.included.split("\n") : [],
@@ -120,7 +155,9 @@ const AddPackage = () => {
       if (res?.success) {
         message.success("Package created successfully!");
         form.resetFields();
+        setPreviewCoverImage(null);
         setFileList([]);
+        navigate("/packages");
       } else {
         message.error(res?.message || "Failed to create package");
       }
@@ -450,8 +487,25 @@ const AddPackage = () => {
                 </Select>
               </Form.Item>
             </div>
-
             <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">4 Seater Dune Buggy 30 Mins</h1>
+              <Form.Item
+                name="four_sitter_dune_buggy"
+                className="text-md w-[150px]"
+              >
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            {/* <div className="flex justify-between items-center gap-4 mb-4">
               <h1 className="w-[250px]">20 Minutes Quad Bike</h1>
               <Form.Item name="quad-bike-2" className="text-md w-[150px]">
                 <Input
@@ -465,14 +519,138 @@ const AddPackage = () => {
                   <Option value="AED">AED</Option>
                 </Select>
               </Form.Item>
+            </div> */}
+            {/* Dune Buggy Ride */}
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Dune Buggy Ride</h1>
+              <Form.Item name="dune_buggy_ride" className="text-md w-[150px]">
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
             </div>
 
+            {/* Tea, Coffee, Soft Drinks */}
             <div className="flex justify-between items-center gap-4 mb-4">
-              <h1 className="w-[250px]">4 Seater Dune Buggy 30 Mins</h1>
+              <h1 className="w-[250px]">Tea, Coffee & Soft Drinks</h1>
               <Form.Item
-                name="four_sitter_dune_buggy"
+                name="tea_cofee_soft_drinks"
                 className="text-md w-[150px]"
               >
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+
+            {/* Henna Tattoos */}
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Henna Tattoos</h1>
+              <Form.Item name="hena_tattos" className="text-md w-[150px]">
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Fire Show</h1>
+              <Form.Item name="fire_show" className="text-md w-[150px]">
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Arabic Costume</h1>
+              <Form.Item name="arabic_costume" className="text-md w-[150px]">
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Shisha Smoking</h1>
+              <Form.Item name="shisha_smoking" className="text-md w-[150px]">
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Falcon Picture</h1>
+              <Form.Item name="falcon_picture" className="text-md w-[150px]">
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Sand Boarding</h1>
+              <Form.Item name="sand_boarding" className="text-md w-[150px]">
+                <Input
+                  style={{ padding: "6px" }}
+                  className="text-md"
+                  placeholder="00 AED"
+                />
+              </Form.Item>
+              <Form.Item name="currency" className="w-[100px]">
+                <Select placeholder="AED">
+                  <Option value="AED">AED</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="flex justify-between items-center gap-4 mb-4">
+              <h1 className="w-[250px]">Belly Dance</h1>
+              <Form.Item name="belly_dance" className="text-md w-[150px]">
                 <Input
                   style={{ padding: "6px" }}
                   className="text-md"
@@ -503,11 +681,7 @@ const AddPackage = () => {
             </div>
           </div>
 
-          <Form.Item
-            name="expectedPickup"
-            label="Expected Pickup"
-            className="text-md"
-          >
+          <Form.Item name="pickup" label="Expected Pickup" className="text-md">
             <Input
               style={{ padding: "6px" }}
               className="text-md"
@@ -582,7 +756,7 @@ const AddPackage = () => {
               className="text-center w-full  p-2 font-bold text-2xl bg-primary  text-white px-10 py-2 rounded-md shadow-lg"
               type="submit"
             >
-              Upload
+              {isLoading ? "Uploading..." : "Upload"}
             </button>
           </Form.Item>
         </Form>

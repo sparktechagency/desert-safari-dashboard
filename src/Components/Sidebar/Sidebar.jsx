@@ -37,7 +37,7 @@ const Sidebar = ({ onClose, closeDrawer }) => {
       {
         icon: <SiHomeassistantcommunitystore className="h-5 w-5" />,
         label: "Add Package",
-        Link: "/pacakes",
+        Link: "/packages",
       },
       {
         icon: <SlNotebook className="h-5 w-5" />,
@@ -174,15 +174,15 @@ const Sidebar = ({ onClose, closeDrawer }) => {
               </div>
             );
           })}
-
+          <div className="my-40"></div>
           <NavLink
             className="text-black hover:text-black"
             to="/sign-in"
             onClick={close}
           >
-            <div className="bg-primary w-72 md:mt-20 py-3 flex justify-center items-center cursor-pointer text-white">
+            <div className="bg-primary w-72  py-3 flex justify-center items-center  text-white">
               <FiLogOut className="text-xl" />
-              <p className="ml-2">Log out</p>
+              <p className="ml-2 cursor-pointer">Log out</p>
             </div>
           </NavLink>
         </div>

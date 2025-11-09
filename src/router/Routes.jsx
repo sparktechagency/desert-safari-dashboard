@@ -68,7 +68,7 @@ export const router = createBrowserRouter([
             element: <AllEvents />,
           },
           {
-            path: "/pacakes",
+            path: "/packages",
             element: <AllPackage />,
           },
           {
