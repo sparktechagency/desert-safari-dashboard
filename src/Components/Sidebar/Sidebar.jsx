@@ -11,7 +11,6 @@ import { GrMapLocation } from "react-icons/gr";
 import { SiHomeassistantcommunitystore } from "react-icons/si";
 import { SlNotebook } from "react-icons/sl";
 import { LuArrowRightLeft, LuFileQuestion } from "react-icons/lu";
-import { LiaCarSolid } from "react-icons/lia";
 
 const Sidebar = ({ onClose, closeDrawer }) => {
   const location = useLocation();

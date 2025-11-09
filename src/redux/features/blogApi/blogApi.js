@@ -4,10 +4,9 @@ const BlogsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getallBlogs: builder.query({
       query: ({page,limit,title}) => ({
-        url: `/blog/allBlogs`,
-        // url: `/blog/allBlogs?page=${page}&title=${title}&limit=${limit}`,
+        url: `/blog/allBlogs?page=${page}&title=${title}&limit=${limit}`,
         method: "GET",
-        params:{page,limit,title}
+      
       }),
       providesTags: ["all-blog"],
     }),

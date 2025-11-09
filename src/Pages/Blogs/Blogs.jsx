@@ -12,6 +12,7 @@ import {
   useGetallBlogsQuery,
   useUpdateBlogsMutation,
 } from "../../redux/features/blogApi/blogApi";
+import Search from "antd/es/input/Search";
 
 const Blogs = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -33,14 +34,14 @@ const Blogs = () => {
   const { data: allBlogsData, refetch } = useGetallBlogsQuery({
     page: pageNumber,
     limit: pageSize,
-    title: searchText ,
+    title: searchText,
   });
 
   const blogsData = allBlogsData?.data?.result;
   console.log(blogsData);
 
   useEffect(() => {
-    refetch(); 
+    refetch();
   }, [pageNumber, pageSize, searchText, refetch]);
 
   const showModal = () => setIsModalVisible(true);
@@ -124,7 +125,16 @@ const Blogs = () => {
     setPreviewEditImage(URL.createObjectURL(file));
     return false;
   };
+  const handleSearch = (value) => {
+    setSearchText(value.trim());
+    refetch();
+  };
 
+  // ✅ When clicking the "clear" (×) icon
+  const handleClearSearch = () => {
+    setSearchText("");
+    refetch();
+  };
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center my-4 gap-3">
@@ -134,14 +144,19 @@ const Blogs = () => {
         </div>
 
         <div className="flex flex-wrap gap-2 items-center">
-          <Input
-            placeholder="Search blog title"
-            size="large"
-            prefix={<SearchOutlined style={{ cursor: "pointer" }} />}
-            className="w-60"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+          <Search
+            allowClear
+            placeholder="Search blog by title"
+            onSearch={handleSearch}
+            enterButton
+            onChange={(e) => {
+              if (e.target.value === "") {
+                handleClearSearch();
+              }
+            }}
+            style={{ width: 250 }}
           />
+
           <button
             onClick={showModal}
             className="h-10 px-4 bg-primary rounded-md text-white flex items-center justify-center"
